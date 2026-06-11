@@ -10,7 +10,7 @@ export default function Hero() {
   ];
 
   return (
-    <section className="w-full min-h-screen flex flex-col lg:flex-row items-center justify-between px-6 lg:px-20 py-16">
+    <section className="relative min-h-screen flex flex-col lg:flex-row items-center justify-between px-6 lg:px-20 py-16">
 
       {/* LEFT SIDE */}
       <div className="flex-1 text-center lg:text-left">
@@ -48,7 +48,7 @@ export default function Hero() {
 
       {/* RIGHT SIDE */}
       <div className="flex-1 relative flex items-center justify-center mt-16 lg:mt-0">
-
+      <div className="absolute w-[400px] h-[400px] bg-pink-500/20 blur-3xl rounded-full" />
         {/* Center Shield */}
         <div className="relative z-10 flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-2xl">
           <Shield size={70} className="text-white" />

@@ -17,18 +17,18 @@ export default function SecretPhraseForm() {
       <div className="mb-5 flex items-center gap-2">
         <Mic className="text-pink-600" />
 
-        <h2 className="text-xl font-semibold">
+        <h2 className="text-xl text-blue-950 font-semibold">
           Voice SOS Setup
         </h2>
       </div>
 
-      <Input
+      <Input className="text-blue-950"
         placeholder="Enter Secret Phrase"
         value={phrase}
         onChange={(e) => setPhrase(e.target.value)}
       />
 
-      <p className="mt-3 text-sm text-slate-500">
+      <p className="mt-3 text-sm text-slate-800">
         Example:
         "The blue notebook is on my desk"
       </p>

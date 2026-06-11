@@ -11,11 +11,11 @@ export default function StatCard({
       <div className="flex items-center justify-between">
 
         <div>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-900">
             {title}
           </p>
 
-          <h3 className="mt-2 text-3xl font-bold">
+          <h3 className="mt-2 text-3xl text-blue-950 font-bold">
             {value}
           </h3>
         </div>

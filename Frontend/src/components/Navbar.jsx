@@ -6,7 +6,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/30 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between px-6">
 
         {/* Logo */}
@@ -16,19 +16,19 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-6 md:flex">
-          <Link to="/dashboard" className="font-medium text-slate-600 hover:text-pink-600">
+          <Link to="/dashboard" className="font-medium text-slate-300 hover:text-pink-400 transition">
             Dashboard
           </Link>
 
-          <Link to="/safety-map" className="font-medium text-slate-600 hover:text-pink-600">
+          <Link to="/safety-map" className="font-medium text-slate-300 hover:text-pink-400 transition">
             Safety Map
           </Link>
 
-          <Link to="/reports" className="font-medium text-slate-600 hover:text-pink-600">
+          <Link to="/reports" className="font-medium text-slate-300 hover:text-pink-400 transition">
             Reports
           </Link>
 
-          <Link to="/mobility" className="font-medium text-slate-600 hover:text-pink-600">
+          <Link to="/mobility" className="font-medium text-slate-300 hover:text-pink-400 transition">
             Mobility
           </Link>
         </div>
