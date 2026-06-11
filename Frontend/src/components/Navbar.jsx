@@ -7,18 +7,8 @@ export default function Navbar() {
       <div className="flex h-16 items-center justify-between px-6">
 
         {/* Logo */}
-        <Link
-          to="/"
-          className="flex items-center gap-2"
-        >
-          <Shield
-            size={32}
-            className="text-pink-600"
-          />
-
-          <h1 className="text-2xl font-bold text-slate-800">
-            HerGuardian
-          </h1>
+        <Link to="/" >
+          <img src="/logo.jpeg" alt="HerGuardian Logo" className="h-16 w-auto" />
         </Link>
 
         {/* Navigation */}
