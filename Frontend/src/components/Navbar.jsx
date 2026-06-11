@@ -8,7 +8,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" >
-          <img src="/logo.jpeg" alt="HerGuardian Logo" className="h-16 w-auto" />
+          <img src="/logo.jpeg" alt="HerGuardian Logo" className="h-16 w-18" />
         </Link>
 
         {/* Navigation */}
