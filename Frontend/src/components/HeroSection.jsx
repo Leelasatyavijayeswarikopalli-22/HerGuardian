@@ -1,126 +1,90 @@
-import { Shield, MapPin, Mic, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Shield, Mic, MapPinned, Users } from "lucide-react";
 
-export default function HeroSection() {
+export default function Hero() {
+  const features = [
+    { icon: Shield, label: "Safety Score" },
+    { icon: Mic, label: "Voice SOS" },
+    { icon: MapPinned, label: "Safe Map" },
+    { icon: Users, label: "Community" },
+  ];
+
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50">
+    <section className="w-full min-h-screen flex flex-col lg:flex-row items-center justify-between px-6 lg:px-20 py-16">
 
-      <div className="mx-auto max-w-7xl px-6 py-24">
+      {/* LEFT SIDE */}
+      <div className="flex-1 text-center lg:text-left">
+        
+        <span className="px-4 py-2 rounded-full border border-white/10 bg-white/5 text-sm text-purple-300">
+          AI-Powered Women Safety Platform
+        </span>
 
-        <div className="grid items-center gap-12 lg:grid-cols-2">
+        <h1 className="text-5xl md:text-7xl font-bold mt-6 leading-tight">
+          Your <span className="text-pink-400">Safety</span>, <br />
+          Our <span className="text-blue-400">Priority</span>
+        </h1>
 
-          {/* Left */}
+        <p className="text-gray-300 mt-6 max-w-xl mx-auto lg:mx-0">
+          HerGuardian is your smart companion for a safer life. Report, track,
+          and stay protected anywhere.
+        </p>
 
-          <div>
+        <div className="flex gap-4 mt-8 justify-center lg:justify-start">
+          <Link
+            to="/dashboard"
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white"
+          >
+            Explore Dashboard
+          </Link>
 
-            <div className="mb-4 inline-flex items-center rounded-full bg-pink-100 px-4 py-2 text-sm font-medium text-pink-700">
-              AI-Powered Women's Safety Platform
-            </div>
-
-            <h1 className="mb-6 text-5xl font-extrabold leading-tight lg:text-6xl">
-
-              Navigate
-              <span className="text-pink-600">
-                {" "}Fearlessly
-              </span>
-
-            </h1>
-
-            <p className="mb-8 text-lg text-slate-600">
-
-              HerGuardian combines AI, community intelligence,
-              dynamic safety mapping and Voice SOS to help women
-              travel, work and live more safely.
-
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-
-              <button className="rounded-xl bg-pink-600 px-6 py-3 font-medium text-white hover:bg-pink-700">
-
-                Get Started
-
-              </button>
-
-              <button className="flex items-center gap-2 rounded-xl border px-6 py-3 font-medium">
-
-                Learn More
-
-                <ArrowRight size={18} />
-
-              </button>
-
-            </div>
-
-          </div>
-
-          {/* Right */}
-
-          <div className="grid gap-4">
-
-            <div className="rounded-2xl bg-white p-6 shadow-lg">
-
-              <div className="flex items-center gap-3">
-
-                <Shield className="text-green-600" />
-
-                <h3 className="font-semibold">
-                  Safety Score
-                </h3>
-
-              </div>
-
-              <h1 className="mt-4 text-5xl font-bold text-green-600">
-                84
-              </h1>
-
-              <p className="text-slate-500">
-                Safe Zone
-              </p>
-
-            </div>
-
-            <div className="rounded-2xl bg-white p-6 shadow-lg">
-
-              <div className="flex items-center gap-3">
-
-                <MapPin className="text-red-500" />
-
-                <h3 className="font-semibold">
-                  Risk Detection
-                </h3>
-
-              </div>
-
-              <p className="mt-4">
-                AI predicts unsafe areas before incidents occur.
-              </p>
-
-            </div>
-
-            <div className="rounded-2xl bg-white p-6 shadow-lg">
-
-              <div className="flex items-center gap-3">
-
-                <Mic className="text-pink-600" />
-
-                <h3 className="font-semibold">
-                  Voice SOS
-                </h3>
-
-              </div>
-
-              <p className="mt-4">
-                Secret phrase triggers emergency support.
-              </p>
-
-            </div>
-
-          </div>
-
+          <Link
+            to="/about"
+            className="px-6 py-3 rounded-xl border border-white/20"
+          >
+            Learn More
+          </Link>
         </div>
-
       </div>
 
+      {/* RIGHT SIDE */}
+      <div className="flex-1 relative flex items-center justify-center mt-16 lg:mt-0">
+
+        {/* Center Shield */}
+        <div className="relative z-10 flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-2xl">
+          <Shield size={70} className="text-white" />
+        </div>
+
+        {/* Floating Feature Bubbles */}
+        {features.map((item, index) => {
+          const Icon = item.icon;
+
+          const positions = [
+            "top-0 left-1/2 -translate-x-1/2",
+            "bottom-0 left-1/2 -translate-x-1/2",
+            "left-0 top-1/2 -translate-y-1/2",
+            "right-0 top-1/2 -translate-y-1/2",
+          ];
+
+          return (
+            <div
+              key={index}
+              className={`absolute ${positions[index]} animate-bounce-slow`}
+            >
+              <div className="flex flex-col items-center gap-1">
+                
+                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg">
+                  <Icon className="text-pink-500" size={22} />
+                </div>
+
+                <span className="text-xs text-gray-300">
+                  {item.label}
+                </span>
+
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

@@ -4,17 +4,14 @@ import FeaturesSection from "../components/FeaturesSection";
 import HowItWorks from "../components/HowItWorks";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-
 export default function Home() {
   return (
     <>
       <Navbar />
 
       <HeroSection />
-
-      <ProblemSection />
-
       <FeaturesSection />
+      <ProblemSection />
 
       <HowItWorks />
 

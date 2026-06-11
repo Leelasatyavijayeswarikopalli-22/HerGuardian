@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -9,8 +9,8 @@ import CommunityReports from "./pages/CommunityReports";
 import MobilityReport from "./pages/MobilityReport";
 import Profile from "./pages/Profile";
 
-import Layout from "./Layouts/Layout";
-
+import Layout from "./layouts/Layout";
+import Home from "./pages/Home";
 export default function App() {
   return (
     <BrowserRouter>
