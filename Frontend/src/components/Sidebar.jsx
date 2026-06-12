@@ -24,7 +24,7 @@ export default function Sidebar() {
 
         <Link
           to="/dashboard"
-          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-100"
+          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
         >
           <LayoutDashboard />
           Dashboard
@@ -32,7 +32,7 @@ export default function Sidebar() {
 
         <Link
           to="/safety-map"
-          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-100"
+          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
         >
           <MapPinned />
           Safety Map
@@ -40,7 +40,7 @@ export default function Sidebar() {
 
         <Link
           to="/reports"
-          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-100"
+          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
         >
           <FileText />
           Reports
@@ -48,7 +48,7 @@ export default function Sidebar() {
 
         <Link
           to="/mobility"
-          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-100"
+          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
         >
           <Route />
           Mobility Report
@@ -56,7 +56,7 @@ export default function Sidebar() {
 
         <Link
           to="/profile"
-          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-100"
+          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
         >
           <User />
           Profile

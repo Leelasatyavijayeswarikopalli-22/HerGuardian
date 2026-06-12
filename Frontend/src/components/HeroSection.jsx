@@ -3,9 +3,7 @@ import {
   Shield,
   Mic,
   MapPinned,
-  Users,
-  AlertTriangle,
-  BookOpen
+  Users
 } from "lucide-react";
 
 export default function Hero() {
@@ -58,11 +56,11 @@ export default function Hero() {
 <div className="absolute w-[350px] h-[350px] border border-purple-500/20 rounded-full"></div>
         {/* Center Shield */}
         {/* Center Women Image */}
-<div className="relative z-10 flex items-center justify-center w-56 h-56 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-2xl overflow-hidden">
+<div className="relative z-10 flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-2xl overflow-hidden">
   <img
-  src="/favicon.png"
+  src="/icon.png"
   alt="HerGuardian Logo"
-  className="w-full h-full object-contain p-6"
+  className="w-full h-full object-contain p-0"
 />
 </div>
         {/* Safety Map Card */}
@@ -77,25 +75,25 @@ export default function Hero() {
 {/* Resources (Left Center - better spacing) */}
 <div className="absolute top-1/2 left-[15%] -translate-y-1/2 -translate-x-1/2 float-card">
   <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex items-center justify-center">
-    <BookOpen className="text-green-400" size={30} />
+    <Shield className="text-green-400" size={30} />
   </div>
-  <p className="text-center text-sm mt-2">Resources</p>
+  <p className="text-center text-sm mt-2">Dynamic Safety Score</p>
 </div>
 
 {/* SOS Alert (Right Center - symmetric) */}
 <div className="absolute top-1/2 left-[85%] -translate-y-1/2 -translate-x-1/2 float-card">
   <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex items-center justify-center">
-    <AlertTriangle className="text-red-400" size={30} />
+    <Mic className="text-red-400" size={30} />
   </div>
-  <p className="text-center text-sm mt-2">SOS Alert</p>
+  <p className="text-center text-sm mt-2">Secret Voice SOS</p>
 </div>
 
 {/* Report Incident (Bottom Center) */}
 <div className="absolute bottom-8 left-1/2 -translate-x-1/2 float-card">
   <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex items-center justify-center">
-    <Mic className="text-pink-400" size={30} />
+    <Users className="text-pink-400" size={30} />
   </div>
-  <p className="text-center text-sm mt-2">Report</p>
+  <p className="text-center text-sm mt-2">Community Report</p>
 </div>
       </div>
     </section>

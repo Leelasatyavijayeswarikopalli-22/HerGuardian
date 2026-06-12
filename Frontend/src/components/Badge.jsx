@@ -3,10 +3,10 @@ export default function Badge({
   color = "green",
 }) {
   const colors = {
-    green: "bg-green-100 text-green-700",
-    yellow: "bg-yellow-100 text-yellow-700",
-    red: "bg-red-100 text-red-700",
-    blue: "bg-blue-100 text-blue-700",
+    green: "bg-green-400 text-black",
+    yellow: "bg-yellow-400 text-black",
+    red: "bg-red-400 text-black",
+    blue: "bg-blue-400 text-black",
   };
 
   return (
@@ -16,6 +16,7 @@ export default function Badge({
         px-3
         py-1
         text-xs
+        text-cyan-500
         font-semibold
         ${colors[color]}
       `}
