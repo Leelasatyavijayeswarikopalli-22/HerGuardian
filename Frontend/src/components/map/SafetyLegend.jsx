@@ -8,7 +8,7 @@ export default function SafetyLegend() {
         
         {/* SAFE */}
         <div className="flex items-center gap-4">
-          <div className="w-5 h-5 rounded-full bg-teal-900 border border-teal-700/50"></div>
+          <div className="w-5 h-5 rounded-full border border-teal-700/50"></div>
           <span className="text-slate-300 font-medium text-lg">Safe</span>
         </div>
 
