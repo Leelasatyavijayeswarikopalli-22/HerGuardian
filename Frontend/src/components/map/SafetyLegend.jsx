@@ -1,31 +1,29 @@
 export default function SafetyLegend() {
   return (
-    <div className="rounded-2xl bg-[#12081f] border border-white/10 p-6 shadow-[0_10px_30px_rgba(168,85,247,0.35)]">
-      <h3 className="mb-6 text-xl font-bold text-white">
-        Safety Zones
-      </h3>
-
-      <div className="space-y-5">
+    <div className="bg-black/40 backdrop-blur-xl border border-purple-500/40 rounded-2xl p-6 shadow-lg shadow-purple-900/30">
+      
+      <h3 className="text-xl font-bold text-white mb-5">Safety Zones</h3>
+      
+      <div className="space-y-4">
+        
+        {/* SAFE */}
         <div className="flex items-center gap-4">
-          <div className="w-5 h-5 rounded-full bg-emerald-500 "></div>
-          <span className="font-medium">
-            Safe
-          </span>
+          <div className="w-5 h-5 rounded-full bg-teal-900 border border-teal-700/50"></div>
+          <span className="text-slate-300 font-medium text-lg">Safe</span>
         </div>
 
+        {/* MODERATE */}
         <div className="flex items-center gap-4">
-          <div className="w-5 h-5 rounded-full bg-yellow-500 "></div>
-          <span className="font-medium ">
-            Moderate
-          </span>
+          <div className="w-5 h-5 rounded-full bg-amber-900 border border-amber-700/50"></div>
+          <span className="text-slate-300 font-medium text-lg">Moderate</span>
         </div>
 
+        {/* UNSAFE */}
         <div className="flex items-center gap-4">
-          <div className="w-5 h-5 rounded-full bg-red-500 "></div>
-          <span className="font-medium">
-            Unsafe
-          </span>
+          <div className="w-5 h-5 rounded-full bg-rose-900 border border-rose-700/50"></div>
+          <span className="text-slate-300 font-medium text-lg">Unsafe</span>
         </div>
+
       </div>
     </div>
   );
