@@ -5,9 +5,7 @@ import Footer from "../components/Footer";
 export default function Layout({ children }) {
   return (
     <div className="min-h-screen glow-bg">
-
-      <Navbar />
-
+     <Navbar />
       <div className="flex">
 
         <Sidebar />

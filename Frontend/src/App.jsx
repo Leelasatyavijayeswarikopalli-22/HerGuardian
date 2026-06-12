@@ -9,7 +9,7 @@ import CommunityReports from "./pages/CommunityReports";
 import MobilityReport from "./pages/MobilityReport";
 import Profile from "./pages/Profile";
 
-import Layout from "./layouts/Layout";
+import Layout from "./Layouts/Layout";
 import Home from "./pages/Home";
 export default function App() {
   return (
