@@ -1,34 +1,83 @@
 @import "tailwindcss";
-body {
-  @apply text-white overflow-x-hidden;
-  background: radial-gradient(circle at top, #120b2e, #070A1A 40%, #05060f);
+
+/* FORCE DARK THEME ON EVERY SINGLE PAGE */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh !important;
+  background: radial-gradient(circle at top, #130826 0%, #0c031d 50%, #04010a 100%) !important;
+  color: white !important;
 }
-.glow-bg {
+
+/* KILL ALL LIGHT BACKGROUNDS - NO EXCEPTIONS */
+div, section, main, aside, article, header, footer, nav {
+  background-color: transparent !important;
+}
+
+/* Override any Tailwind light classes */
+.bg-white, 
+.bg-gray-50, .bg-gray-100, .bg-slate-50,
+.bg-pink-50, [class*="bg-white"], 
+[class*="bg-gray-"][class*="50"],
+[class*="bg-slate-"][class*="50"] {
+  background-color: rgba(255,255,255,0.02) !important; /* Barely visible dark mode cards */
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Ensure text is visible on all pages */
+h1, h2, h3, p, span, label, input, textarea {
+  color: inherit;
+}
+
+/* Glow effects like Image 2 */
+body::before {
+  content: '';
   position: fixed;
-  inset: 0;
+  top: -200px;
+  left: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%);
+  filter: blur(80px);
   z-index: -1;
-  overflow: hidden;
+  pointer-events: none;
 }
 
-.glow-bg::before,
-.glow-bg::after {
-  content: "";
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  filter: blur(120px);
-  opacity: 0.4;
-  border-radius: 50%;
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(76,111,255,0.12) 0%, transparent 70%);
+  filter: blur(80px);
+  z-index: -1;
+  pointer-events: none;
+}
+@keyframes float-nav {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
 }
 
-.glow-bg::before {
-  background: #ff4ecd;
-  top: -100px;
-  left: -100px;
+nav {
+  animation: float-nav 6s ease-in-out infinite;
 }
 
-.glow-bg::after {
-  background: #4c6fff;
-  bottom: -100px;
-  right: -100px;
+/* Smooth transitions for all interactive elements */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f071e; 
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ec4899, #8b5cf6); 
+  border-radius: 4px;
 }

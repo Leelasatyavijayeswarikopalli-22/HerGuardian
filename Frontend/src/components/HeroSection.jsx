@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
-import { Shield, Mic, MapPinned, Users } from "lucide-react";
+import {
+  Shield,
+  Mic,
+  MapPinned,
+  Users,
+  AlertTriangle,
+  BookOpen
+} from "lucide-react";
 
 export default function Hero() {
-  const features = [
-    { icon: Shield, label: "Safety Score" },
-    { icon: Mic, label: "Voice SOS" },
-    { icon: MapPinned, label: "Safe Map" },
-    { icon: Users, label: "Community" },
-  ];
+  
 
   return (
     <section className="relative min-h-screen flex flex-col lg:flex-row items-center justify-between px-6 lg:px-20 py-16">
@@ -47,43 +49,54 @@ export default function Hero() {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="flex-1 relative flex items-center justify-center mt-16 lg:mt-0">
-      <div className="absolute w-[400px] h-[400px] bg-pink-500/20 blur-3xl rounded-full" />
+      <div className="flex-1 relative flex items-center justify-center mt-16 lg:mt-0 min-h-[700px]">
+      <div className="absolute w-[550px] h-[550px] bg-pink-500/30 blur-[140px] rounded-full" />
+      <div className="absolute w-[650px] h-[650px] border border-pink-500/20 rounded-full"></div>
+
+<div className="absolute w-[500px] h-[500px] border border-blue-500/20 rounded-full"></div>
+
+<div className="absolute w-[350px] h-[350px] border border-purple-500/20 rounded-full"></div>
         {/* Center Shield */}
-        <div className="relative z-10 flex items-center justify-center w-40 h-40 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-2xl">
-          <Shield size={70} className="text-white" />
-        </div>
+        {/* Center Women Image */}
+<div className="relative z-10 flex items-center justify-center w-56 h-56 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-2xl overflow-hidden">
+  <img
+  src="/favicon.png"
+  alt="HerGuardian Logo"
+  className="w-full h-full object-contain p-6"
+/>
+</div>
+        {/* Safety Map Card */}
+{/* Safety Map (Top Center) */}
+<div className="absolute top-8 left-1/2 -translate-x-1/2 float-card">
+  <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex flex-col items-center justify-center">
+    <MapPinned className="text-blue-400" size={30} />
+  </div>
+  <p className="text-center text-sm mt-2">Safety Map</p>
+</div>
 
-        {/* Floating Feature Bubbles */}
-        {features.map((item, index) => {
-          const Icon = item.icon;
+{/* Resources (Left Center - better spacing) */}
+<div className="absolute top-1/2 left-[15%] -translate-y-1/2 -translate-x-1/2 float-card">
+  <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex items-center justify-center">
+    <BookOpen className="text-green-400" size={30} />
+  </div>
+  <p className="text-center text-sm mt-2">Resources</p>
+</div>
 
-          const positions = [
-            "top-0 left-1/2 -translate-x-1/2",
-            "bottom-0 left-1/2 -translate-x-1/2",
-            "left-0 top-1/2 -translate-y-1/2",
-            "right-0 top-1/2 -translate-y-1/2",
-          ];
+{/* SOS Alert (Right Center - symmetric) */}
+<div className="absolute top-1/2 left-[85%] -translate-y-1/2 -translate-x-1/2 float-card">
+  <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex items-center justify-center">
+    <AlertTriangle className="text-red-400" size={30} />
+  </div>
+  <p className="text-center text-sm mt-2">SOS Alert</p>
+</div>
 
-          return (
-            <div
-              key={index}
-              className={`absolute ${positions[index]} animate-bounce-slow`}
-            >
-              <div className="flex flex-col items-center gap-1">
-                
-                <div className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg">
-                  <Icon className="text-pink-500" size={22} />
-                </div>
-
-                <span className="text-xs text-gray-300">
-                  {item.label}
-                </span>
-
-              </div>
-            </div>
-          );
-        })}
+{/* Report Incident (Bottom Center) */}
+<div className="absolute bottom-8 left-1/2 -translate-x-1/2 float-card">
+  <div className="w-28 h-28 rounded-full bg-white/10 backdrop-blur-xl border border-pink-500/20 flex items-center justify-center">
+    <Mic className="text-pink-400" size={30} />
+  </div>
+  <p className="text-center text-sm mt-2">Report</p>
+</div>
       </div>
     </section>
   );
