@@ -81,3 +81,37 @@ nav {
   background: linear-gradient(to bottom, #ec4899, #8b5cf6); 
   border-radius: 4px;
 }
+.leaflet-routing-container {
+  background: #1e1b4b !important;
+  color: white !important;
+  border-radius: 12px;
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.leaflet-routing-container h2,
+.leaflet-routing-container h3,
+.leaflet-routing-container td,
+.leaflet-routing-container div,
+.leaflet-routing-container span {
+  color: white !important;
+}
+
+.leaflet-routing-alt {
+  background: #312e81 !important;
+  color: white !important;
+}
+
+.leaflet-routing-alt:hover {
+  background: #4338ca !important;
+}
+
+.leaflet-routing-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaflet-routing-container::-webkit-scrollbar-thumb {
+  background: #a855f7;
+  border-radius: 10px;
+}

@@ -66,12 +66,6 @@ export default function Navbar() {
               label="Reports"
               active={location.pathname.startsWith("/reports")}
             />
-
-            <NavItem
-              to="/mobility"
-              label="Mobility"
-              active={location.pathname === "/mobility"}
-            />
           </div>
 
           {/* Desktop Right */}
@@ -135,13 +129,6 @@ export default function Navbar() {
               to="/reports"
               label="Reports"
               active={location.pathname.startsWith("/reports")}
-              onClick={() => setOpen(false)}
-            />
-
-            <MobileItem
-              to="/mobility"
-              label="Mobility"
-              active={location.pathname === "/mobility"}
               onClick={() => setOpen(false)}
             />
 

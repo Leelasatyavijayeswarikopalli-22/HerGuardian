@@ -6,7 +6,6 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import SafetyMap from "./pages/SafetyMap";
 import CommunityReports from "./pages/CommunityReports";
-import MobilityReport from "./pages/MobilityReport";
 import Profile from "./pages/Profile";
 
 import Layout from "./Layouts/Layout";
@@ -44,15 +43,6 @@ export default function App() {
           element={
             <Layout>
               <CommunityReports />
-            </Layout>
-          }
-        />
-
-        <Route
-          path="/mobility"
-          element={
-            <Layout>
-              <MobilityReport />
             </Layout>
           }
         />
