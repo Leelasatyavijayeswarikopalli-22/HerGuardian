@@ -43,6 +43,13 @@ export default function AuthChoice() {
             Sign Up
           </button>
 
+          <button
+  onClick={() => navigate("/")}
+  className="rounded-lg border px-4 py-2"
+>
+  Back to Home
+</button>
+
         </div>
 
       </div>
