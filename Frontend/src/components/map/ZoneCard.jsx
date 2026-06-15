@@ -3,7 +3,7 @@ import Badge from "../Badge";
 
 export default function ZoneCard() {
   return (
-    <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/40 rounded-2xl p-6 shadow-lg shadow-purple-900/30">
+    <Card >
 
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">MG Road</h2>

@@ -47,14 +47,6 @@ export default function Sidebar() {
         </Link>
 
         <Link
-          to="/mobility"
-          className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
-        >
-          <Route />
-          Mobility Report
-        </Link>
-
-        <Link
           to="/profile"
           className="flex items-center gap-3 rounded-lg p-3 hover:bg-slate-400"
         >
