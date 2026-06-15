@@ -1,10 +1,22 @@
 import { Bell, Menu, X, Phone,UserCircle } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleProfileClick = () => {
+  const isLoggedIn =
+    localStorage.getItem("isLoggedIn");
+
+  if (isLoggedIn) {
+    navigate("/profile");
+  } else {
+    navigate("/auth");
+  }
+};
 
   return (
     <>
@@ -36,7 +48,7 @@ export default function Navbar() {
                 3
               </span>
             </button>
-            <button className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <button onClick={handleProfileClick} className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
               <UserCircle size={18} className="text-white" />
             </button>
           </div>
@@ -78,7 +90,7 @@ export default function Navbar() {
                 3
               </span>
             </button>
-            <button className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
+            <button onClick={handleProfileClick} className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
               <UserCircle size={18} className="text-white" />
             </button>
 

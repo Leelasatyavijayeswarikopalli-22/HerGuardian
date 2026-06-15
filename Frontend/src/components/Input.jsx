@@ -1,4 +1,5 @@
 export default function Input({
+  name,
   type = "text",
   placeholder = "",
   value,
@@ -7,6 +8,7 @@ export default function Input({
 }) {
   return (
     <input
+      name={name}
       type={type}
       value={value}
       onChange={onChange}

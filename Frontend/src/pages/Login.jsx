@@ -2,13 +2,26 @@ import { useState } from "react";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
-
+import { useNavigate } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
+    const savedUser = JSON.parse(
+    localStorage.getItem("user")
+  );
+
+  if (
+    savedUser.email === email &&
+    savedUser.password === password
+  ) {
+    localStorage.setItem("isLoggedIn", "true");
+    navigate("/profile");
+  } else {
+    alert("Invalid credentials");
+  }
   };
 
   return (

@@ -2,7 +2,7 @@ import { useState } from "react";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
-
+import { useNavigate } from "react-router-dom";
 export default function Signup() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -12,6 +12,7 @@ export default function Signup() {
     emergencyContact: "",
     secretPhrase: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -21,9 +22,25 @@ export default function Signup() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-  };
+  e.preventDefault();
+
+  const existingUser = localStorage.getItem("user");
+
+  if (existingUser) {
+    alert("Account already exists. Please Login.");
+    navigate("/login");
+    return;
+  }
+
+  localStorage.setItem(
+    "user",
+    JSON.stringify(formData)
+  );
+
+  localStorage.setItem("isLoggedIn", "true");
+
+  navigate("/profile");
+};
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-6">

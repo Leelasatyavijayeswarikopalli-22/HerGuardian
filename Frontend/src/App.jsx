@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 
 import Layout from "./Layouts/Layout";
 import Home from "./pages/Home";
+import AuthChoice from "./pages/AuthChoice";
 export default function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth" element={<AuthChoice />} />
 
         <Route path="/signup" element={<Signup />} />
 
