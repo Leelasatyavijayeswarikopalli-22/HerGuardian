@@ -36,45 +36,62 @@ export default function SrcToDest({
   };
 
   const getCurrentLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser");
+    return;
+  }
 
-        setSource([lat, lng]);
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
 
-        try {
-          const response = await fetch(
-            `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`
-          );
+      console.log("Current Location:", lat, lng);
+      console.log("Accuracy:", position.coords.accuracy);
 
-          const data = await response.json();
+      setSource([lat, lng]);
 
-          if (data.features?.length > 0) {
-            setSourceText(
-              data.features[0].place_name
-            );
-          } else {
-            setSourceText(
-              `${lat.toFixed(5)}, ${lng.toFixed(5)}`
-            );
-          }
-        } catch (error) {
-          console.error(error);
-
-          setSourceText(
-            `${lat.toFixed(5)}, ${lng.toFixed(5)}`
-          );
-        }
-      },
-      (error) => {
-        console.error(error);
-        alert(
-          "Unable to access your location. Please allow location permission."
+      try {
+        const response = await fetch(
+          `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`
         );
+
+        const data = await response.json();
+
+        if (data.features?.length > 0) {
+          setSourceText(data.features[0].place_name);
+        } else {
+          setSourceText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        }
+      } catch (error) {
+        console.error(error);
+        setSourceText(`${lat.toFixed(6)}, ${lng.toFixed(6)}`);
       }
-    );
-  };
+    },
+    (error) => {
+      console.error(error);
+
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Location permission denied");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location unavailable");
+          break;
+        case error.TIMEOUT:
+          alert("Location request timed out");
+          break;
+        default:
+          alert("Unable to get location");
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 20000,
+      maximumAge: 0,
+    }
+  );
+};
 
   return (
     <div className="relative z-[9999] mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">

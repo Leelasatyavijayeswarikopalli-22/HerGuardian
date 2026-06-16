@@ -113,11 +113,11 @@ const handleLogout = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-green-100 px-4 py-2 text-sm font-medium text-green-700">
+              <span className="rounded-full bg-green-900 px-4 py-2 text-sm font-medium text-white">
                 Active & Protected
               </span>
 
-              <span className="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
+              <span className="rounded-full bg-slate-900 px-4 py-2 text-sm text-slate-600">
                 Hidden for Security
               </span>
             </div>

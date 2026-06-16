@@ -3,6 +3,7 @@ import GoogleMapView from "../components/map/GoogleMapView";
 import SafetyLegend from "../components/map/SafetyLegend";
 import ZoneCard from "../components/map/ZoneCard";
 import { useState } from "react";
+import  Button  from "../components/button";
 
 export default function SafetyMap() {
   const [source, setSource] = useState(null);
@@ -28,7 +29,7 @@ export default function SafetyMap() {
             />
           </div>
 
-          <div className="mb-4 flex gap-3">
+          <div className="mb-4 flex gap-4">
 
             <button
               className="rounded-lg bg-blue-600 px-4 py-2 text-white"
@@ -38,7 +39,8 @@ export default function SafetyMap() {
             >
               Select Source On Map
             </button>
-
+            </div>
+          <div className="mb-4 flex gap-4">
             <button
               className="rounded-lg bg-green-600 px-4 py-2 text-white"
               onClick={() =>
