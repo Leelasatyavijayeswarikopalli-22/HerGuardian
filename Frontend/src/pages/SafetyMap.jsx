@@ -3,7 +3,7 @@ import GoogleMapView from "../components/map/GoogleMapView";
 import SafetyLegend from "../components/map/SafetyLegend";
 import ZoneCard from "../components/map/ZoneCard";
 import { useState } from "react";
-import  Button  from "../components/button";
+import  Button  from "../components/Button";
 
 export default function SafetyMap() {
   const [source, setSource] = useState(null);
