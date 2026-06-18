@@ -263,18 +263,6 @@ Built for:
 
 ---
 
-# 📷 Screenshots
-
-*Add project screenshots here*
-
-```md
-![Home Screen](assets/home.png)
-![Navigation Dashboard](assets/dashboard.png)
-![SOS Feature](assets/sos.png)
-```
-
----
-
 # 🧪 Installation
 
 ## Clone Repository
