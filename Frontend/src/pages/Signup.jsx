@@ -3,7 +3,10 @@ import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+
 export default function Signup() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -12,7 +15,6 @@ export default function Signup() {
     emergencyContact: "",
     secretPhrase: "",
   });
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -22,40 +24,71 @@ export default function Signup() {
   };
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const existingUser = localStorage.getItem("user");
+    const {
+      fullName,
+      email,
+      password,
+      confirmPassword,
+      emergencyContact,
+      secretPhrase,
+    } = formData;
 
-  if (existingUser) {
-    alert("Account already exists. Please Login.");
-    navigate("/login");
-    return;
-  }
+    // Check empty fields
+    if (
+      !fullName ||
+      !email ||
+      !password ||
+      !confirmPassword ||
+      !emergencyContact ||
+      !secretPhrase
+    ) {
+      alert("Please fill all fields.");
+      return;
+    }
 
-  localStorage.setItem(
-    "user",
-    JSON.stringify(formData)
-  );
+    // Password match
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
 
-  localStorage.setItem("isLoggedIn", "true");
+    // Check existing user
+    const existingUser = JSON.parse(localStorage.getItem("user"));
 
-  navigate("/profile");
-};
+    if (existingUser) {
+      alert("Account already exists. Please Login.");
+      navigate("/login");
+      return;
+    }
+
+    // Save user
+    const user = {
+      fullName,
+      email,
+      password,
+      emergencyContact,
+      secretPhrase,
+    };
+
+    localStorage.setItem("user", JSON.stringify(user));
+
+    localStorage.setItem("isLoggedIn", "true");
+
+    alert("Account created successfully!");
+
+    navigate("/profile");
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
-
       <Card className="w-full max-w-lg">
-
         <h1 className="mb-6 text-center text-3xl font-bold text-pink-600">
           HerGuardian
         </h1>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             name="fullName"
             placeholder="Full Name"
@@ -94,34 +127,28 @@ export default function Signup() {
             onChange={handleChange}
           />
 
-          <div>
-            <label className="mb-2 block font-medium">
-              Secret Voice SOS Phrase
-            </label>
+          <Input
+            name="secretPhrase"
+            placeholder="Secret SOS Phrase"
+            value={formData.secretPhrase}
+            onChange={handleChange}
+          />
 
-            <Input
-              name="secretPhrase"
-              placeholder="Example: The blue notebook is on my desk"
-              value={formData.secretPhrase}
-              onChange={handleChange}
-            />
-
-            <p className="mt-2 text-sm text-slate-500">
-              This phrase will trigger emergency alerts.
-            </p>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-          >
+          <Button type="submit" className="w-full">
             Create Account
           </Button>
-
         </form>
 
+        <p className="mt-4 text-center">
+          Already have an account?{" "}
+          <button
+            className="text-pink-600 font-semibold"
+            onClick={() => navigate("/login")}
+          >
+            Login
+          </button>
+        </p>
       </Card>
-
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import SafetyScoreCard from "../components/dashboard/SafetyScoreCard";
 import StatCard from "../components/dashboard/StatCard";
-import SecretPhraseForm from "../components/voice/SecretPhraseForm";
 
 import {
   AlertTriangle,
@@ -35,8 +34,6 @@ export default function Dashboard() {
         />
 
       </div>
-
-      <SecretPhraseForm />
 
     </div>
   );

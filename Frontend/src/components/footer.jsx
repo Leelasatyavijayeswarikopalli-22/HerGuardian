@@ -48,10 +48,6 @@ export default function Footer() {
     </li>
 
     <li>
-      ✓ AI Mobility Safety Report
-    </li>
-
-    <li>
       ✓ Secret Voice SOS
     </li>
 
@@ -90,12 +86,6 @@ export default function Footer() {
               <li>
                 <a href="/reports">
                   Community Reports
-                </a>
-              </li>
-
-              <li>
-                <a href="/mobility">
-                  Mobility Report
                 </a>
               </li>
 
