@@ -1,13 +1,14 @@
 package com.herguardian.Backend.service;
 
 import com.herguardian.Backend.dto.RegisterRequest;
-import com.herguardian.Backend.entity.OTP;
-import com.herguardian.Backend.repository.OTPRepository;
 import com.herguardian.Backend.repository.UserRepository;
 import com.herguardian.Backend.util.OtpGenerator;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.herguardian.Backend.entity.PendingUser;
+import com.herguardian.Backend.repository.PendingUserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -19,33 +20,39 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private OTPRepository otpRepository;
-
-    @Autowired
     private EmailService emailService;
 
-    public String register(RegisterRequest request){
+    @Autowired
+    private PendingUserRepository pendingUserRepository;
 
-        if(userRepository.existsByEmail(request.getEmail())){
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    public String register(RegisterRequest request) {
+
+        if (userRepository.existsByEmail(request.getEmail())) {
             return "Email already registered";
         }
 
+        pendingUserRepository.findByEmail(request.getEmail())
+                .ifPresent(pendingUserRepository::delete);
+
         String otp = OtpGenerator.generateOtp();
 
-        otpRepository.findByEmail(request.getEmail())
-                .ifPresent(otpRepository::delete);
-
-        OTP otpEntity = OTP.builder()
+        PendingUser pendingUser = PendingUser.builder()
+                .fullName(request.getFullName())
                 .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .emergencyContact(request.getEmergencyContact())
+                .voicePhrase(request.getVoicePhrase())
                 .otp(otp)
                 .expiryTime(LocalDateTime.now().plusMinutes(5))
                 .build();
 
-        otpRepository.save(otpEntity);
+        pendingUserRepository.save(pendingUser);
 
         emailService.sendOtp(request.getEmail(), otp);
 
         return "OTP Sent Successfully";
     }
-
 }

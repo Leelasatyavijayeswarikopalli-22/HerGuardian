@@ -1,0 +1,47 @@
+package com.herguardian.Backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "PENDING_USERS")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class PendingUser {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "pending_seq")
+    @SequenceGenerator(
+            name = "pending_seq",
+            sequenceName = "PENDING_SEQ",
+            allocationSize = 1
+    )
+    private Long id;
+
+    @Column(nullable = false)
+    private String fullName;
+
+    @Column(nullable = false,unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
+    private String emergencyContact;
+
+    @Column(nullable = false)
+    private String voicePhrase;
+
+    @Column(nullable = false)
+    private String otp;
+
+    @Column(nullable = false)
+    private LocalDateTime expiryTime;
+}
