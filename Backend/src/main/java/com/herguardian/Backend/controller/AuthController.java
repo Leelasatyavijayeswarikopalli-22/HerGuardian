@@ -1,9 +1,6 @@
 package com.herguardian.Backend.controller;
 
-import com.herguardian.Backend.dto.LoginRequest;
-import com.herguardian.Backend.dto.LoginResponse;
-import com.herguardian.Backend.dto.RegisterRequest;
-import com.herguardian.Backend.dto.VerifyOtpRequest;
+import com.herguardian.Backend.dto.*;
 import com.herguardian.Backend.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +44,15 @@ public class AuthController {
 
         }
 
+    }
+    @GetMapping("/voice-phrase/{email}")
+    public ResponseEntity<SecretPhraseResponse> getVoicePhrase(
+            @PathVariable String email) {
+
+        return ResponseEntity.ok(
+                new SecretPhraseResponse(
+                        authService.getVoicePhrase(email)
+                )
+        );
     }
     }
