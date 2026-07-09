@@ -32,7 +32,13 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String emergencyContact;
+    private String emergencyContact1;
+
+    @Column(nullable = false)
+    private String emergencyContact2;
+
+    @Column(nullable = false)
+    private String emergencyContact3;
 
     @Column(nullable = false)
     private String voicePhrase;

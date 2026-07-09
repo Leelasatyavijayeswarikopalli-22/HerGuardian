@@ -3,81 +3,117 @@ import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
-  const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    // Check empty fields
-    if (!email || !password) {
-      alert("Please enter email and password.");
-      return;
-    }
+    const handleSubmit = async (e) => {
 
-    const savedUser = JSON.parse(localStorage.getItem("user"));
+        e.preventDefault();
 
-    if (!savedUser) {
-      alert("No account found. Please Sign Up first.");
-      navigate("/signup");
-      return;
-    }
+        if (!email || !password) {
+            alert("Please enter Email and Password");
+            return;
+        }
 
-    if (
-      savedUser.email === email.trim() &&
-      savedUser.password === password
-    ) {
-      localStorage.setItem("isLoggedIn", "true");
+        try {
 
-      alert("Login Successful!");
+            const response = await axios.post(
+                "http://localhost:8080/api/auth/login",
+                {
+                    email,
+                    password
+                }
+            );
 
-      navigate("/profile");
-    } else {
-      alert("Invalid Email or Password.");
-    }
-  };
+            localStorage.setItem("token", response.data.token);
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100">
-      <Card className="w-full max-w-md">
-        <h1 className="mb-6 text-center text-3xl font-bold text-pink-600">
-          Welcome Back
-        </h1>
+            localStorage.setItem(
+                "user",
+                JSON.stringify({
+                    fullName: response.data.fullName,
+                    email: email,
+                    emergencyContact1: response.data.emergencyContact1,
+                    emergencyContact2: response.data.emergencyContact2,
+                    emergencyContact3: response.data.emergencyContact3,
+                })
+            );
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            localStorage.setItem("isLoggedIn", "true");
 
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            alert("Login Successful");
 
-          <Button type="submit" className="w-full">
-            Login
-          </Button>
-        </form>
+            navigate("/profile");
 
-        <p className="mt-4 text-center">
-          Don't have an account?{" "}
-          <button
-            className="text-pink-600 font-semibold"
-            onClick={() => navigate("/signup")}
-          >
-            Sign Up
-          </button>
-        </p>
-      </Card>
-    </div>
-  );
+        } catch (error) {
+
+            if (error.response) {
+                alert(error.response.data);
+            } else {
+                alert("Server Error");
+            }
+
+        }
+
+    };
+
+    return (
+
+        <div className="flex min-h-screen items-center justify-center bg-slate-100">
+
+            <Card className="w-full max-w-md">
+
+                <h1 className="mb-6 text-center text-3xl font-bold text-pink-600">
+                    Welcome Back
+                </h1>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+
+                    <Input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e)=>setEmail(e.target.value)}
+                    />
+
+                    <Input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e)=>setPassword(e.target.value)}
+                    />
+
+                    <Button
+                        type="submit"
+                        className="w-full"
+                    >
+                        Login
+                    </Button>
+
+                </form>
+
+                <p className="mt-4 text-center">
+
+                    Don't have an account?
+
+                    <button
+                        className="ml-2 text-pink-600 font-semibold"
+                        onClick={()=>navigate("/signup")}
+                    >
+                        Sign Up
+                    </button>
+
+                </p>
+
+            </Card>
+
+        </div>
+
+    );
+
 }

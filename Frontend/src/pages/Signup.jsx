@@ -3,8 +3,10 @@ import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Signup() {
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -12,18 +14,23 @@ export default function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
-    emergencyContact: "",
+    emergencyContact1: "",
+    emergencyContact2: "",
+    emergencyContact3: "",
     secretPhrase: "",
   });
 
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     const {
@@ -31,64 +38,167 @@ export default function Signup() {
       email,
       password,
       confirmPassword,
-      emergencyContact,
+      emergencyContact1,
+      emergencyContact2,
+      emergencyContact3,
       secretPhrase,
     } = formData;
 
-    // Check empty fields
+    // ================= Required Fields =================
+
     if (
-      !fullName ||
-      !email ||
+      !fullName.trim() ||
+      !email.trim() ||
       !password ||
       !confirmPassword ||
-      !emergencyContact ||
-      !secretPhrase
+      !emergencyContact1.trim() ||
+      !emergencyContact2.trim() ||
+      !emergencyContact3.trim() ||
+      !secretPhrase.trim()
     ) {
       alert("Please fill all fields.");
       return;
     }
 
-    // Password match
+    // ================= Email Validation =================
+
+    const emailRegex =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    // ================= Password Match =================
+
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
 
-    // Check existing user
-    const existingUser = JSON.parse(localStorage.getItem("user"));
+    // ================= Strong Password =================
 
-    if (existingUser) {
-      alert("Account already exists. Please Login.");
-      navigate("/login");
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&+=!]).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+
+      alert(
+        "Password must be at least 8 characters and contain uppercase, lowercase, number and special character."
+      );
+
       return;
     }
 
-    // Save user
-    const user = {
-      fullName,
-      email,
-      password,
-      emergencyContact,
-      secretPhrase,
-    };
+    // ================= Phone Validation =================
 
-    localStorage.setItem("user", JSON.stringify(user));
+    const phoneRegex = /^[6-9]\d{9}$/;
 
-    localStorage.setItem("isLoggedIn", "true");
+    if (
+      !phoneRegex.test(emergencyContact1) ||
+      !phoneRegex.test(emergencyContact2) ||
+      !phoneRegex.test(emergencyContact3)
+    ) {
+      alert("Enter valid 10-digit mobile numbers.");
+      return;
+    }
 
-    alert("Account created successfully!");
+    // ================= Different Contacts =================
 
-    navigate("/profile");
+    if (
+      emergencyContact1 === emergencyContact2 ||
+      emergencyContact1 === emergencyContact3 ||
+      emergencyContact2 === emergencyContact3
+    ) {
+
+      alert("All emergency contacts must be different.");
+
+      return;
+    }
+
+    // ================= Secret Phrase =================
+
+    if (secretPhrase.trim().length < 4) {
+
+      alert("Secret phrase must contain at least 4 characters.");
+
+      return;
+    }
+
+    try {
+
+      const response = await axios.post(
+        "http://localhost:8080/api/auth/register",
+        {
+          fullName,
+          email,
+          password,
+          emergencyContact1,
+          emergencyContact2,
+          emergencyContact3,
+          voicePhrase: secretPhrase,
+        }
+      );
+
+      if (
+        response.data === "OTP Sent Successfully" ||
+        response.data === "OTP Already Sent"
+      ) {
+
+        alert(response.data);
+
+        navigate("/verify-otp", {
+          state: { email },
+        });
+
+      } else if (
+        response.data === "Email already registered"
+      ) {
+
+        alert("Email already registered. Please Login.");
+
+        navigate("/login");
+
+      } else {
+
+        alert(response.data);
+
+      }
+
+    } catch (error) {
+
+      console.log(error);
+
+      if (error.response) {
+
+        alert(error.response.data);
+
+      } else {
+
+        alert("Server Error");
+
+      }
+
+    }
+
   };
 
   return (
+
     <div className="flex min-h-screen items-center justify-center bg-slate-100 p-6">
+
       <Card className="w-full max-w-lg">
+
         <h1 className="mb-6 text-center text-3xl font-bold text-pink-600">
           HerGuardian
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+        >
+
           <Input
             name="fullName"
             placeholder="Full Name"
@@ -121,9 +231,23 @@ export default function Signup() {
           />
 
           <Input
-            name="emergencyContact"
-            placeholder="Emergency Contact Number"
-            value={formData.emergencyContact}
+            name="emergencyContact1"
+            placeholder="Emergency Contact 1"
+            value={formData.emergencyContact1}
+            onChange={handleChange}
+          />
+
+          <Input
+            name="emergencyContact2"
+            placeholder="Emergency Contact 2"
+            value={formData.emergencyContact2}
+            onChange={handleChange}
+          />
+
+          <Input
+            name="emergencyContact3"
+            placeholder="Emergency Contact 3"
+            value={formData.emergencyContact3}
             onChange={handleChange}
           />
 
@@ -134,21 +258,19 @@ export default function Signup() {
             onChange={handleChange}
           />
 
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+          >
             Create Account
           </Button>
+
         </form>
 
-        <p className="mt-4 text-center">
-          Already have an account?{" "}
-          <button
-            className="text-pink-600 font-semibold"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
-        </p>
       </Card>
+
     </div>
+
   );
+
 }

@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 import Layout from "./Layouts/Layout";
 import Home from "./pages/Home";
 import AuthChoice from "./pages/AuthChoice";
+import VerifyOtp from "./pages/VerifyOtp";
 export default function App() {
   return (
     <BrowserRouter>
@@ -21,7 +22,7 @@ export default function App() {
         <Route path="/auth" element={<AuthChoice />} />
 
         <Route path="/signup" element={<Signup />} />
-
+        <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route
           path="/dashboard"
           element={

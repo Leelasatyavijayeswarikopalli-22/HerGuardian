@@ -1,23 +1,51 @@
 package com.herguardian.Backend.controller;
 
+import com.herguardian.Backend.dto.LoginRequest;
+import com.herguardian.Backend.dto.LoginResponse;
 import com.herguardian.Backend.dto.RegisterRequest;
+import com.herguardian.Backend.dto.VerifyOtpRequest;
 import com.herguardian.Backend.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173",
+        "http://localhost:5174"})
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
-    @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest request){
-
-        return authService.register(request);
-
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
-}
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+
+        return ResponseEntity.ok(authService.register(request));
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<String> verify(@RequestBody VerifyOtpRequest request) {
+
+        return ResponseEntity.ok(authService.verifyOtp(request));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+
+        try {
+
+            LoginResponse response = authService.login(request);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        }
+
+    }
+    }

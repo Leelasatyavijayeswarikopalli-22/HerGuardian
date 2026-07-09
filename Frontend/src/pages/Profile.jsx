@@ -8,30 +8,40 @@ import {
   Shield,
   CheckCircle,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";      
+import { useNavigate } from "react-router-dom";
+
 export default function Profile() {
+
   const navigate = useNavigate();
-const handleLogout = () => {
-  localStorage.removeItem("isLoggedIn");
-  navigate("/auth");
-};
+
   const [user, setUser] = useState(null);
 
+  const handleLogout = () => {
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("isLoggedIn");
+
+    navigate("/login");
+
+  };
+
   useEffect(() => {
-  const isLoggedIn =
-    localStorage.getItem("isLoggedIn");
 
-  if (!isLoggedIn) {
-    navigate("/auth");
-    return;
-  }
+    const token = localStorage.getItem("token");
 
-  const user = JSON.parse(
-    localStorage.getItem("user")
-  );
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  setUser(user);
-}, [navigate]);
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+
+    if (savedUser) {
+      setUser(savedUser);
+    }
+
+  }, [navigate]);
 
   if (!user) {
     return (
@@ -61,7 +71,7 @@ const handleLogout = () => {
             </div>
 
             <h1 className="text-3xl font-bold text-pink-600">
-              {user.fullName}
+              {user.fullName || "User"}
             </h1>
 
             <p className="mt-2 text-slate-500">
@@ -100,7 +110,7 @@ const handleLogout = () => {
             </div>
 
             <p className="text-lg text-slate-800">
-              {user.emergencyContact}
+              {"Hidden for Security"}
             </p>
           </Card>
 
@@ -156,6 +166,7 @@ const handleLogout = () => {
               SOS and emergency features are active.
             </p>
           </Card>
+
         </div>
 
         {/* Actions */}
@@ -165,6 +176,7 @@ const handleLogout = () => {
           </h3>
 
           <div className="flex flex-wrap gap-4">
+
             <Button>
               Edit Profile
             </Button>
@@ -174,11 +186,12 @@ const handleLogout = () => {
             </Button>
 
             <button
-  onClick={handleLogout}
-  className="rounded-lg bg-red-500 px-4 py-2 text-white"
->
-  Logout
-</button>
+              onClick={handleLogout}
+              className="rounded-lg bg-red-500 px-4 py-2 text-white"
+            >
+              Logout
+            </button>
+
           </div>
         </Card>
 

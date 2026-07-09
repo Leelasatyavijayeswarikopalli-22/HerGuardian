@@ -1,16 +1,21 @@
 package com.herguardian.Backend.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-public class RegisterRequest {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class UserResponse {
 
     private String fullName;
     private String email;
-    private String password;
     private String emergencyContact1;
     private String emergencyContact2;
     private String emergencyContact3;
     private String voicePhrase;
+
 }
