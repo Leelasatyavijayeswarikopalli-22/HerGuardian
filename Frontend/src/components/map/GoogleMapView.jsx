@@ -1,404 +1,200 @@
-import { useEffect } from "react";
+import { useState } from "react";
+
 import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup,
-  Circle,
-  useMap,
-  useMapEvents,
+  Popup
 } from "react-leaflet";
 
 import "leaflet/dist/leaflet.css";
-import "leaflet-routing-machine";
-import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
 import L from "leaflet";
 
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
+import LocationPicker from "./LocationPicker";
+import SafetyRouting from "./SafetyRouting";
+import RouteCards from "./RouteCards";
+import { FlyToSource, FitRoute } from "./MapHelpers";
+
 const DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+  iconSize: [25,41],
+  iconAnchor: [12,41]
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-/* ===========================
-   MAP CLICK LOCATION PICKER
-=========================== */
+export default function GoogleMapView({
 
-function LocationPicker({
-  setSource,
-  setDestination,
-  pickingMode,
-}) {
-  useMapEvents({
-    click(e) {
-      const coords = [
-        e.latlng.lat,
-        e.latlng.lng,
-      ];
+    source,
 
-      if (pickingMode === "source") {
-        setSource(coords);
-      }
+    destination,
 
-      if (pickingMode === "destination") {
-        setDestination(coords);
-      }
-    },
-  });
+    setSource,
 
-  return null;
-}
+    setDestination,
 
-/* ===========================
-   SAFE ROUTING
-=========================== */
+    pickingMode,
 
-function SafetyRouting({
-  source,
-  destination,
-  safetyZones,
-}) {
-  const map = useMap();
+    setPickingMode
 
-  useEffect(() => {
-    if (!source || !destination) return;
+}){
 
-    let routeLine;
+    const apiKey =
+        import.meta.env.VITE_MAPTILER_KEY;
 
-    const routingControl = L.Routing.control({
-      waypoints: [
-        L.latLng(source[0], source[1]),
-        L.latLng(
-          destination[0],
-          destination[1]
-        ),
-      ],
+    const [routeResults,setRouteResults] =
+        useState([]);
 
-      routeWhileDragging: false,
-      addWaypoints: false,
-      draggableWaypoints: false,
-      fitSelectedRoutes: true,
-      showAlternatives: true,
-      createMarker: () => null,
-    });
+    const [selectedRoute,setSelectedRoute] =
+        useState(null);
 
-    routingControl.on(
-      "routesfound",
-      (e) => {
-        const route = e.routes[0];
+    return(
 
-        let unsafeHits = 0;
-        let moderateHits = 0;
+        <>
 
-        route.coordinates.forEach(
-          (point) => {
-            safetyZones.forEach(
-              (zone) => {
-                const distance =
-                  map.distance(
-                    [
-                      point.lat,
-                      point.lng,
-                    ],
-                    zone.position
-                  );
+        <div
+        className="rounded-xl overflow-hidden border"
+        style={{
 
-                if (
-                  distance <= zone.radius
-                ) {
-                  if (
-                    zone.type ===
-                    "unsafe"
-                  )
-                    unsafeHits++;
+            height:"600px",
 
-                  if (
-                    zone.type ===
-                    "moderate"
-                  )
-                    moderateHits++;
+            width:"100%"
+
+        }}
+        >
+
+            <MapContainer
+
+                center={
+                    source ??
+                    [16.989,82.247]
                 }
-              }
-            );
-          }
-        );
 
-        let routeColor = "#10b981";
+                zoom={13}
 
-        if (unsafeHits > 10) {
-          routeColor = "#ef4444";
-        } else if (
-          moderateHits > 10
-        ) {
-          routeColor = "#f59e0b";
-        }
+                scrollWheelZoom={true}
 
-        if (routeLine) {
-          map.removeLayer(routeLine);
-        }
+                style={{
 
-        routeLine = L.polyline(
-          route.coordinates,
-          {
-            color: routeColor,
-            weight: 7,
-          }
-        ).addTo(map);
-      }
+                    height:"100%",
+
+                    width:"100%"
+
+                }}
+
+            >
+
+                <TileLayer
+
+                    attribution="© MapTiler © OpenStreetMap"
+
+                    url={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${apiKey}`}
+
+                />
+
+                <LocationPicker
+
+                    pickingMode={pickingMode}
+
+                    setPickingMode={setPickingMode}
+
+                    setSource={setSource}
+
+                    setDestination={setDestination}
+
+                />
+
+                <FlyToSource
+
+                    source={source}
+
+                />
+
+                <FitRoute
+
+                    source={source}
+
+                    destination={destination}
+
+                />
+
+                {
+
+                    source &&
+
+                    <Marker position={source}>
+
+                        <Popup>
+
+                            Source
+
+                        </Popup>
+
+                    </Marker>
+
+                }
+
+                {
+
+                    destination &&
+
+                    <Marker position={destination}>
+
+                        <Popup>
+
+                            Destination
+
+                        </Popup>
+
+                    </Marker>
+
+                }
+
+                {
+
+                    source &&
+
+                    destination &&
+
+                    <SafetyRouting
+
+                        source={source}
+
+                        destination={destination}
+
+                        routeResults={routeResults}
+
+                        setRouteResults={setRouteResults}
+
+                        selectedRoute={selectedRoute}
+
+                        setSelectedRoute={setSelectedRoute}
+
+                    />
+
+                }
+
+            </MapContainer>
+
+        </div>
+
+        <RouteCards
+
+            routeResults={routeResults}
+
+            selectedRoute={selectedRoute}
+
+            setSelectedRoute={setSelectedRoute}
+
+        />
+
+        </>
+
     );
 
-    routingControl.addTo(map);
-
-    return () => {
-      if (routeLine) {
-        map.removeLayer(routeLine);
-      }
-
-      map.removeControl(
-        routingControl
-      );
-    };
-  }, [
-    map,
-    source,
-    destination,
-    safetyZones,
-  ]);
-
-  return null;
-}
-function FlyToSource({ source }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (source) {
-      map.flyTo(source, 16, {
-        animate: true,
-        duration: 1.5,
-      });
-    }
-  }, [source, map]);
-
-  return null;
-}
-function FitRoute({
-  source,
-  destination,
-}) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (source && destination) {
-      const bounds = L.latLngBounds([
-        source,
-        destination,
-      ]);
-
-      map.fitBounds(bounds, {
-        padding: [50, 50],
-      });
-    }
-  }, [source, destination, map]);
-
-  return null;
-}
-
-/* ===========================
-   MAIN COMPONENT
-=========================== */
-
-export default function GoogleMapView({
-  source,
-  destination,
-  setSource,
-  setDestination,
-  pickingMode,
-}) {
-  const apiKey =
-    import.meta.env.VITE_MAPTILER_KEY;
-
-  const safetyZones = [
-    {
-      position: [12.9716, 77.5946],
-      name: "MG Road",
-      type: "moderate",
-      color: "#f59e0b",
-      radius: 500,
-    },
-    {
-      position: [12.9352, 77.6245],
-      name: "Koramangala",
-      type: "safe",
-      color: "#10b981",
-      radius: 600,
-    },
-    {
-      position: [12.9698, 77.75],
-      name: "Whitefield",
-      type: "unsafe",
-      color: "#ef4444",
-      radius: 400,
-    },
-    {
-      position: [12.9784, 77.6408],
-      name: "Indiranagar",
-      type: "safe",
-      color: "#10b981",
-      radius: 500,
-    },
-  ];
-
-  return (
-    <div
-      className="relative z-0 rounded-2xl overflow-hidden border border-purple-500/40 shadow-lg shadow-purple-900/30"
-      style={{
-        height: "600px",
-        width: "100%",
-      }}
-    >
-      <MapContainer
-        center={
-          source
-            ? source
-            : [12.9716, 77.5946]
-        }
-        zoom={12}
-        scrollWheelZoom={true}
-        dragging={true}
-        touchZoom={true}
-        style={{
-          height: "100%",
-          width: "100%",
-        }}
-      >
-        <TileLayer
-          attribution="&copy; MapTiler &copy; OpenStreetMap contributors"
-          url={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=${apiKey}`}
-        />
-        <FlyToSource source={source} />
-      <FitRoute
-  source={source}
-  destination={destination}
-/>
-        <LocationPicker
-          setSource={setSource}
-          setDestination={
-            setDestination
-          }
-          pickingMode={
-            pickingMode
-          }
-        />
-
-        {source &&
-          destination && (
-            <SafetyRouting
-              source={source}
-              destination={
-                destination
-              }
-              safetyZones={
-                safetyZones
-              }
-            />
-          )}
-
-        {source && (
-          <Marker
-            position={source}
-          >
-            <Popup>
-              Source Location
-            </Popup>
-          </Marker>
-        )}
-
-        {destination && (
-          <Marker
-            position={destination}
-          >
-            <Popup>
-              Destination
-            </Popup>
-          </Marker>
-        )}
-{safetyZones.map((zone, index) => (
-  <Marker
-    key={`marker-${index}`}
-    position={zone.position}
-  >
-    <Popup>
-      <div>
-        <strong>{zone.name}</strong>
-        <br />
-        Status:
-        <span
-          style={{
-            color: zone.color,
-            fontWeight: "bold",
-          }}
-        >
-          {" "}
-          {zone.type.toUpperCase()}
-        </span>
-      </div>
-    </Popup>
-  </Marker>
-))}
-        {safetyZones.map(
-          (zone, index) => (
-            <Circle
-              key={index}
-              center={
-                zone.position
-              }
-              radius={
-                zone.radius
-              }
-              pathOptions={{
-                fillColor:
-                  zone.color,
-                color:
-                  zone.color,
-                fillOpacity:
-                  0.3,
-                weight: 2,
-              }}
-            >
-              <Popup>
-                <div>
-                  <strong>
-                    {zone.name}
-                  </strong>
-
-                  <br />
-
-                  Status:
-
-                  <span
-                    style={{
-                      color:
-                        zone.color,
-                      fontWeight:
-                        "bold",
-                    }}
-                  >
-                    {" "}
-                    {zone.type.toUpperCase()}
-                  </span>
-                </div>
-              </Popup>
-            </Circle>
-          )
-        )}
-      </MapContainer>
-    </div>
-  );
 }

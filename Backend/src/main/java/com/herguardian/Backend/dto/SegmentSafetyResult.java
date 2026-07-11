@@ -13,17 +13,11 @@ public class SegmentSafetyResult {
     private RouteSegment segment;
 
     private double crimeScore;
-
     private double crowdScore;
-
     private double lightingScore;
-
     private double policeScore;
-
     private double cctvScore;
-
     private double roadScore;
-
     private double timeScore;
 
     private double finalScore;

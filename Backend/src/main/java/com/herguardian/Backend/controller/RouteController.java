@@ -1,44 +1,64 @@
 package com.herguardian.Backend.controller;
 
-import com.herguardian.Backend.dto.maptiler.RouteRequest;
-import com.herguardian.Backend.geo.RouteSegment;
-import com.herguardian.Backend.service.map.MapTilerService;
+import com.herguardian.Backend.dto.AnalyzeRoutesRequest;
+import com.herguardian.Backend.dto.RouteSafetyResult;
+import com.herguardian.Backend.service.RouteAnalyzerService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/routes")
-@CrossOrigin(origins = "*")
+@CrossOrigin("*")
 public class RouteController {
 
-    private final MapTilerService mapTilerService;
+    private final RouteAnalyzerService routeAnalyzerService;
 
     public RouteController(
-            MapTilerService mapTilerService
-    ) {
+            RouteAnalyzerService routeAnalyzerService){
 
-        this.mapTilerService = mapTilerService;
-
+        this.routeAnalyzerService = routeAnalyzerService;
     }
 
-    @PostMapping("/all")
+    @PostMapping("/analyze")
+    public List<RouteSafetyResult> analyze(
 
-    public List<List<RouteSegment>> getRoutes(
+            @RequestBody
+            AnalyzeRoutesRequest request){
 
-            @RequestBody RouteRequest request
+        List<RouteSafetyResult> results =
+                new ArrayList<>();
 
-    ) throws Exception {
+        request.getRoutes().forEach(route->{
 
-        return mapTilerService.getRoutes(
+            results.add(
 
-                request.getStartLat(),
-                request.getStartLng(),
+                    routeAnalyzerService.analyzeRoute(
 
-                request.getEndLat(),
-                request.getEndLng()
+                            route.getRouteNumber(),
 
-        );
+                            route.getCoordinates())
+
+            );
+
+        });
+
+        results.sort(
+
+                Comparator.comparing(
+                                RouteSafetyResult::getTotalSafetyScore)
+
+                        .reversed());
+
+        if(!results.isEmpty()){
+
+            results.get(0).setSafest(true);
+
+        }
+
+        return results;
 
     }
 
