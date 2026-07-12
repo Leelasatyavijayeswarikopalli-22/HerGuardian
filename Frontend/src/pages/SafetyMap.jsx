@@ -1,7 +1,7 @@
 import SrcToDest from "../components/map/SrcToDest";
 import GoogleMapView from "../components/map/GoogleMapView";
 import SafetyLegend from "../components/map/SafetyLegend";
-import ZoneCard from "../components/map/ZoneCard";
+
 import { useState } from "react";
 
 export default function SafetyMap() {
@@ -66,7 +66,6 @@ export default function SafetyMap() {
 
         <div className="space-y-4">
           <SafetyLegend />
-          <ZoneCard />
         </div>
 
       </div>

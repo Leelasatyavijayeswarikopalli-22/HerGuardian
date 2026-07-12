@@ -94,7 +94,15 @@ export default function SafetyRouting({
 
                 );
 
-            const rankedRoutes=response.data;
+            const rankedRoutes = response.data.map((route, index) => ({
+
+    ...route,
+
+    distance: routes[index].distance,
+
+    duration: routes[index].duration
+
+}));
 
             setRouteResults(rankedRoutes);
 
@@ -210,6 +218,7 @@ Safety Score
 ${aiRoute.totalSafetyScore.toFixed(1)}
 
 </h2>
+
 
 Crime : ${aiRoute.crimeScore.toFixed(1)}<br/>
 

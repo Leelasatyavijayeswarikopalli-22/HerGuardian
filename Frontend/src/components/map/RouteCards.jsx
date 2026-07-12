@@ -92,6 +92,17 @@ export default function RouteCards({
                             </div>
 
                         </div>
+                        <div className="mt-2 text-sm text-gray-600">
+
+    📍 Distance :
+    {(route.distance / 1000).toFixed(2)} km
+
+    <br/>
+
+    ⏱ Time :
+    {Math.round(route.duration / 60)} mins
+
+</div>
 
                         <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
 
@@ -109,13 +120,14 @@ export default function RouteCards({
 
                             <div>Time : {route.timeScore.toFixed(1)}</div>
 
+
                         </div>
 
                         <div className="mt-5 flex gap-3">
 
                             {
 
-                                route.safest &&
+                                route.safest &&(
 
                                 <span
 
@@ -127,11 +139,11 @@ export default function RouteCards({
 
                                 </span>
 
-                            }
+                            )}
 
                             {
 
-                                route.fastest &&
+                                route.fastest &&(
 
                                 <span
 
@@ -143,7 +155,7 @@ export default function RouteCards({
 
                                 </span>
 
-                            }
+                            )}
 
                         </div>
 

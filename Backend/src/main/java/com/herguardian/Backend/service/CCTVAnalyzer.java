@@ -11,7 +11,11 @@ import org.springframework.web.client.RestTemplate;
 public class CCTVAnalyzer {
 
     private final RestTemplate restTemplate = new RestTemplate();
+
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private static final String API_KEY =
+            "f42ea210f5c8455b9b21585bfaaf3c97";
 
     public CCTVData analyze(RouteSegment segment){
 
@@ -25,42 +29,113 @@ public class CCTVAnalyzer {
                     (segment.getStart().getLongitude()
                             + segment.getEnd().getLongitude())/2;
 
-            String query =
-                    "[out:json];" +
-                            "(" +
-                            "node(around:500,"+lat+","+lon+")[\"man_made\"=\"surveillance\"];" +
-                            ");" +
-                            "out;";
+            String categories =
+
+                    "service.bank," +
+
+                            "commercial.shopping_mall," +
+
+                            "education.school," +
+
+                            "education.university," +
+
+                            "service.police," +
+
+                            "public_transport";
 
             String url =
-                    "https://overpass-api.de/api/interpreter?data="+query;
+
+                    "https://api.geoapify.com/v2/places"
+
+                            + "?categories=" + categories
+
+                            + "&filter=circle:"
+
+                            + lon + "," + lat + ",1000"
+
+                            + "&limit=50"
+
+                            + "&apiKey=" + API_KEY;
 
             String response =
-                    restTemplate.getForObject(url,String.class);
+
+                    restTemplate.getForObject(
+
+                            url,
+
+                            String.class
+
+                    );
 
             JsonNode root =
+
                     mapper.readTree(response);
 
-            JsonNode elements =
-                    root.get("elements");
+            JsonNode features =
 
-            int count = elements.size();
+                    root.get("features");
 
-            double camerasPerKm = count * 2.0;
+            int count =
+
+                    features == null
+
+                            ? 0
+
+                            : features.size();
+
+            double surveillanceScore;
+
+            if(count >= 12){
+
+                surveillanceScore = 100;
+
+            }
+            else if(count >= 9){
+
+                surveillanceScore = 90;
+
+            }
+            else if(count >= 6){
+
+                surveillanceScore = 80;
+
+            }
+            else if(count >= 4){
+
+                surveillanceScore = 65;
+
+            }
+            else if(count >= 2){
+
+                surveillanceScore = 45;
+
+            }
+            else{
+
+                surveillanceScore = 20;
+
+            }
 
             return CCTVData.builder()
+
                     .cameraCount(count)
-                    .camerasPerKm(camerasPerKm)
+
+                    .camerasPerKm(surveillanceScore)
+
                     .build();
 
         }
+
         catch(Exception e){
 
             e.printStackTrace();
 
             return CCTVData.builder()
+
                     .cameraCount(0)
-                    .camerasPerKm(0)
+
+                    .camerasPerKm(20)
+
                     .build();
 
         }
