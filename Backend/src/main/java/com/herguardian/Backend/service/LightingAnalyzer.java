@@ -9,12 +9,6 @@ public class LightingAnalyzer {
 
     public LightingData analyze(RouteSegment segment){
 
-        /*
-            Dummy values for now.
-            Later these values will come from
-            OpenStreetMap Overpass API.
-        */
-
         double lightsPerKm = 28;
 
         return LightingData.builder()

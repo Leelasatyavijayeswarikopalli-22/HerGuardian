@@ -136,13 +136,13 @@ export default function SafetyRouting({
                 if(!aiRoute)
                     return;
 
-                let color="#ef4444";
+                let color="#FF4D6D";
 
                 let weight=5;
 
                 if(aiRoute.safest){
 
-                    color="#16a34a";
+                    color="#00F5A0";
 
                     weight=8;
 
@@ -150,7 +150,7 @@ export default function SafetyRouting({
 
                 else if(aiRoute.fastest){
 
-                    color="#2563eb";
+                    color="#00C2FF";
 
                     weight=7;
 
@@ -164,7 +164,7 @@ export default function SafetyRouting({
 
                 else if(aiRoute.totalSafetyScore>=60){
 
-                    color="#f59e0b";
+                    color="#FFD93D";
 
                 }
 
@@ -182,27 +182,48 @@ export default function SafetyRouting({
 
                     );
 
-                const polyline=
+               const polyline=L.polyline(
 
-                    L.polyline(
+    coordinates,
 
-                        coordinates,
+    {
 
-                        {
+        color,
 
-                            color,
+        weight,
 
-                            weight,
+        opacity:0.95,
 
-                            opacity:0.9
+        lineCap:"round",
 
-                        }
+        lineJoin:"round",
 
-                    );
+        dashArray:null
+
+    }
+
+);     
 
                 polyline.addTo(map);
+                const glow=L.polyline(
 
-                polylines.current.push(polyline);
+    coordinates,
+
+    {
+
+        color,
+
+        weight:weight+10,
+
+        opacity:0.18
+
+    }
+
+);
+
+glow.addTo(map);
+
+polylines.current.push(glow);
                                 polyline.bindPopup(`
 
 <div style="font-family:Arial;width:260px">
