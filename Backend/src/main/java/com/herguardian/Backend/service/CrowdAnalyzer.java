@@ -14,47 +14,73 @@ public class CrowdAnalyzer {
 
     private final CrowdDensityRepository repository;
 
-    public CrowdAnalyzer(CrowdDensityRepository repository) {
+    public CrowdAnalyzer(
+            CrowdDensityRepository repository
+    ) {
         this.repository = repository;
     }
 
-    public CrowdData analyze(RouteSegment segment) {
+    public CrowdData analyze(RouteSegment segment){
 
-        List<CrowdDensity> all = repository.findAll();
+        List<CrowdDensity> all =
+                repository.findAll();
 
-        double totalDensity = 0;
-        int count = 0;
+        double totalDensity=0;
 
-        double centerLat =
-                (segment.getStart().getLatitude() +
-                        segment.getEnd().getLatitude()) / 2;
+        int count=0;
 
-        double centerLon =
-                (segment.getStart().getLongitude() +
-                        segment.getEnd().getLongitude()) / 2;
+        double centerLat=
 
-        for (CrowdDensity crowd : all) {
+                (segment.getStart().getLatitude()
 
-            double distance = DistanceUtil.distance(
+                        +
 
-                    centerLat,
-                    centerLon,
+                        segment.getEnd().getLatitude())
 
-                    crowd.getLatitude(),
-                    crowd.getLongitude()
+                        /2;
 
-            );
 
-            if (distance <= 0.20) {
+        double centerLon=
 
-                totalDensity += crowd.getDensity();
+                (segment.getStart().getLongitude()
+
+                        +
+
+                        segment.getEnd().getLongitude())
+
+                        /2;
+
+
+        for(CrowdDensity crowd:all){
+
+            double distance=
+
+                    DistanceUtil.distance(
+
+                            centerLat,
+                            centerLon,
+
+                            crowd.getLatitude(),
+                            crowd.getLongitude()
+
+                    );
+
+
+            //500 metres
+
+            if(distance<=0.5){
+
+                totalDensity+=
+                        crowd.getDensity();
+
                 count++;
 
             }
 
         }
 
-        if (count == 0) {
+
+        if(count==0){
 
             return CrowdData.builder()
 
@@ -66,9 +92,12 @@ public class CrowdAnalyzer {
 
         }
 
+
         return CrowdData.builder()
 
-                .peoplePerSquareMeter(totalDensity / count)
+                .peoplePerSquareMeter(
+                        totalDensity/count
+                )
 
                 .samples(count)
 

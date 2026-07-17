@@ -1,11 +1,10 @@
 import Card from "../Card";
 
-export default function AlertCard({
+export default function PredictionCard({
 
-    alerts
+    predictions
 
 }){
-
 
     return(
 
@@ -16,33 +15,35 @@ export default function AlertCard({
             <h1
             className="text-2xl
             font-bold
-            text-red-600"
+            text-purple-700"
             >
 
-                Live Safety Alerts
+                AI Safety Predictions
 
             </h1>
 
 
             {
 
-                alerts.map((alert,index)=>(
+                predictions.map((item,index)=>(
 
                     <div
 
                     key={index}
 
                     className="rounded-xl
-                    bg-red-50
                     border-l-4
-                    border-red-600
+                    border-purple-600
+                    bg-purple-50
                     p-4"
 
                     >
 
-                        <p>
+                        <p
+                        className="font-semibold"
+                        >
 
-                            ⚠ {alert}
+                            {item}
 
                         </p>
 

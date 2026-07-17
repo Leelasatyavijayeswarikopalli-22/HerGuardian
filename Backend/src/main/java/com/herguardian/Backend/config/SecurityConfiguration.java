@@ -27,7 +27,8 @@ public class SecurityConfiguration {
                                 "/api/routes/**",
                                 "/api/test/**",
                                 "/api/mail",
-                                "/api/hello"
+                                "/api/hello",
+                                "/api/dashboard"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

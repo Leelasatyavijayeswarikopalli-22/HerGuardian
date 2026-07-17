@@ -128,7 +128,7 @@ public class TestController {
     }
 
     @Autowired
-    private CCTVAnalyzer cctvAnalyzer;
+    private SurveillanceAnalyzer cctvAnalyzer;
 
     @Autowired
     private CCTVEngine cctvEngine;

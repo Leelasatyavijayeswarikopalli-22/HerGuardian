@@ -15,9 +15,27 @@ export default function StatCard({
             {title}
           </p>
 
-          <h3 className="mt-2 text-3xl text-blue-950 font-bold">
-            {value}
-          </h3>
+        <h3
+className="mt-3
+text-4xl
+font-bold
+text-purple-700"
+>
+
+{value}
+
+</h3>
+
+
+<p
+className="mt-2
+text-sm
+text-slate-500"
+>
+
+/100 Safety Score
+
+</p>
         </div>
 
         <div>

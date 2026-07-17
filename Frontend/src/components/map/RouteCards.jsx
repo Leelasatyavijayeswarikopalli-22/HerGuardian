@@ -112,7 +112,7 @@ export default function RouteCards({
 
                             <div>Lighting : {route.lightingScore.toFixed(1)}</div>
 
-                            <div>CCTV : {route.cctvScore.toFixed(1)}</div>
+                            <div>Surveillance : {route.cctvScore.toFixed(1)}</div>
 
                             <div>Police : {route.policeScore.toFixed(1)}</div>
 

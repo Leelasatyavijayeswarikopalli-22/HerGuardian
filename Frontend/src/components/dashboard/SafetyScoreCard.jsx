@@ -1,34 +1,129 @@
 import Card from "../Card";
-import Badge from "../Badge";
 
-export default function SafetyScoreCard() {
-  const score = 84;
+export default function SafetyScoreCard({
 
-  return (
-    <Card className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl text-blue-950 font-semibold">
-          Current Safety Score
-        </h2>
+    score,
 
-        <Badge text="Safe Zone" color="green" />
-      </div>
+    status,
 
-      <h1 className="text-6xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 text-transparent bg-clip-text">
-        {score}
-      </h1>
+    recommendation
 
-      <div className="h-3 overflow-hidden rounded-full bg-slate-200">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-pink-400 to-blue-400"
-          style={{ width: `${score}%` }}
-        />
-      </div>
+}){
 
-      <p className="text-sm text-slate-800">
-        Based on community reports, crowd density,
-        lighting and transport availability.
-      </p>
-    </Card>
-  );
+
+    return(
+
+        <Card
+        className="space-y-5"
+        >
+
+
+            <div
+            className="flex
+            justify-between
+            items-center"
+            >
+
+                <h1
+                className="text-3xl
+                font-bold"
+                >
+
+                    Your Safety Status
+
+                </h1>
+
+
+                <div
+                className="rounded-full
+                bg-green-100
+                px-5
+                py-2"
+
+                >
+
+                    {status}
+
+                </div>
+
+
+            </div>
+
+
+            <h1
+
+            className="text-7xl
+            font-bold
+            bg-gradient-to-r
+            from-pink-500
+            via-purple-600
+            to-blue-600
+            text-transparent
+            bg-clip-text"
+
+            >
+
+                {Math.round(score)}
+
+            </h1>
+
+
+            <div
+            className="h-4
+            rounded-full
+            overflow-hidden
+            bg-slate-200"
+            >
+
+                <div
+
+                style={{
+
+                    width:`${score}%`
+
+                }}
+
+                className="h-full
+                rounded-full
+                bg-gradient-to-r
+                from-pink-500
+                via-purple-600
+                to-blue-600"
+
+                />
+
+            </div>
+
+
+            <div
+            className="rounded-xl
+            bg-purple-50
+            p-5"
+            >
+
+                <h2
+                className="font-bold
+                text-xl"
+                >
+
+                    AI Recommendation
+
+                </h2>
+
+
+                <p
+                className="mt-2"
+                >
+
+                    {recommendation}
+
+                </p>
+
+            </div>
+
+
+        </Card>
+
+    );
+
 }

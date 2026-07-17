@@ -18,7 +18,7 @@ public class SafetyRouteEngine {
     private final CrowdAnalyzer crowdAnalyzer;
     private final LightingAnalyzer lightingAnalyzer;
     private final PoliceAnalyzer policeAnalyzer;
-    private final CCTVAnalyzer cctvAnalyzer;
+    private final SurveillanceAnalyzer cctvAnalyzer;
     private final RoadAnalyzer roadAnalyzer;
     private final TimeAnalyzer timeAnalyzer;
 
@@ -36,7 +36,7 @@ public class SafetyRouteEngine {
             CrowdAnalyzer crowdAnalyzer,
             LightingAnalyzer lightingAnalyzer,
             PoliceAnalyzer policeAnalyzer,
-            CCTVAnalyzer cctvAnalyzer,
+            SurveillanceAnalyzer cctvAnalyzer,
             RoadAnalyzer roadAnalyzer,
             TimeAnalyzer timeAnalyzer,
 
