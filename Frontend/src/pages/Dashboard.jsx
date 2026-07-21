@@ -155,41 +155,6 @@ md:grid-cols-3"
 >
 
 
-<StatCard
-
-title="Nearest Police"
-
-value={`${dashboard.nearestPoliceDistance} KM`}
-
-icon={<MapPin/>}
-
-/>
-
-
-
-<StatCard
-
-title="Nearest Hospital"
-
-value={`${dashboard.nearestHospitalDistance} KM`}
-
-icon={<Users/>}
-
-/>
-
-
-
-<StatCard
-
-title="Weather"
-
-value={dashboard.weather}
-
-icon={<AlertTriangle/>}
-
-/>
-
-
 </div>
 
 
@@ -297,7 +262,7 @@ icon={<AlertTriangle/>}
 
         <StatCard
 
-          title="CCTV Score"
+          title="Surveillance Score"
 
           value={
             Math.round(
@@ -324,7 +289,7 @@ icon={<AlertTriangle/>}
 
         <StatCard
 
-          title="Time Score"
+          title="Time Of The Day Score"
 
           value={
             Math.round(
@@ -395,10 +360,6 @@ icon={<AlertTriangle/>}
 
           police={
             dashboard.nearestPoliceDistance
-          }
-
-          hospital={
-            dashboard.nearestHospitalDistance
           }
 
         />

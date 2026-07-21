@@ -1,4 +1,5 @@
 import Card from "../Card";
+import { useNavigate } from "react-router-dom";
 
 export default function EmergencyCard({
 
@@ -8,6 +9,8 @@ export default function EmergencyCard({
 
 }){
 
+
+    const navigate = useNavigate();
 
     return(
 
@@ -35,7 +38,7 @@ export default function EmergencyCard({
 
                 <div
                 className="rounded-xl
-                bg-blue-50
+                bg-pink-50
                 p-5"
                 >
 
@@ -59,35 +62,6 @@ export default function EmergencyCard({
 
                 </div>
 
-
-                <div
-                className="rounded-xl
-                bg-pink-50
-                p-5"
-                >
-
-                    <h2
-                    className="font-bold"
-                    >
-
-                        Nearest Hospital
-
-                    </h2>
-
-
-                    <h1
-                    className="mt-3
-                    text-3xl
-                    font-bold"
-                    >
-
-                        {hospital} KM
-
-                    </h1>
-
-                </div>
-
-
             </div>
 
 
@@ -100,7 +74,7 @@ export default function EmergencyCard({
 
 
                 <button
-
+                 onClick={() => navigate("/safety-map")}
                 className="rounded-xl
                 bg-purple-700
                 p-3

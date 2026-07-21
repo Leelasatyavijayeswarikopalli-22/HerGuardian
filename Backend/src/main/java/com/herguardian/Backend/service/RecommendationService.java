@@ -8,35 +8,66 @@ public class RecommendationService {
 
     public String getRecommendation(
 
-            double score,
+            double safetyScore,
 
-            String time
+            double crimeScore,
+
+            double crowdScore,
+
+            double timeScore
 
     ){
 
-        if(score>=85){
 
-            return "SAFE TO TRAVEL";
+
+
+
+        if(
+
+                safetyScore>=85
+
+                        &&
+
+                        crimeScore>=80
+
+                        &&
+
+                        timeScore>=80
+
+        ){
+
+            return "Safe throughout the day.";
 
         }
 
 
-        if(score>=70){
+        if(
 
-            return "TRAVEL WITH CAUTION";
+                safetyScore>=70
+
+                        &&
+
+                        timeScore>=70
+
+        ){
+
+            return "Morning and evening are recommended.";
 
         }
 
 
-        if(score>=50){
+        if(
 
-            return "AVOID ISOLATED ROUTES";
+                safetyScore>=60
+
+        ){
+
+            return "Prefer travelling between 6 AM and 8 PM.";
 
         }
 
 
-        return "TRAVEL NOT RECOMMENDED";
-
+        return "Daytime travel is recommended.";
 
     }
 
@@ -78,14 +109,14 @@ public class RecommendationService {
 
         if(score>=85){
 
-            return "6 PM - 9 PM";
+            return "Safe to travel at any time";
 
         }
 
 
         if(score>=70){
 
-            return "6 PM - 8 PM";
+            return "Try to avoid late nights";
 
         }
 

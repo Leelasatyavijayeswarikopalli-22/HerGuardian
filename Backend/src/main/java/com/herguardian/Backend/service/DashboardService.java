@@ -269,8 +269,9 @@ public class DashboardService {
                         .getRecommendation(
 
                                 safetyScore,
-
-                                time.getTimeCategory()
+                                crimeScore,
+                                crowdScore,
+                                timeScore
 
                         );
 
@@ -287,20 +288,70 @@ public class DashboardService {
                 new ArrayList<>();
 
 
-        alerts.add(recommendation);
+        if(crimeScore<60){
 
-        alerts.add(
+            alerts.add(
 
-                "Emergency SOS is active."
+                    "Higher crime activity detected nearby."
 
-        );
+            );
+
+        }
 
 
-        alerts.add(
+        if(crowdScore<50){
 
-                "Live location sharing is available."
+            alerts.add(
 
-        );
+                    "This location appears less crowded. Avoid travelling alone."
+
+            );
+
+        }
+
+
+        if(timeScore<50){
+
+            alerts.add(
+
+                    "Late hours detected. Prefer travelling during daytime."
+
+            );
+
+        }
+
+
+        if(policeScore<60){
+
+            alerts.add(
+
+                    "Nearest police assistance is relatively farther away."
+
+            );
+
+        }
+
+
+        if(safetyScore<60){
+
+            alerts.add(
+
+                    "Safety score is low. Consider selecting a safer route."
+
+            );
+
+        }
+
+
+        if(alerts.isEmpty()){
+
+            alerts.add(
+
+                    "No immediate safety concerns detected."
+
+            );
+
+        }
 
 
 
@@ -322,10 +373,6 @@ public class DashboardService {
 
                 .bestTimeToTravel(
                         bestTime
-                )
-
-                .weather(
-                        "CLEAR SKY"
                 )
 
                 .crimeScore(
@@ -362,20 +409,23 @@ public class DashboardService {
 
                 )
 
-                .nearestHospitalDistance(
-                        1.0
-                )
-
                 .alerts(
                         alerts
                 )
 
                 .predictions(
 
-                        predictionService
-                                .predict(
-                                        safetyScore
-                                )
+                        predictionService.predict(
+
+                                crimeScore,
+                                crowdScore,
+                                lightingScore,
+                                policeScore,
+                                cctvScore,
+                                roadScore,
+                                timeScore
+
+                        )
 
                 )
 

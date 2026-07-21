@@ -21,8 +21,6 @@ public class DashboardResponse {
 
     private String bestTimeToTravel;
 
-    private String weather;
-
     private double crimeScore;
 
     private double crowdScore;
@@ -40,8 +38,6 @@ public class DashboardResponse {
     private List<Double> predictions;
 
     private double nearestPoliceDistance;
-
-    private double nearestHospitalDistance;
 
     private List<String> alerts;
 

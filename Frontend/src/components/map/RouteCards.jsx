@@ -1,34 +1,33 @@
 export default function RouteCards({
 
     routeResults,
-
     selectedRoute,
+    setSelectedRoute,
+    startJourney,
+    journeyStarted
 
-    setSelectedRoute
+}) {
 
-}){
-
-    if(routeResults.length===0)
+    if (routeResults.length === 0)
         return null;
 
-    return(
 
-        <div className="mt-5 space-y-4">
+    return (
+
+        <div className="mt-5 space-y-6">
 
             {
 
-                routeResults.map(route=>(
+                routeResults.map((route) => (
 
                     <div
 
                         key={route.routeNumber}
 
-                        onClick={()=>{
+                        onClick={() => {
 
                             setSelectedRoute(
-
                                 route.routeNumber
-
                             );
 
                         }}
@@ -36,48 +35,52 @@ export default function RouteCards({
                         className={`
 
                         cursor-pointer
-
-                        rounded-xl
-
-                        border
-
-                        p-5
-
-                        shadow-md
-
+                        rounded-3xl
+                        border-2
+                        p-6
+                        shadow-xl
                         transition-all
-
-                        hover:shadow-lg
+                        duration-300
+                        hover:scale-[1.01]
 
                         ${
 
-                        selectedRoute===route.routeNumber
+                            selectedRoute === route.routeNumber
 
-                        ?
+                                ?
 
-                        "border-green-600 bg-green-50"
+                                "border-emerald-500 bg-gradient-to-br from-emerald-50 to-cyan-50"
 
-                        :
+                                :
 
-                        "bg-white"
+                                "bg-white"
 
-                        }
+                            }
 
                         `}
 
                     >
 
-                        <div className="flex justify-between items-center">
+                        {/* HEADER */}
+
+
+                        <div className="flex items-center justify-between">
+
 
                             <div>
 
-                                <h2 className="text-lg font-bold">
+                                <h1
+                                className="text-2xl font-bold text-slate-800"
+                                >
 
                                     Route {route.routeNumber}
 
-                                </h2>
+                                </h1>
 
-                                <p className="text-sm text-gray-500">
+
+                                <p
+                                className="text-sm text-gray-600"
+                                >
 
                                     Overall Safety Score
 
@@ -85,101 +88,343 @@ export default function RouteCards({
 
                             </div>
 
-                            <div className="text-3xl font-bold text-green-600">
 
-                                {route.totalSafetyScore.toFixed(1)}
+                            <div
+                            className="rounded-2xl bg-emerald-600 px-5 py-4 text-white shadow-lg"
+                            >
+
+                                <h1
+                                className="text-3xl font-bold"
+                                >
+
+                                    {route.totalSafetyScore.toFixed(1)}
+
+                                </h1>
 
                             </div>
 
-                        </div>
-                        <div className="mt-2 text-sm text-gray-600">
-
-    📍 Distance :
-    {(route.distance / 1000).toFixed(2)} km
-
-    <br/>
-
-    ⏱ Time :
-    {Math.round(route.duration / 60)} mins
-
-</div>
-
-                        <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-
-                            <div>Crime : {route.crimeScore.toFixed(1)}</div>
-
-                            <div>Crowd : {route.crowdScore.toFixed(1)}</div>
-
-                            <div>Lighting : {route.lightingScore.toFixed(1)}</div>
-
-                            <div>Surveillance : {route.cctvScore.toFixed(1)}</div>
-
-                            <div>Police : {route.policeScore.toFixed(1)}</div>
-
-                            <div>Road : {route.roadScore.toFixed(1)}</div>
-
-                            <div>Time : {route.timeScore.toFixed(1)}</div>
-
 
                         </div>
 
-                        <div className="mt-5 flex gap-3">
+
+
+                        {/* DISTANCE */}
+
+
+                        <div
+                        className="mt-5 grid grid-cols-2 gap-4"
+                        >
+
+
+                            <div
+                            className="rounded-2xl bg-blue-50 p-4"
+                            >
+
+                                <h3
+                                className="font-bold text-blue-700"
+                                >
+                                    Distance
+                                </h3>
+
+                                <p
+                                className="text-lg font-semibold text-slate-800"
+                                >
+
+                                    {(route.distance/1000).toFixed(2)} km
+
+                                </p>
+
+                            </div>
+
+
+                            <div
+                            className="rounded-2xl bg-purple-50 p-4"
+                            >
+
+                                <h3
+                                className="font-bold text-purple-700"
+                                >
+                                    Time
+                                </h3>
+
+                                <p
+                                className="text-lg font-semibold text-slate-800"
+                                >
+
+                                    {Math.round(route.duration/60)} mins
+
+                                </p>
+
+                            </div>
+
+
+                        </div>
+
+
+
+                        {/* SCORES */}
+
+
+                        <div
+                        className="mt-5 grid grid-cols-2 gap-4 text-sm"
+                        >
+
+
+                            <div>Crime : <b>{route.crimeScore.toFixed(1)}</b></div>
+
+                            <div>Crowd : <b>{route.crowdScore.toFixed(1)}</b></div>
+
+                            <div>Lighting : <b>{route.lightingScore.toFixed(1)}</b></div>
+
+                            <div>Police : <b>{route.policeScore.toFixed(1)}</b></div>
+
+                            <div>Surveillance : <b>{route.cctvScore.toFixed(1)}</b></div>
+
+                            <div>Road : <b>{route.roadScore.toFixed(1)}</b></div>
+
+                            <div>Time : <b>{route.timeScore.toFixed(1)}</b></div>
+
+
+                        </div>
+
+
+
+                        {/* BADGES */}
+
+
+
+                        <div
+                        className="mt-6 flex flex-wrap gap-3"
+                        >
+
 
                             {
 
                                 route.safest &&(
 
-                                <span
+                                    <span
 
-                                    className="rounded-lg bg-green-600 px-3 py-1 text-white"
+                                    className="rounded-full bg-emerald-600 px-4 py-2 font-semibold text-white shadow"
 
-                                >
+                                    >
 
-                                    🛡 Safest
+                                        🛡 SAFEST ROUTE
 
-                                </span>
+                                    </span>
 
-                            )}
+                                )
+
+                            }
+
+
 
                             {
 
                                 route.fastest &&(
 
-                                <span
+                                    <span
 
-                                    className="rounded-lg bg-blue-600 px-3 py-1 text-white"
+                                    className="rounded-full bg-blue-600 px-4 py-2 font-semibold text-white shadow"
 
-                                >
+                                    >
 
-                                    ⚡ Fastest
+                                        ⚡ FASTEST ROUTE
 
-                                </span>
+                                    </span>
 
-                            )}
+                                )
+
+                            }
+
+
+
+                            {
+
+                                journeyStarted
+
+                                &&
+
+                                selectedRoute===route.routeNumber
+
+                                &&(
+
+                                    <span
+
+                                    className="animate-pulse rounded-full bg-red-600 px-4 py-2 font-bold text-white shadow-lg"
+
+                                    >
+
+                                        🎙 LIVE SAFETY TRACKING
+
+                                    </span>
+
+                                )
+
+                            }
+
+
 
                         </div>
 
+
+
+                        {/* GUARDIAN MODE */}
+
+
+
                         {
 
-                            selectedRoute===route.routeNumber &&
+                            selectedRoute===route.routeNumber
 
-                            <button
+                            &&
 
-                                className="mt-5 w-full rounded-lg bg-purple-700 py-3 text-white hover:bg-purple-800"
+                            journeyStarted
 
-                            >
+                            &&(
 
-                                Start Journey
 
-                            </button>
+                                <div
+
+                                className="mt-6 rounded-3xl bg-gradient-to-r from-emerald-600 to-cyan-600 p-6 text-white shadow-2xl"
+
+                                >
+
+
+                                    <h1
+                                    className="mb-4 text-2xl font-bold"
+                                    >
+
+                                        SAFE JOURNEY MODE ACTIVE
+
+                                    </h1>
+
+
+                                    <div
+                                    className="space-y-3 text-lg"
+                                    >
+
+                                        <p>
+                                            📍 Live Location Tracking Enabled
+                                        </p>
+
+                                        <p>
+                                            🎙 Secret Voice SOS Enabled
+                                        </p>
+
+                                        <p>
+                                            🚨 Emergency Monitoring Enabled
+                                        </p>
+
+                                        <p>
+                                            🤖 AI Risk Detection Enabled
+                                        </p>
+
+                                        <p>
+                                            🛡 Route Safety Monitoring Enabled
+                                        </p>
+
+                                        <p>
+                                            👨‍👩‍👧 Emergency Contacts Ready
+                                        </p>
+
+                                        <p>
+                                            📢 Microphone Active Until Destination
+                                        </p>
+
+                                    </div>
+
+
+
+                                    <div
+                                    className="mt-5 rounded-2xl bg-white/20 p-4"
+                                    >
+
+                                        <h3
+                                        className="font-bold text-xl"
+                                        >
+
+                                            CURRENT STATUS
+
+                                        </h3>
+
+                                        <br/>
+
+                                        <p>
+                                            Risk Level : LOW
+                                        </p>
+
+                                        <p>
+                                            Safety Monitoring : ACTIVE
+                                        </p>
+
+                                        <p>
+                                            Location Sharing : ACTIVE
+                                        </p>
+
+                                    </div>
+
+
+
+                                </div>
+
+                            )
 
                         }
+
+
+
+
+                        {/* BUTTON */}
+
+
+
+                        {
+
+                            selectedRoute===route.routeNumber
+
+                            &&(
+
+                                <button
+
+                                onClick={(e)=>{
+
+                                    e.stopPropagation();
+
+                                    startJourney(route);
+
+                                }}
+
+                                className="mt-6 w-full rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-600 py-4 text-xl font-bold text-white shadow-xl transition-all duration-300 hover:scale-105"
+
+                                >
+
+                                    {
+
+                                        journeyStarted
+
+                                        ?
+
+                                        "SAFE JOURNEY ACTIVE"
+
+                                        :
+
+                                        "START SAFE JOURNEY"
+
+                                    }
+
+                                </button>
+
+                            )
+
+                        }
+
 
                     </div>
 
                 ))
 
             }
+
 
         </div>
 
