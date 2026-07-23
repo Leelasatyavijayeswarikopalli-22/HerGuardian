@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {BrowserRouter,Routes,Route}
+from "react-router-dom";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -7,60 +8,157 @@ import Dashboard from "./pages/Dashboard";
 import SafetyMap from "./pages/SafetyMap";
 import CommunityReports from "./pages/CommunityReports";
 import Profile from "./pages/Profile";
+import AuthorityDashboard from "./components/authority/AuthorityDashboard";
 
 import Layout from "./Layouts/Layout";
 import Home from "./pages/Home";
 import AuthChoice from "./pages/AuthChoice";
 import VerifyOtp from "./pages/VerifyOtp";
-export default function App() {
-  return (
-    <BrowserRouter>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/auth" element={<AuthChoice />} />
+import ProtectedAuthorityRoute
+from "./components/authority/ProtectedAuthorityRoute";
 
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route
-          path="/dashboard"
-          element={
-            <Layout>
-              <Dashboard />
-            </Layout>
-          }
-        />
 
-        <Route
-          path="/safety-map"
-          element={
-            <Layout>
-              <SafetyMap />
-            </Layout>
-          }
-        />
+export default function App(){
 
-        <Route
-          path="/reports"
-          element={
-            <Layout>
-              <CommunityReports />
-            </Layout>
-          }
-        />
+return(
 
-        <Route
-          path="/profile"
-          element={
-            <Layout>
-              <Profile />
-            </Layout>
-          }
-        />
+<BrowserRouter>
 
-      </Routes>
+<Routes>
 
-    </BrowserRouter>
-  );
+
+<Route
+path="/"
+element={<Home/>}
+/>
+
+
+<Route
+path="/login"
+element={<Login/>}
+/>
+
+
+<Route
+path="/auth"
+element={<AuthChoice/>}
+/>
+
+
+<Route
+path="/signup"
+element={<Signup/>}
+/>
+
+
+<Route
+path="/verify-otp"
+element={<VerifyOtp/>}
+/>
+
+
+
+<Route
+
+path="/dashboard"
+
+element={
+
+<Layout>
+
+<Dashboard/>
+
+</Layout>
+
+}
+
+/>
+
+
+
+<Route
+
+path="/safety-map"
+
+element={
+
+<Layout>
+
+<SafetyMap/>
+
+</Layout>
+
+}
+
+/>
+
+
+
+<Route
+
+path="/reports"
+
+element={
+
+<Layout>
+
+<CommunityReports/>
+
+</Layout>
+
+}
+
+/>
+
+
+
+<Route
+
+path="/profile"
+
+element={
+
+<Layout>
+
+<Profile/>
+
+</Layout>
+
+}
+
+/>
+
+
+
+<Route
+
+path="/authority"
+
+element={
+
+<ProtectedAuthorityRoute>
+
+<Layout>
+
+<AuthorityDashboard/>
+
+</Layout>
+
+</ProtectedAuthorityRoute>
+
+}
+
+/>
+
+
+
+</Routes>
+
+</BrowserRouter>
+
+
+);
+
+
 }

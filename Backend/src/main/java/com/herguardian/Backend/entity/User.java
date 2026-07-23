@@ -15,49 +15,82 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "user_seq")
     @SequenceGenerator(
             name = "user_seq",
             sequenceName = "USER_SEQ",
             allocationSize = 1
     )
     private Long id;
+
+
     @Column(nullable = false)
     private String fullName;
 
-    @Column(nullable = false, unique = true)
+
+    @Column(nullable = false,
+            unique = true)
     private String email;
+
 
     @Column(nullable = false)
     private String password;
 
+
     @Column(nullable = false)
     private String emergencyContact1;
+
 
     @Column(nullable = false)
     private String emergencyContact2;
 
+
     @Column(nullable = false)
     private String emergencyContact3;
+
 
     @Column(nullable = false)
     private String voicePhrase;
 
+
     @Column(nullable = false)
-    private Boolean verified = false;
+    private Boolean verified=false;
+
+
+    @Column(nullable = false)
+    private String role;
+
 
     private LocalDateTime createdAt;
 
+
     private LocalDateTime updatedAt;
+
+
 
     @PrePersist
     public void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+
+        createdAt=LocalDateTime.now();
+
+        updatedAt=LocalDateTime.now();
+
+        if(role==null){
+
+            role="USER";
+
+        }
+
     }
+
+
 
     @PreUpdate
     public void onUpdate() {
-        updatedAt = LocalDateTime.now();
+
+        updatedAt= LocalDateTime.now();
+
     }
+
 }

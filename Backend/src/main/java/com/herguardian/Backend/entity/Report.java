@@ -5,15 +5,13 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
-
 @Entity
-@Table(name="REPORTS")
+@Table(name = "REPORTS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Report {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,14 +43,18 @@ public class Report {
     private Boolean verified;
 
 
-    private LocalDateTime reportedAt;
-
-
-    private LocalDateTime resolvedAt;
+    private String authorityName;
 
 
     @Column(length = 500)
     private String adminRemark;
+
+    private String reportedBy;
+
+    private LocalDateTime reportedAt;
+
+
+    private LocalDateTime resolvedAt;
 
 
 
@@ -84,6 +86,5 @@ public class Report {
         }
 
     }
-
 
 }

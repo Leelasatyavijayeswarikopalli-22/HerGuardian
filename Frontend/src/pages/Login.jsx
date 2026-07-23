@@ -47,8 +47,24 @@ export default function Login() {
             localStorage.setItem("isLoggedIn", "true");
 
             alert("Login Successful");
+            localStorage.setItem("token",response.data.token);
 
-            navigate("/profile");
+localStorage.setItem("role",response.data.role);
+
+localStorage.setItem("name",response.data.fullName);
+
+localStorage.setItem("id",response.data.id);
+           if(response.data.role==="AUTHORITY"){
+
+    navigate("/authority");
+
+}
+
+else{
+
+    navigate("/profile");
+
+}
 
         } catch (error) {
 

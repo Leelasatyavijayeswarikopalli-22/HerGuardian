@@ -1,93 +1,265 @@
-import {useState} from "react";
+import { useState } from "react";
 import axios from "axios";
 import Button from "../Button";
 import Card from "../Card";
 
-export default function ReportForm(){
+export default function ReportForm() {
 
+    const apiKey =
+        import.meta.env.VITE_MAPTILER_KEY;
 
-const [category,setCategory]=
+    const [category, setCategory] =
+        useState("");
+
+    const [description, setDescription] =
+        useState("");
+
+    const [location, setLocation] =
+        useState("");
+
+    const [latitude, setLatitude] =
+        useState(null);
+
+    const [longitude, setLongitude] =
+        useState(null);
+
+    const [searchLocation,setSearchLocation]=
 useState("");
 
+const [results,setResults]=
+useState([]);
+    const categories = [
 
-const [description,setDescription]=
-useState("");
+        "Poor Lighting",
+        "No CCTV",
+        "Harassment",
+        "Unsafe Transport",
+        "Stalking",
+        "Suspicious Activity",
+        "Unsafe Area",
+        "Others"
+
+    ];
 
 
-const [location,setLocation]=
-useState("");
+    async function getCurrentLocation() {
+
+        if (!navigator.geolocation) {
+
+            alert(
+                "Geolocation is not supported."
+            );
+
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+
+            async (position) => {
+
+                const lat =
+                    position.coords.latitude;
+
+                const lng =
+                    position.coords.longitude;
 
 
-const submitReport=async()=>{
+                setLatitude(lat);
+                setLongitude(lng);
 
 
-try{
+                try {
+
+                    const response =
+
+                        await fetch(
+
+                            `https://api.maptiler.com/geocoding/${lng},${lat}.json?key=${apiKey}`
+
+                        );
 
 
-await axios.post(
+                    const data =
+                        await response.json();
 
-"http://localhost:8080/api/reports",
 
-{
+                    if (data.features.length > 0) {
 
-category,
-description,
-location
+                        setLocation(
+
+                            data.features[0]
+                                .place_name
+
+                        );
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.log(error);
+
+                    alert(
+                        "Unable to fetch location."
+                    );
+
+                }
+
+            },
+
+            (error) => {
+
+                console.log(error);
+
+                alert(
+                    "Location permission denied."
+                );
+
+            },
+
+            {
+
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+
+            }
+
+        );
+
+    }
+
+    async function searchPlaces(){
+
+
+if(searchLocation===""){
+
+return;
 
 }
+
+
+const response=
+
+await fetch(
+
+`https://api.maptiler.com/geocoding/${searchLocation}.json?key=${apiKey}`
 
 );
 
 
-alert(
-"Report Submitted Successfully."
+const data=
+
+await response.json();
+
+
+setResults(
+
+data.features
+
 );
 
 
-setCategory("");
-setDescription("");
-setLocation("");
-
-
 }
 
+    async function submitReport() {
 
-catch(error){
+        if (
 
-console.log(error);
+            category === "" ||
 
-}
+            description === "" ||
 
+            location === ""
 
-};
+        ) {
 
+            alert(
 
+                "Please fill all the fields."
 
-return(
+            );
 
-<Card>
+            return;
 
-<h2
-className="mb-5 text-2xl font-bold"
->
-
-Community Safety Report
-
-</h2>
+        }
 
 
+        try {
 
-<input
+            await axios.post(
+
+                "http://localhost:8080/api/reports",
+
+                {
+
+                    category,
+                    description,
+                    location,
+                    latitude,
+                    longitude
+
+                }
+
+            );
+
+
+            alert(
+
+                "Report Submitted Successfully."
+
+            );
+
+
+            setCategory("");
+            setDescription("");
+            setLocation("");
+
+            setLatitude(null);
+            setLongitude(null);
+
+
+            window.dispatchEvent(
+
+new Event("reportSubmitted")
+
+);
+
+
+        }
+
+        catch (error) {
+
+            console.log(error);
+
+            alert(
+
+                "Unable to submit report."
+
+            );
+
+        }
+
+
+    }
+    
+
+    return (
+
+        <Card>
+            
+            <input
 
 type="text"
 
-placeholder="Location"
+placeholder="Search Location"
 
-value={location}
+value={searchLocation}
 
 onChange={(e)=>{
 
-setLocation(
+setSearchLocation(
 
 e.target.value
 
@@ -99,147 +271,240 @@ className="mb-4
 w-full
 rounded-xl
 border
-p-3"
+p-4"
 
 />
-
-
-
-<select
-
-value={category}
-
-onChange={(e)=>{
-
-setCategory(
-
-e.target.value
-
-);
-
-}}
-
-className="mb-4
-w-full
-rounded-xl
-border
-p-3"
-
->
-
-
-<option value="">
-
-Select Category
-
-</option>
-
-
-<option>
-
-Poor Lighting
-
-</option>
-
-
-<option>
-
-No CCTV
-
-</option>
-
-
-<option>
-
-Harassment
-
-</option>
-
-
-<option>
-
-Unsafe Transport
-
-</option>
-
-
-<option>
-
-Stalking
-
-</option>
-
-
-<option>
-
-Suspicious Activity
-
-</option>
-
-
-<option>
-
-Unsafe Area
-
-</option>
-
-
-<option>
-
-Others
-
-</option>
-
-
-
-</select>
-
-
-
-<textarea
-
-rows="5"
-
-value={description}
-
-placeholder="Describe the issue..."
-
-onChange={(e)=>{
-
-setDescription(
-
-e.target.value
-
-);
-
-}}
-
-className="w-full
-rounded-xl
-border
-p-3"
-
-/>
-
 
 
 <Button
 
-onClick={submitReport}
+onClick={searchPlaces}
 
-className="mt-5 w-full"
+className="mb-5
+w-full"
 
 >
 
-Submit Report
+SEARCH LOCATION
 
 </Button>
 
+{
 
-</Card>
+results.map((place)=>(
 
+
+<div
+
+key={place.id}
+
+onClick={()=>{
+
+
+setLocation(
+
+place.place_name
 
 );
 
+
+setLatitude(
+
+place.center[1]
+
+);
+
+
+setLongitude(
+
+place.center[0]
+
+);
+
+
+setResults([]);
+
+
+}}
+
+
+className="mb-2
+cursor-pointer
+rounded-xl
+border
+p-3
+hover:bg-purple-100"
+
+>
+
+
+{place.place_name}
+
+
+</div>
+
+
+))
+
+
+}
+            <Button
+
+                onClick={getCurrentLocation}
+
+                className="mb-5 w-full"
+
+            >
+
+                USE MY CURRENT LOCATION
+
+            </Button>
+
+
+
+            {
+
+                location && (
+
+                    <div
+
+                        className="mb-5 rounded-xl bg-purple-50 p-4"
+
+                    >
+
+                        <h3
+
+                            className="font-bold text-purple-700"
+
+                        >
+
+                            Current Location
+
+                        </h3>
+
+                        <p>
+
+                            {location}
+
+                        </p>
+
+                    </div>
+
+                )
+
+            }
+
+
+
+            <h3
+
+                className="mb-3 font-semibold"
+
+            >
+
+                Select Category
+
+            </h3>
+
+
+
+            <div
+
+                className="mb-5 grid gap-3 sm:grid-cols-2"
+
+            >
+
+                {
+
+                    categories.map((item) => (
+
+                        <button
+
+                            key={item}
+
+                            onClick={() => {
+
+                                setCategory(item);
+
+                            }}
+
+                            className={`
+
+                            rounded-xl
+                            border
+                            p-3
+                            font-semibold
+                            transition-all
+
+                            ${
+
+                                category === item
+
+                                    ?
+
+                                    "bg-purple-700 text-white"
+
+                                    :
+
+                                    "bg-white hover:bg-purple-100"
+
+                                }
+
+                            `}
+
+                        >
+
+                            {item}
+
+                        </button>
+
+                    ))
+
+                }
+
+            </div>
+
+
+
+            <textarea
+
+                rows="6"
+
+                value={description}
+
+                placeholder="Describe the issue here..."
+
+                onChange={(e) => {
+
+                    setDescription(
+
+                        e.target.value
+
+                    );
+
+                }}
+
+                className="w-full rounded-xl border p-4"
+
+            />
+
+
+
+            <Button
+
+                onClick={submitReport}
+
+                className="mt-5 w-full"
+
+            >
+
+                SUBMIT REPORT
+
+            </Button>
+
+
+        </Card>
+
+    );
 
 }

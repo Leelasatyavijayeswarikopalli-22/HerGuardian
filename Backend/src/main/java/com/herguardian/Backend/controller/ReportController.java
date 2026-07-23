@@ -1,6 +1,7 @@
 package com.herguardian.Backend.controller;
 
 
+import com.herguardian.Backend.dto.ReportStatusRequest;
 import com.herguardian.Backend.entity.Report;
 import com.herguardian.Backend.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,7 @@ public class ReportController {
 
 
     @PostMapping
-
     public Report save(
-
 
             @RequestBody
             Report report
@@ -41,9 +40,7 @@ public class ReportController {
 
 
     @GetMapping
-
     public List<Report> getAll(){
-
 
         return service.getAllReports();
 
@@ -52,9 +49,7 @@ public class ReportController {
 
 
     @GetMapping("/active")
-
     public List<Report> active(){
-
 
         return service.getActiveReports();
 
@@ -63,9 +58,7 @@ public class ReportController {
 
 
     @GetMapping("/rectified")
-
     public List<Report> rectified(){
-
 
         return service.getRectifiedReports();
 
@@ -73,17 +66,28 @@ public class ReportController {
 
 
 
-    @PutMapping("/rectify/{id}")
-
-    public Report rectify(
-
+    @PutMapping("/status/{id}")
+    public Report updateStatus(
 
             @PathVariable
-            Long id
+            Long id,
+
+            @RequestBody
+            ReportStatusRequest request
 
     ){
 
-        return service.rectify(id);
+        return service.updateStatus(
+
+                id,
+
+                request.getStatus(),
+
+                request.getAdminRemark(),
+
+                request.getAuthorityName()
+
+        );
 
     }
 

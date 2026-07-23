@@ -7,9 +7,50 @@ import ActiveReports from
 import RectifiedReports from
 "../components/reports/RectifiedReports";
 
+import {useState} from "react";
+
+import {useEffect} from "react";
+
 
 export default function CommunityReports(){
+const [refresh,setRefresh]=
+useState(false);
 
+useEffect(()=>{
+
+
+const listener=()=>{
+
+setRefresh((prev)=>!prev);
+
+};
+
+
+window.addEventListener(
+
+"reportSubmitted",
+
+listener
+
+);
+
+
+return ()=>{
+
+
+window.removeEventListener(
+
+"reportSubmitted",
+
+listener
+
+);
+
+
+};
+
+
+},[]);
 
 return(
 
@@ -44,7 +85,11 @@ lg:grid-cols-2"
 <ReportForm/>
 
 
-<ActiveReports/>
+<ActiveReports
+
+refresh={refresh}
+
+/>
 
 
 </div>
@@ -55,7 +100,11 @@ lg:grid-cols-2"
 className="mt-6"
 >
 
-<RectifiedReports/>
+<RectifiedReports
+
+refresh={refresh}
+
+/>
 
 </div>
 

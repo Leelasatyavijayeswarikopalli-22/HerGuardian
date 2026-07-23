@@ -1,124 +1,117 @@
-import {useEffect,useState} from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Card from "../Card";
 
+export default function RectifiedReports() {
 
-export default function RectifiedReports(){
+    const [reports, setReports] = useState([]);
 
+    async function loadReports() {
 
-const [reports,setReports]=
-useState([]);
+        try {
 
+            const response = await axios.get(
+                "http://localhost:8080/api/reports/rectified"
+            );
 
+            setReports(response.data);
 
-useEffect(()=>{
+        }
+        catch (error) {
 
-loadReports();
+            console.log(error);
 
-},[]);
+        }
 
+    }
 
+    useEffect(() => {
 
-async function loadReports(){
+        loadReports();
 
+        const interval = setInterval(() => {
 
-const response=
+            loadReports();
 
-await axios.get(
+        }, 5000);
 
-"http://localhost:8080/api/reports/rectified"
+        return () => clearInterval(interval);
 
-);
+    }, []);
 
 
-setReports(
+    return (
 
-response.data
+        <Card>
 
-);
+            <h2
+                className="mb-6 text-2xl font-bold text-green-700"
+            >
+                SAFE NOW
+            </h2>
 
 
-}
+            {reports.length === 0 && (
 
+                <p>
+                    No Rectified Reports Found.
+                </p>
 
+            )}
 
-return(
 
+            {reports.map((report) => (
 
-<Card>
+                <div
+                    key={report.id}
+                    className="mb-5 rounded-2xl border border-green-200 bg-green-50 p-5 shadow-md"
+                >
 
+                    <h3 className="text-lg font-bold">
+                        {report.category}
+                    </h3>
 
-<h2
-className="mb-5 text-xl font-bold"
->
 
-RECTIFIED REPORTS
+                    <p>
+                        <b>Location :</b> {report.location}
+                    </p>
 
-</h2>
 
+                    <p>
+                        <b>Status :</b> SAFE NOW
+                    </p>
 
 
-{
+                    <p>
+                        <b>Resolved By :</b> {report.authorityName}
+                    </p>
 
-reports.map((report)=>(
 
+                    <p>
+                        <b>Resolved On :</b>{" "}
+                        {
+                            report.resolvedAt
+                                ? new Date(report.resolvedAt).toLocaleString()
+                                : "-"
+                        }
+                    </p>
 
-<div
 
-key={report.id}
+                    <p>
+                        <b>Authority Remark :</b> {report.adminRemark}
+                    </p>
 
-className="mb-4
-rounded-xl
-bg-green-50
-p-4"
 
->
+                    <p>
+                        <b>Reported By :</b> {report.reportCount} Users
+                    </p>
 
+                </div>
 
-<h3
-className="font-bold"
->
+            ))}
 
-{report.category}
+        </Card>
 
-</h3>
-
-
-<p>
-
-{report.location}
-
-</p>
-
-
-<p>
-
-{report.description}
-
-</p>
-
-
-<p>
-
-SAFE NOW
-
-</p>
-
-
-
-</div>
-
-
-))
-
-
-}
-
-
-</Card>
-
-
-);
-
+    );
 
 }
