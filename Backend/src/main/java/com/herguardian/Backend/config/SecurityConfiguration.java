@@ -28,7 +28,8 @@ public class SecurityConfiguration {
                                 "/api/test/**",
                                 "/api/mail",
                                 "/api/hello",
-                                "/api/dashboard"
+                                "/api/dashboard",
+                                "/api/reports/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );
