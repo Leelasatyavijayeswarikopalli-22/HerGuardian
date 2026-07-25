@@ -16,58 +16,17 @@ public class ReportService {
     private final ReportRepository repository;
 
 
+    // SAVE REPORT
 
     public Report save(Report report){
 
-
-        List<Report> reports=
-
-                repository.findAll();
-
-
-
-        for(Report item:reports){
-
-
-            if(
-
-                    item.getCategory().equalsIgnoreCase(
-
-                            report.getCategory()
-
-                    )
-
-                            &&
-
-                            item.getLocation().equalsIgnoreCase(
-
-                                    report.getLocation()
-
-                            )
-
-            ){
-
-                item.setReportCount(
-
-                        item.getReportCount()+1
-
-                );
-
-
-                return repository.save(item);
-
-
-            }
-
-
-        }
-
-
         return repository.save(report);
-
 
     }
 
+
+
+    // AUTHORITY
 
 
     public List<Report> getAllReports(){
@@ -78,20 +37,83 @@ public class ReportService {
 
 
 
+    // AUTHORITY
+
+
     public List<Report> getActiveReports(){
 
-        return repository.findByStatusNot("RECTIFIED");
+        return repository.findByStatusNot(
+
+                "RECTIFIED"
+
+        );
 
     }
 
+
+
+    // AUTHORITY
 
 
     public List<Report> getRectifiedReports(){
 
-        return repository.findByStatus("RECTIFIED");
+        return repository.findByStatus(
+
+                "RECTIFIED"
+
+        );
 
     }
 
+
+
+    // USER
+
+
+    public List<Report> getUserActiveReports(
+
+            String email
+
+    ){
+
+        return repository.
+
+                findByReportedByAndStatusNot(
+
+                        email,
+
+                        "RECTIFIED"
+
+                );
+
+    }
+
+
+
+    // USER
+
+
+    public List<Report> getUserRectifiedReports(
+
+            String email
+
+    ){
+
+        return repository.
+
+                findByReportedByAndStatus(
+
+                        email,
+
+                        "RECTIFIED"
+
+                );
+
+    }
+
+
+
+    // AUTHORITY
 
 
     public Report updateStatus(
@@ -103,72 +125,70 @@ public class ReportService {
 
     ){
 
-
         Report report=
 
                 repository.findById(id)
+
                         .orElseThrow();
 
 
 
         report.setStatus(status);
 
+        report.setAdminRemark(
 
-        report.setAdminRemark(remark);
+                remark
+
+        );
 
 
-        report.setAuthorityName(authorityName);
+        report.setAuthorityName(
+
+                authorityName
+
+        );
 
 
 
-        if(status.equalsIgnoreCase("RECTIFIED")){
+        if(
 
+                status.equalsIgnoreCase(
+
+                        "RECTIFIED"
+
+                )
+
+        ){
 
             report.setVerified(true);
 
             report.setResolvedAt(
+
                     LocalDateTime.now()
+
             );
 
-        }else{
+        }
 
-            report.setResolvedAt(null);
+        else{
 
             report.setVerified(false);
+
+            report.setResolvedAt(
+
+                    null
+
+            );
 
         }
 
 
-        return repository.save(report);
+        return repository.save(
 
+                report
 
-    }
-
-
-
-    public Report rectify(Long id){
-
-        Report report=
-
-                repository.findById(id)
-                        .orElseThrow();
-
-
-        report.setStatus("RECTIFIED");
-
-        report.setVerified(true);
-
-        report.setResolvedAt(
-                LocalDateTime.now()
         );
 
-
-        report.setAdminRemark(
-                "Issue Resolved Successfully"
-        );
-
-
-        return repository.save(report);
 
     }
 

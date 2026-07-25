@@ -36,9 +36,10 @@ export default function Navbar() {
               className="w-10 h-10 rounded-full object-cover border border-white/10"
             />
 
-            <span className="hidden sm:block font-bold text-white text-lg">
-              HerGuardian
-            </span>
+            <div className="hidden sm:block">
+  <p className="font-bold text-white text-lg leading-tight">HerGuardian</p>
+  <p className="text-[10px] text-pink-300 tracking-wider">Your Safety, Our Priority</p>
+</div>
           </Link>
           <div className="flex items-center gap-4 md:hidden">
           <button className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
@@ -78,6 +79,7 @@ export default function Navbar() {
               label="Reports"
               active={location.pathname.startsWith("/reports")}
             />
+            
           </div>
 
           {/* Desktop Right */}

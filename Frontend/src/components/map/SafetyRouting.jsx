@@ -93,7 +93,7 @@ export default function SafetyRouting({
                     payload
 
                 );
-
+        console.log(response.data);
             const rankedRoutes = response.data.map((route, index) => ({
 
     ...route,
@@ -103,6 +103,8 @@ export default function SafetyRouting({
     duration: routes[index].duration
 
 }));
+
+console.log(rankedRoutes);
 
             setRouteResults(rankedRoutes);
 

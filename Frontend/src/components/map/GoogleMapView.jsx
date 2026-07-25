@@ -138,7 +138,11 @@ function startJourney(route){
 setSelectedRoute(
 route.routeNumber
 );
+useEffect(()=>{
 
+console.log(routeResults);
+
+},[routeResults]);
 
 setJourneyStarted(true);
 

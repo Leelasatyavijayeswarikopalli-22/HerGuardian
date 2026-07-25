@@ -12,13 +12,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
-
 @RequiredArgsConstructor
-
 @CrossOrigin("*")
 
 public class ReportController {
-
 
 
     private final ReportService service;
@@ -26,6 +23,7 @@ public class ReportController {
 
 
     @PostMapping
+
     public Report save(
 
             @RequestBody
@@ -33,40 +31,118 @@ public class ReportController {
 
     ){
 
-        return service.save(report);
+        return service.save(
+
+                report
+
+        );
 
     }
 
+
+
+    // AUTHORITY
 
 
     @GetMapping
+
     public List<Report> getAll(){
 
-        return service.getAllReports();
+        return service
+
+                .getAllReports();
 
     }
 
+
+
+    // USER
+
+
+    @GetMapping("/user/active")
+
+    public List<Report>
+
+    getUserActiveReports(
+
+            @RequestParam
+            String email
+
+    ){
+
+        return service
+
+                .getUserActiveReports(
+
+                        email
+
+                );
+
+    }
+
+
+
+    // USER
+
+
+    @GetMapping("/user/rectified")
+
+    public List<Report>
+
+    getUserRectifiedReports(
+
+            @RequestParam
+            String email
+
+    ){
+
+        return service
+
+                .getUserRectifiedReports(
+
+                        email
+
+                );
+
+    }
+
+
+
+    // AUTHORITY
 
 
     @GetMapping("/active")
+
     public List<Report> active(){
 
-        return service.getActiveReports();
+        return service
+
+                .getActiveReports();
 
     }
 
+
+
+    // AUTHORITY
 
 
     @GetMapping("/rectified")
+
     public List<Report> rectified(){
 
-        return service.getRectifiedReports();
+        return service
+
+                .getRectifiedReports();
 
     }
 
 
 
+    // AUTHORITY
+
+
     @PutMapping("/status/{id}")
+
     public Report updateStatus(
 
             @PathVariable
