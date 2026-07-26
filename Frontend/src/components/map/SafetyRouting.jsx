@@ -1,343 +1,86 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
-import axios from "axios";
 import { getAlternativeRoutes } from "../../services/maptilerService";
 
 export default function SafetyRouting({
+  source,
+  destination,
+  setRouteResults,
+  setSelectedRoute,
+}) {
+  const map = useMap();
+  const layersRef = useRef([]);
 
-    source,
+  useEffect(() => {
+    if (!source || !destination) return;
 
-    destination,
+    const clearRoutes = () => {
+      layersRef.current.forEach((layer) => map.removeLayer(layer));
+      layersRef.current = [];
+    };
 
-    setRouteResults,
+    const loadRoutes = async () => {
+      try {
+        clearRoutes();
 
-    selectedRoute,
+        const routes = await getAlternativeRoutes(source, destination);
+        console.log("ROUTES:", routes);
 
-    setSelectedRoute
+        const fakeRankedRoutes = routes.map((route, index) => ({
+          routeNumber: index + 1,
+          totalSafetyScore: 75,
+          crimeScore: 70,
+          crowdScore: 70,
+          lightingScore: 70,
+          policeScore: 70,
+          cctvScore: 70,
+          roadScore: 70,
+          timeScore: 70,
+          safest: index === 0,
+          fastest: false,
+          distance: route.distance,
+          duration: route.duration,
+        }));
 
-}){
+        setRouteResults(fakeRankedRoutes);
 
-    const map=useMap();
+        const bounds = [];
 
-    const polylines=useRef([]);
+        routes.forEach((route, index) => {
+          const coordinates = route.geometry.coordinates.map((point) => [
+            point[1],
+            point[0],
+          ]);
 
-    useEffect(()=>{
+          bounds.push(...coordinates);
 
-        if(!source || !destination)
-            return;
+          const polyline = L.polyline(coordinates, {
+            color: index === 0 ? "#00F5A0" : "#FF4D6D",
+            weight: 6,
+            opacity: 0.95,
+          }).addTo(map);
 
-        loadRoutes();
+          polyline.bindPopup(`Route ${index + 1}`);
+          polyline.on("click", () => {
+            setSelectedRoute(index + 1);
+          });
 
-        async function loadRoutes(){
+          layersRef.current.push(polyline);
+        });
 
-            try{
-
-                clearRoutes();
-
-                const routes=
-
-                    await getAlternativeRoutes(
-
-                        source,
-
-                        destination
-
-                    );
-
-                analyzeRoutes(routes);
-
-            }
-
-            catch(error){
-
-                console.log(error);
-
-            }
-
+        if (bounds.length) {
+          map.fitBounds(bounds, { padding: [40, 40] });
         }
-                async function analyzeRoutes(routes){
+      } catch (error) {
+        console.error("loadRoutes error:", error.response?.data || error.message || error);
+      }
+    };
 
-            const payload={
+    loadRoutes();
 
-                routes:
+    return () => clearRoutes();
+  }, [source, destination, map, setRouteResults, setSelectedRoute]);
 
-                    routes.map((route,index)=>({
-
-                        routeNumber:index+1,
-
-                        distance:route.distance,
-
-                        duration:route.duration,
-
-                        coordinates:
-
-                            route.geometry.coordinates.map(point=>({
-
-                                latitude:point[1],
-
-                                longitude:point[0]
-
-                            }))
-
-                    }))
-
-            };
-
-            const response=
-
-                await axios.post(
-
-                    "http://localhost:8080/api/routes/analyze",
-
-                    payload
-
-                );
-        console.log(response.data);
-            const rankedRoutes = response.data.map((route, index) => ({
-
-    ...route,
-
-    distance: routes[index].distance,
-
-    duration: routes[index].duration
-
-}));
-
-console.log(rankedRoutes);
-
-            setRouteResults(rankedRoutes);
-
-            drawRoutes(
-
-                routes,
-
-                rankedRoutes
-
-            );
-
-        }
-                function drawRoutes(
-
-            routes,
-
-            rankedRoutes
-
-        ){
-
-            routes.forEach((route,index)=>{
-
-                const aiRoute=
-
-                    rankedRoutes.find(
-
-                        r=>r.routeNumber===index+1
-
-                    );
-
-                if(!aiRoute)
-                    return;
-
-                let color="#FF4D6D";
-
-                let weight=5;
-
-                if(aiRoute.safest){
-
-                    color="#00F5A0";
-
-                    weight=8;
-
-                }
-
-                else if(aiRoute.fastest){
-
-                    color="#00C2FF";
-
-                    weight=7;
-
-                }
-
-                else if(aiRoute.totalSafetyScore>=80){
-
-                    color="#22c55e";
-
-                }
-
-                else if(aiRoute.totalSafetyScore>=60){
-
-                    color="#FFD93D";
-
-                }
-
-                const coordinates=
-
-                    route.geometry.coordinates.map(
-
-                        point=>[
-
-                            point[1],
-
-                            point[0]
-
-                        ]
-
-                    );
-
-               const polyline=L.polyline(
-
-    coordinates,
-
-    {
-
-        color,
-
-        weight,
-
-        opacity:0.95,
-
-        lineCap:"round",
-
-        lineJoin:"round",
-
-        dashArray:null
-
-    }
-
-);     
-
-                polyline.addTo(map);
-                const glow=L.polyline(
-
-    coordinates,
-
-    {
-
-        color,
-
-        weight:weight+10,
-
-        opacity:0.18
-
-    }
-
-);
-
-glow.addTo(map);
-
-polylines.current.push(glow);
-                                polyline.bindPopup(`
-
-<div style="font-family:Arial;width:260px">
-
-<h3>Route ${aiRoute.routeNumber}</h3>
-
-<hr/>
-
-<h2 style="color:#16a34a">
-
-Safety Score
-
-${aiRoute.totalSafetyScore.toFixed(1)}
-
-</h2>
-
-
-Crime : ${aiRoute.crimeScore.toFixed(1)}<br/>
-
-Crowd : ${aiRoute.crowdScore.toFixed(1)}<br/>
-
-Lighting : ${aiRoute.lightingScore.toFixed(1)}<br/>
-
-Police : ${aiRoute.policeScore.toFixed(1)}<br/>
-
-CCTV : ${aiRoute.cctvScore.toFixed(1)}<br/>
-
-Road : ${aiRoute.roadScore.toFixed(1)}<br/>
-
-Time : ${aiRoute.timeScore.toFixed(1)}<br/><br/>
-
-${
-
-aiRoute.safest
-
-?
-
-"<span style='color:green;font-weight:bold'>🛡️ SAFEST ROUTE</span><br/>"
-
-:
-
-""
-
-}
-
-${
-
-aiRoute.fastest
-
-?
-
-"<span style='color:#2563eb;font-weight:bold'>⚡ FASTEST ROUTE</span>"
-
-:
-
-""
-
-}
-
-</div>
-
-`);
-                polyline.on("click",()=>{
-
-                    setSelectedRoute(
-
-                        aiRoute.routeNumber
-
-                    );
-
-                    polylines.current.forEach((line,i)=>{
-
-                        line.setStyle({
-
-                            opacity:
-
-                                i===index?1:0.25,
-
-                            weight:
-
-                                i===index?9:5
-
-                        });
-
-                    });
-
-                });
-
-            });
-
-        }
-
-        function clearRoutes(){
-
-            polylines.current.forEach(line=>{
-
-                map.removeLayer(line);
-
-            });
-
-            polylines.current=[];
-
-        }
-
-        return()=>{
-
-            clearRoutes();
-
-        };
-
-    },[source,destination]);
-
-    return null;
-
+  return null;
 }

@@ -89,7 +89,7 @@ public class AuthService {
     }
     // ---------------- VERIFY OTP ----------------
 
-    public String verifyOtp(VerifyOtpRequest request) {
+    public  String verifyOtp(VerifyOtpRequest request) {
 
         PendingUser pendingUser = pendingUserRepository
                 .findByEmail(request.getEmail())

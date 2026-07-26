@@ -28,7 +28,12 @@ export default function SafetyMap() {
       <div className="relative grid gap-6 lg:grid-cols-4">
         <div className="lg:col-span-3">
           <div className="relative z-[9999]">
-            <SrcToDest setSource={setSource} setDestination={setDestination} />
+            <SrcToDest
+  source={source}
+  destination={destination}
+  setSource={setSource}
+  setDestination={setDestination}
+/>
           </div>
 
           {/* Action Buttons Row */}
