@@ -13,7 +13,6 @@ public class PredictionService {
     public List<Double> predict(
 
             double crime,
-            double crowd,
             double lighting,
             double police,
             double cctv,
@@ -34,7 +33,6 @@ public class PredictionService {
                 calculateScore(
 
                         crime,
-                        crowd,
                         lighting,
                         police,
                         cctv,
@@ -51,7 +49,6 @@ public class PredictionService {
                 predictFuture(
 
                         crime,
-                        crowd,
                         lighting,
                         police,
                         cctv,
@@ -70,7 +67,6 @@ public class PredictionService {
                 predictFuture(
 
                         crime,
-                        crowd,
                         lighting,
                         police,
                         cctv,
@@ -89,7 +85,6 @@ public class PredictionService {
                 predictFuture(
 
                         crime,
-                        crowd,
                         lighting,
                         police,
                         cctv,
@@ -108,7 +103,6 @@ public class PredictionService {
                 predictFuture(
 
                         crime,
-                        crowd,
                         lighting,
                         police,
                         cctv,
@@ -132,7 +126,6 @@ public class PredictionService {
     private double predictFuture(
 
             double crime,
-            double crowd,
             double lighting,
             double police,
             double cctv,
@@ -148,7 +141,6 @@ public class PredictionService {
 
 
         double predictedCrime = crime;
-        double predictedCrowd = crowd;
         double predictedLighting = lighting;
         double predictedPolice = police;
         double predictedCCTV = cctv;
@@ -163,8 +155,6 @@ public class PredictionService {
 
             predictedCrime -=5;
 
-            predictedCrowd -=15;
-
             predictedLighting -=10;
 
             predictedTime -=15;
@@ -176,7 +166,6 @@ public class PredictionService {
 
         else if(hour>=18){
 
-            predictedCrowd -=5;
 
             predictedLighting -=3;
 
@@ -189,7 +178,6 @@ public class PredictionService {
 
         else if(hour<=6){
 
-            predictedCrowd -=10;
 
             predictedTime -=5;
 
@@ -211,9 +199,6 @@ public class PredictionService {
         predictedCrime =
                 clamp(predictedCrime);
 
-        predictedCrowd =
-                clamp(predictedCrowd);
-
         predictedLighting =
                 clamp(predictedLighting);
 
@@ -234,7 +219,6 @@ public class PredictionService {
         return calculateScore(
 
                 predictedCrime,
-                predictedCrowd,
                 predictedLighting,
                 predictedPolice,
                 predictedCCTV,
@@ -251,7 +235,6 @@ public class PredictionService {
     private double calculateScore(
 
             double crime,
-            double crowd,
             double lighting,
             double police,
             double cctv,
@@ -263,15 +246,13 @@ public class PredictionService {
 
         return
 
-                crime*0.25 +
-
-                        crowd*0.15 +
+                crime*0.30 +
 
                         lighting*0.15 +
 
-                        police*0.15 +
+                        police*0.20 +
 
-                        cctv*0.15 +
+                        cctv*0.20 +
 
                         road*0.10 +
 

@@ -15,21 +15,13 @@ public class TestController {
     private final CrimeAnalyzer crimeAnalyzer;
     private final CrimeEngine crimeEngine;
 
-    private final CrowdAnalyzer crowdAnalyzer;
-    private final CrowdEngine crowdEngine;
-
     public TestController(
             CrimeAnalyzer crimeAnalyzer,
-            CrimeEngine crimeEngine,
-            CrowdAnalyzer crowdAnalyzer,
-            CrowdEngine crowdEngine
+            CrimeEngine crimeEngine
     ) {
 
         this.crimeAnalyzer = crimeAnalyzer;
         this.crimeEngine = crimeEngine;
-
-        this.crowdAnalyzer = crowdAnalyzer;
-        this.crowdEngine = crowdEngine;
     }
 
     @GetMapping("/api/test/crime")
@@ -51,24 +43,7 @@ public class TestController {
         return data;
     }
 
-    @GetMapping("/api/test/crowd")
-    public CrowdData crowdTest() {
 
-        RouteSegment segment = RouteSegment.builder()
-                .start(new GeoPoint(16.989,82.247))
-                .end(new GeoPoint(16.990,82.248))
-                .build();
-
-        CrowdData data = crowdAnalyzer.analyze(segment);
-
-        double score =
-                crowdEngine.calculateCrowdScore(
-                        data.getPeoplePerSquareMeter());
-
-        System.out.println("Crowd Score = " + score);
-
-        return data;
-    }
     @Autowired
     private LightingAnalyzer lightingAnalyzer;
 

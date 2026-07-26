@@ -12,8 +12,6 @@ public class RecommendationService {
 
             double crimeScore,
 
-            double crowdScore,
-
             double timeScore
 
     ){

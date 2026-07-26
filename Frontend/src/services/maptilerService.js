@@ -20,7 +20,13 @@ export async function getAlternativeRoutes(source, destination) {
     const response = await axios.post(
       "/ors/v2/directions/driving-car/geojson",
       {
-        coordinates: [startCoords, endCoords]
+        coordinates: [startCoords, endCoords],
+        preference: "recommended",
+        alternative_routes: {
+          target_count: 2,
+          weight_factor: 1.4,
+          share_factor: 0.6,
+        },
       },
       {
         headers: {
@@ -30,7 +36,7 @@ export async function getAlternativeRoutes(source, destination) {
       }
     );
 
-    console.log("ORS RESPONSE:", response.data);
+    console.log("ORS RESPONSE FEATURES COUNT:", response.data?.features?.length);
 
     if (!response.data?.features?.length) {
       throw new Error("No routes found");

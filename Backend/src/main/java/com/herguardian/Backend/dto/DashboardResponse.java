@@ -23,8 +23,6 @@ public class DashboardResponse {
 
     private double crimeScore;
 
-    private double crowdScore;
-
     private double lightingScore;
 
     private double policeScore;

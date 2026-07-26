@@ -20,7 +20,6 @@ public class DashboardService {
     private final RecommendationService recommendationService;
 
     private final CrimeAnalyzer crimeAnalyzer;
-    private final CrowdAnalyzer crowdAnalyzer;
     private final LightingAnalyzer lightingAnalyzer;
     private final PoliceAnalyzer policeAnalyzer;
     private final SurveillanceAnalyzer cctvAnalyzer;
@@ -29,7 +28,6 @@ public class DashboardService {
 
 
     private final CrimeEngine crimeEngine;
-    private final CrowdEngine crowdEngine;
     private final LightingEngine lightingEngine;
     private final PoliceEngine policeEngine;
     private final CCTVEngine cctvEngine;
@@ -44,7 +42,6 @@ public class DashboardService {
             RecommendationService recommendationService,
 
             CrimeAnalyzer crimeAnalyzer,
-            CrowdAnalyzer crowdAnalyzer,
             LightingAnalyzer lightingAnalyzer,
             PoliceAnalyzer policeAnalyzer,
             SurveillanceAnalyzer cctvAnalyzer,
@@ -52,7 +49,6 @@ public class DashboardService {
             TimeAnalyzer timeAnalyzer,
 
             CrimeEngine crimeEngine,
-            CrowdEngine crowdEngine,
             LightingEngine lightingEngine,
             PoliceEngine policeEngine,
             CCTVEngine cctvEngine,
@@ -70,9 +66,6 @@ public class DashboardService {
 
         this.crimeAnalyzer=
                 crimeAnalyzer;
-
-        this.crowdAnalyzer=
-                crowdAnalyzer;
 
         this.lightingAnalyzer=
                 lightingAnalyzer;
@@ -93,8 +86,6 @@ public class DashboardService {
         this.crimeEngine=
                 crimeEngine;
 
-        this.crowdEngine=
-                crowdEngine;
 
         this.lightingEngine=
                 lightingEngine;
@@ -148,10 +139,6 @@ public class DashboardService {
 
         CrimeData crime=
                 crimeAnalyzer.analyze(segment);
-
-        CrowdData crowd=
-                crowdAnalyzer.analyze(segment);
-
         LightingData lighting=
                 lightingAnalyzer.analyze(segment);
 
@@ -174,15 +161,6 @@ public class DashboardService {
                 crimeEngine.calculateCrimeScore(
 
                         crime.getCrimesPerKm2()
-
-                );
-
-
-        double crowdScore=
-
-                crowdEngine.calculateCrowdScore(
-
-                        crowd.getPeoplePerSquareMeter()
 
                 );
 
@@ -239,15 +217,13 @@ public class DashboardService {
         double safetyScore=
 
 
-                crimeScore*0.25 +
-
-                        crowdScore*0.15 +
+                crimeScore*0.30 +
 
                         lightingScore*0.15 +
 
-                        policeScore*0.15 +
+                        policeScore*0.20 +
 
-                        cctvScore*0.15 +
+                        cctvScore*0.20 +
 
                         roadScore*0.10 +
 
@@ -270,7 +246,6 @@ public class DashboardService {
 
                                 safetyScore,
                                 crimeScore,
-                                crowdScore,
                                 timeScore
 
                         );
@@ -293,17 +268,6 @@ public class DashboardService {
             alerts.add(
 
                     "Higher crime activity detected nearby."
-
-            );
-
-        }
-
-
-        if(crowdScore<50){
-
-            alerts.add(
-
-                    "This location appears less crowded. Avoid travelling alone."
 
             );
 
@@ -379,10 +343,6 @@ public class DashboardService {
                         crimeScore
                 )
 
-                .crowdScore(
-                        crowdScore
-                )
-
                 .lightingScore(
                         lightingScore
                 )
@@ -418,7 +378,6 @@ public class DashboardService {
                         predictionService.predict(
 
                                 crimeScore,
-                                crowdScore,
                                 lightingScore,
                                 policeScore,
                                 cctvScore,

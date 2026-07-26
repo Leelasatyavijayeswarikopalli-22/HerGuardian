@@ -15,7 +15,6 @@ import java.util.List;
 public class SafetyRouteEngine {
 
     private final CrimeAnalyzer crimeAnalyzer;
-    private final CrowdAnalyzer crowdAnalyzer;
     private final LightingAnalyzer lightingAnalyzer;
     private final PoliceAnalyzer policeAnalyzer;
     private final SurveillanceAnalyzer cctvAnalyzer;
@@ -23,7 +22,6 @@ public class SafetyRouteEngine {
     private final TimeAnalyzer timeAnalyzer;
 
     private final CrimeEngine crimeEngine;
-    private final CrowdEngine crowdEngine;
     private final LightingEngine lightingEngine;
     private final PoliceEngine policeEngine;
     private final CCTVEngine cctvEngine;
@@ -33,7 +31,6 @@ public class SafetyRouteEngine {
     public SafetyRouteEngine(
 
             CrimeAnalyzer crimeAnalyzer,
-            CrowdAnalyzer crowdAnalyzer,
             LightingAnalyzer lightingAnalyzer,
             PoliceAnalyzer policeAnalyzer,
             SurveillanceAnalyzer cctvAnalyzer,
@@ -41,7 +38,6 @@ public class SafetyRouteEngine {
             TimeAnalyzer timeAnalyzer,
 
             CrimeEngine crimeEngine,
-            CrowdEngine crowdEngine,
             LightingEngine lightingEngine,
             PoliceEngine policeEngine,
             CCTVEngine cctvEngine,
@@ -51,7 +47,6 @@ public class SafetyRouteEngine {
     ) {
 
         this.crimeAnalyzer = crimeAnalyzer;
-        this.crowdAnalyzer = crowdAnalyzer;
         this.lightingAnalyzer = lightingAnalyzer;
         this.policeAnalyzer = policeAnalyzer;
         this.cctvAnalyzer = cctvAnalyzer;
@@ -59,7 +54,6 @@ public class SafetyRouteEngine {
         this.timeAnalyzer = timeAnalyzer;
 
         this.crimeEngine = crimeEngine;
-        this.crowdEngine = crowdEngine;
         this.lightingEngine = lightingEngine;
         this.policeEngine = policeEngine;
         this.cctvEngine = cctvEngine;
@@ -78,7 +72,6 @@ public class SafetyRouteEngine {
                 new ArrayList<>();
 
         double crimeTotal = 0;
-        double crowdTotal = 0;
         double lightingTotal = 0;
         double policeTotal = 0;
         double cctvTotal = 0;
@@ -89,9 +82,6 @@ public class SafetyRouteEngine {
 
             CrimeData crime =
                     crimeAnalyzer.analyze(segment);
-
-            CrowdData crowd =
-                    crowdAnalyzer.analyze(segment);
 
             LightingData lighting =
                     lightingAnalyzer.analyze(segment);
@@ -111,10 +101,6 @@ public class SafetyRouteEngine {
             double crimeScore =
                     crimeEngine.calculateCrimeScore(
                             crime.getCrimesPerKm2());
-
-            double crowdScore =
-                    crowdEngine.calculateCrowdScore(
-                            crowd.getPeoplePerSquareMeter());
 
             double lightingScore =
                     lightingEngine.calculateLightingScore(
@@ -138,22 +124,19 @@ public class SafetyRouteEngine {
 
             double finalScore =
 
-                    crimeScore*0.25 +
-
-                            crowdScore*0.15 +
+                    crimeScore*0.30 +
 
                             lightingScore*0.15 +
 
-                            policeScore*0.15 +
+                            policeScore*0.20 +
 
-                            cctvScore*0.15 +
+                            cctvScore*0.20 +
 
                             roadScore*0.10 +
 
                             timeScore*0.05;
 
             crimeTotal += crimeScore;
-            crowdTotal += crowdScore;
             lightingTotal += lightingScore;
             policeTotal += policeScore;
             cctvTotal += cctvScore;
@@ -167,7 +150,6 @@ public class SafetyRouteEngine {
                             .segment(segment)
 
                             .crimeScore(crimeScore)
-                            .crowdScore(crowdScore)
                             .lightingScore(lightingScore)
                             .policeScore(policeScore)
                             .cctvScore(cctvScore)
@@ -186,15 +168,13 @@ public class SafetyRouteEngine {
 
         double totalSafetyScore =
 
-                (crimeTotal*0.25
-
-                        + crowdTotal*0.15
+                (crimeTotal*0.30
 
                         + lightingTotal*0.15
 
-                        + policeTotal*0.15
+                        + policeTotal*0.20
 
-                        + cctvTotal*0.15
+                        + cctvTotal*0.20
 
                         + roadTotal*0.10
 
@@ -207,7 +187,6 @@ public class SafetyRouteEngine {
                 .routeNumber(routeNumber)
 
                 .crimeScore(crimeTotal/total)
-                .crowdScore(crowdTotal/total)
                 .lightingScore(lightingTotal/total)
                 .policeScore(policeTotal/total)
                 .cctvScore(cctvTotal/total)

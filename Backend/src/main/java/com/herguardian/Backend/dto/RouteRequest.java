@@ -14,6 +14,10 @@ public class RouteRequest {
 
     private int routeNumber;
 
+    private double distance;
+
+    private double duration;
+
     private List<GeoPoint> coordinates;
 
 }

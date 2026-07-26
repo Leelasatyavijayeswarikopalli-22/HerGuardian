@@ -16,50 +16,48 @@ public class RouteController {
 
     private final RouteAnalyzerService routeAnalyzerService;
 
-    public RouteController(
-            RouteAnalyzerService routeAnalyzerService){
-
+    public RouteController(RouteAnalyzerService routeAnalyzerService) {
         this.routeAnalyzerService = routeAnalyzerService;
     }
 
     @PostMapping("/analyze")
-    public List<RouteSafetyResult> analyze(
+    public List<RouteSafetyResult> analyze(@RequestBody AnalyzeRoutesRequest request) {
 
-            @RequestBody
-            AnalyzeRoutesRequest request){
+        List<RouteSafetyResult> results = new ArrayList<>();
+        double minDuration = Double.MAX_VALUE;
 
-        List<RouteSafetyResult> results =
-                new ArrayList<>();
-
-        request.getRoutes().forEach(route->{
-
-            results.add(
-
-                    routeAnalyzerService.analyzeRoute(
-
-                            route.getRouteNumber(),
-
-                            route.getCoordinates())
-
+        // 1. Analyze all route geometries using your real engine
+        request.getRoutes().forEach(route -> {
+            RouteSafetyResult res = routeAnalyzerService.analyzeRoute(
+                    route.getRouteNumber(),
+                    route.getCoordinates()
             );
 
+            // Retain route properties for React UI
+            res.setDistance(route.getDistance());
+            res.setDuration(route.getDuration());
+            res.setCoordinates(route.getCoordinates());
+
+            results.add(res);
         });
 
-        results.sort(
+        // 2. Find minimum duration for fastest badge
+        for (RouteSafetyResult r : results) {
+            if (r.getDuration() < minDuration) {
+                minDuration = r.getDuration();
+            }
+        }
 
-                Comparator.comparing(
-                                RouteSafetyResult::getTotalSafetyScore)
+        // 3. Sort descending by Total Safety Score (Highest/Safest first)
+        results.sort(Comparator.comparing(RouteSafetyResult::getTotalSafetyScore).reversed());
 
-                        .reversed());
-
-        if(!results.isEmpty()){
-
-            results.get(0).setSafest(true);
-
+        // 4. Assign badges based on actual computations
+        for (int i = 0; i < results.size(); i++) {
+            RouteSafetyResult res = results.get(i);
+            res.setSafest(i == 0); // Highest score gets Safest tag
+            res.setFastest(res.getDuration() == minDuration && results.size() > 1); // Quickest tag
         }
 
         return results;
-
     }
-
 }

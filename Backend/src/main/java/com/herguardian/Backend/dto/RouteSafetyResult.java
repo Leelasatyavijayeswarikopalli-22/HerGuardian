@@ -1,5 +1,6 @@
 package com.herguardian.Backend.dto;
 
+import com.herguardian.Backend.geo.GeoPoint;
 import lombok.*;
 
 import java.util.List;
@@ -15,8 +16,10 @@ public class RouteSafetyResult {
 
     private double totalSafetyScore;
 
+    private double distance;
+    private double duration;
+
     private double crimeScore;
-    private double crowdScore;
     private double lightingScore;
     private double policeScore;
     private double cctvScore;
@@ -25,6 +28,8 @@ public class RouteSafetyResult {
 
     private boolean safest;
     private boolean fastest;
+
+    private List<GeoPoint> coordinates;
 
     private List<SegmentSafetyResult> segments;
 
