@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MapPin, Navigation, Search } from "lucide-react";
 import Input from "../Input";
 import Button from "../Button";
@@ -23,6 +23,15 @@ export default function SrcToDest({
 
   const searchTimeoutRef = useRef(null);
   const abortControllerRef = useRef(null);
+
+  // ✅ Spinner stays ON until SafetyRouting says routes are drawn
+  useEffect(() => {
+    const handleRoutesLoaded = () => setIsLoading(false);
+
+    window.addEventListener("hg-routes-loaded", handleRoutesLoaded);
+    return () =>
+      window.removeEventListener("hg-routes-loaded", handleRoutesLoaded);
+  }, []);
 
   const searchLocation = async (query, setResults) => {
     if (abortControllerRef.current) abortControllerRef.current.abort();
@@ -159,7 +168,7 @@ export default function SrcToDest({
       return;
     }
 
-    setIsLoading(true);
+    setIsLoading(true); // ✅ spinner ON now...
 
     try {
       let finalSource = sourceCoords || source;
@@ -169,11 +178,10 @@ export default function SrcToDest({
         const srcResult = await geocodePlace(sourceText);
         if (!srcResult) {
           alert("Could not find source location.");
+          setIsLoading(false);
           return;
         }
         finalSource = srcResult.coords;
-        setSourceCoords(srcResult.coords);
-        setSource(srcResult.coords);
         setSourceText(srcResult.name);
       }
 
@@ -181,23 +189,35 @@ export default function SrcToDest({
         const destResult = await geocodePlace(destinationText);
         if (!destResult) {
           alert("Could not find destination location.");
+          setIsLoading(false);
           return;
         }
         finalDestination = destResult.coords;
-        setDestCoords(destResult.coords);
-        setDestination(destResult.coords);
         setDestinationText(destResult.name);
       }
 
-      if (onFindRoute) {
-        await onFindRoute(finalSource, finalDestination);
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 2500));
+      if (!finalSource || !finalDestination) {
+        alert("Please select both source and destination");
+        setIsLoading(false);
+        return;
       }
+
+      // ✅ new array identities so SafetyRouting ALWAYS re-runs,
+      // even if you press Find twice with the same points
+      setSource([...finalSource]);
+      setDestination([...finalDestination]);
+      setSourceCoords([...finalSource]);
+      setDestCoords([...finalDestination]);
+
+      if (onFindRoute) {
+        await onFindRoute([...finalSource], [...finalDestination]);
+      }
+
+      // ❌ NO setIsLoading(false) here anymore!
+      // The "hg-routes-loaded" event from SafetyRouting turns it off.
     } catch (error) {
       console.error("Route finding error:", error);
       alert("Failed to find route. Please try again.");
-    } finally {
       setIsLoading(false);
     }
   };

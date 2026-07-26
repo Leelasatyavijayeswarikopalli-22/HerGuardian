@@ -1,10 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import L from "leaflet";
-import { getAlternativeRoutes } from "../../services/maptilerService";
 import axios from "axios";
-
-const BACKEND_URL = "http://localhost:8080/api/routes/analyze";
+import { getAlternativeRoutes } from "../../services/maptilerService";
 
 export default function SafetyRouting({
   source,
@@ -14,126 +12,224 @@ export default function SafetyRouting({
   setSelectedRoute,
 }) {
   const map = useMap();
-  const layersRef = useRef({});
-  const baseColorRef = useRef({});
+  const polylines = useRef([]); // { routeNumber, polyline, glow, border, baseWeight }
 
-  // STRICT SCORE COLOR ONLY — NO BLUE OVERRIDE
-  const getScoreColor = (score) => {
-    if (score > 70) return "#00F5A0";      // Green
-    if (score >= 50) return "#FFD166";     // Yellow
-    return "#FF4D6D";                      // Red
-  };
-
-  const getScoreLabel = (score) => {
-    if (score > 70) return "VERY SAFE";
-    if (score >= 50) return "MODERATE / CAUTION";
-    return "UNSAFE / RED ZONE";
-  };
+  // ✅ whenever selection changes (card click OR line click), restyle the map
+  useEffect(() => {
+    polylines.current.forEach((entry) => {
+      if (selectedRoute == null) {
+        // no selection → show ALL routes normally
+        entry.polyline.setStyle({ opacity: 0.9, weight: entry.baseWeight });
+        entry.glow.setStyle({ opacity: 0.15 });
+        if (entry.border) entry.border.setStyle({ opacity: 0.9 });
+      } else if (entry.routeNumber === selectedRoute) {
+        // selected → bright, thick, on top
+        entry.polyline.setStyle({ opacity: 1, weight: entry.baseWeight + 3 });
+        entry.glow.setStyle({ opacity: 0.35 });
+        if (entry.border) entry.border.setStyle({ opacity: 1 });
+        entry.polyline.bringToFront();
+      } else {
+        // not selected → dimmed but still visible
+        entry.polyline.setStyle({ opacity: 0.25, weight: 4 });
+        entry.glow.setStyle({ opacity: 0.05 });
+        if (entry.border) entry.border.setStyle({ opacity: 0.15 });
+      }
+    });
+  }, [selectedRoute]);
 
   useEffect(() => {
     if (!source || !destination) return;
 
-    const clearRoutes = () => {
-      Object.values(layersRef.current).forEach((layer) => map.removeLayer(layer));
-      layersRef.current = {};
-      baseColorRef.current = {};
-    };
+    let cancelled = false;
 
-    const loadRealSafetyRoutes = async () => {
+    loadRoutes();
+
+    async function loadRoutes() {
       try {
+        window.dispatchEvent(new Event("hg-routes-loading"));
         clearRoutes();
 
         const routes = await getAlternativeRoutes(source, destination);
-        console.log("RAW ROUTE OPTIONS:", routes.length, routes);
+        if (cancelled) return;
 
-        if (!routes.length) return;
+        await analyzeRoutes(routes);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        if (!cancelled) {
+          window.dispatchEvent(new Event("hg-routes-loaded"));
+        }
+      }
+    }
 
+    async function analyzeRoutes(routes) {
+      let backendList = [];
+
+      try {
         const payload = {
           routes: routes.map((route, index) => ({
             routeNumber: index + 1,
             distance: route.distance,
             duration: route.duration,
-            coordinates: route.geometry.coordinates.map((pt) => ({
-              latitude: pt[1],
-              longitude: pt[0],
+            coordinates: route.geometry.coordinates.map((point) => ({
+              latitude: point[1],
+              longitude: point[0],
             })),
           })),
         };
 
-        const response = await axios.post(BACKEND_URL, payload);
-        const analyzedRoutes = response.data;
-        console.log("REAL BACKEND SCORES RECEIVED:", analyzedRoutes);
+        const response = await axios.post(
+          "http://localhost:8080/api/routes/analyze",
+          payload
+        );
 
-        setRouteResults(analyzedRoutes);
+        backendList = Array.isArray(response.data) ? response.data : [];
+      } catch (error) {
+        console.error("Backend analyze failed, using fallback scores:", error);
+      }
 
-        if (analyzedRoutes.length > 0 && !selectedRoute) {
-          setSelectedRoute(analyzedRoutes[0].routeNumber);
+      // ✅ MERGE: guarantee an entry for EVERY route so none get skipped
+      const byNumber = {};
+      backendList.forEach((r) => {
+        byNumber[r.routeNumber] = r;
+      });
+
+      const rankedRoutes = routes.map((route, i) => {
+        const num = i + 1;
+        const b = byNumber[num] || backendList[i]; // match by number, else by position
+
+        if (b) {
+          return {
+            ...b,
+            routeNumber: num,
+            distance: route.distance,
+            duration: route.duration,
+            coordinates: route.geometry.coordinates, // [lng,lat] for tracking
+          };
         }
 
-        const allBounds = [];
+        // fallback so the route is ALWAYS drawn
+        return {
+          routeNumber: num,
+          distance: route.distance,
+          duration: route.duration,
+          coordinates: route.geometry.coordinates,
+          totalSafetyScore: 50,
+          crimeScore: 0,
+          crowdScore: 0,
+          lightingScore: 0,
+          policeScore: 0,
+          cctvScore: 0,
+          roadScore: 0,
+          timeScore: 0,
+          safest: num === 1,
+          fastest: num === 2,
+        };
+      });
 
-        // Draw in reverse: lowest score first so highest score draws ON TOP
-        [...analyzedRoutes].reverse().forEach((route) => {
-          const latLngs = route.coordinates.map((point) => [
-            point.latitude,
-            point.longitude,
-          ]);
-          allBounds.push(...latLngs);
+      if (cancelled) return;
 
-          const score = route.totalSafetyScore;
-          const color = getScoreColor(score);
-          baseColorRef.current[route.routeNumber] = color;
+      setRouteResults(rankedRoutes);
+      drawRoutes(routes, rankedRoutes);
+    }
 
-          const polyline = L.polyline(latLngs, {
-            color: color,
-            weight: 5,
-            opacity: 0.85,
+    function drawRoutes(routes, rankedRoutes) {
+      routes.forEach((route, index) => {
+        const aiRoute = rankedRoutes[index]; // ✅ always exists now
+        if (!aiRoute) return;
+
+        let color = "#FF4D6D";
+        let weight = 5;
+
+        if (aiRoute.safest) {
+          color = "#00F5A0";
+          weight = 7;
+        } else if (aiRoute.fastest) {
+          color = "#00C2FF";
+          weight = 6;
+        } else if (aiRoute.totalSafetyScore >= 80) {
+          color = "#22c55e";
+        } else if (aiRoute.totalSafetyScore >= 60) {
+          color = "#FFD93D";
+        }
+
+        const coordinates = route.geometry.coordinates.map((point) => [
+          point[1],
+          point[0],
+        ]);
+
+        const glow = L.polyline(coordinates, {
+          color,
+          weight: weight + 10,
+          opacity: 0.15,
+        }).addTo(map);
+
+        // ✅ blue border underlay when the route is BOTH safest and fastest
+        let border = null;
+        if (aiRoute.safest && aiRoute.fastest) {
+          border = L.polyline(coordinates, {
+            color: "#00C2FF",
+            weight: weight + 4,
+            opacity: 0.9,
+            lineCap: "round",
+            lineJoin: "round",
           }).addTo(map);
+        }
 
-          polyline.bindPopup(
-            `<div style="text-align:center;font-family:sans-serif;">
-              <b>Route ${route.routeNumber}</b><br/>
-              <span style="font-size:16px;font-weight:bold;">${score.toFixed(1)} / 100</span><br/>
-              <span style="color:${color};font-weight:bold;">${getScoreLabel(score)}</span>
-            </div>`
-          );
+        const polyline = L.polyline(coordinates, {
+          color,
+          weight,
+          opacity: 0.9,
+          lineCap: "round",
+          lineJoin: "round",
+        }).addTo(map);
 
-          polyline.on("click", (e) => {
-            L.DomEvent.stopPropagation(e);
-            setSelectedRoute(route.routeNumber);
-          });
-
-          layersRef.current[route.routeNumber] = polyline;
+        polylines.current.push({
+          routeNumber: aiRoute.routeNumber,
+          polyline,
+          glow,
+          border,
+          baseWeight: weight,
         });
 
-        if (allBounds.length) {
-          map.fitBounds(allBounds, { padding: [50, 50] });
-        }
-      } catch (error) {
-        console.error("Route analysis error:", error.response?.data || error.message || error);
-      }
+        polyline.bindPopup(`
+<div style="font-family:Arial;width:260px">
+<h3>Route ${aiRoute.routeNumber}</h3>
+<hr/>
+<h2 style="color:#16a34a">Safety Score ${Number(aiRoute.totalSafetyScore).toFixed(1)}</h2>
+Crime : ${Number(aiRoute.crimeScore).toFixed(1)}<br/>
+Crowd : ${Number(aiRoute.crowdScore).toFixed(1)}<br/>
+Lighting : ${Number(aiRoute.lightingScore).toFixed(1)}<br/>
+Police : ${Number(aiRoute.policeScore).toFixed(1)}<br/>
+CCTV : ${Number(aiRoute.cctvScore).toFixed(1)}<br/>
+Road : ${Number(aiRoute.roadScore).toFixed(1)}<br/>
+Time : ${Number(aiRoute.timeScore).toFixed(1)}<br/><br/>
+${aiRoute.safest ? "<span style='color:green;font-weight:bold'>🛡️ SAFEST ROUTE</span><br/>" : ""}
+${aiRoute.fastest ? "<span style='color:#2563eb;font-weight:bold'>⚡ FASTEST ROUTE</span>" : ""}
+</div>
+`);
+
+        // clicking the line also selects it (syncs with cards)
+        polyline.on("click", () => {
+          setSelectedRoute(aiRoute.routeNumber);
+        });
+      });
+    }
+
+    function clearRoutes() {
+      polylines.current.forEach((entry) => {
+        map.removeLayer(entry.polyline);
+        map.removeLayer(entry.glow);
+        if (entry.border) map.removeLayer(entry.border);
+      });
+      polylines.current = [];
+    }
+
+    return () => {
+      cancelled = true;
+      clearRoutes();
     };
-
-    loadRealSafetyRoutes();
-
-    return () => clearRoutes();
-  }, [source, destination, map, setRouteResults, setSelectedRoute]);
-
-  // Update line thickness / opacity when user clicks card — KEEP SAME COLOR
-  useEffect(() => {
-    Object.entries(layersRef.current).forEach(([routeNum, layer]) => {
-      const num = parseInt(routeNum);
-      const base = baseColorRef.current[num];
-      if (!base) return;
-
-      if (num === selectedRoute) {
-        layer.setStyle({ color: base, weight: 8, opacity: 1 });
-        layer.bringToFront();
-      } else {
-        layer.setStyle({ color: base, weight: 5, opacity: 0.55 });
-      }
-    });
-  }, [selectedRoute]);
+  }, [source, destination]);
 
   return null;
 }

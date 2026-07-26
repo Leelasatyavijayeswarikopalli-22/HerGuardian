@@ -54,7 +54,6 @@ AI selects the optimal route balancing:
 
 * travel speed
 * lighting conditions
-* crowd density
 * incident history
 * time-based safety scoring
 
@@ -106,7 +105,6 @@ User sets destination
 AI analyzes all possible routes
         ↓
 Safety scoring engine evaluates:
-- crowd data
 - crime history
 - lighting
 - time of day
@@ -124,7 +122,6 @@ Continuous monitoring & live alerts
 
 ML models score route segments using:
 
-* crowd data
 * incident reports
 * crime history
 * lighting conditions

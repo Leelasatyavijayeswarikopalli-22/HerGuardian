@@ -12,20 +12,15 @@ export async function getAlternativeRoutes(source, destination) {
       ? [destination[1], destination[0]]
       : [destination.lng, destination.lat];
 
-    console.log("SOURCE:", source);
-    console.log("DESTINATION:", destination);
-    console.log("START COORDS:", startCoords);
-    console.log("END COORDS:", endCoords);
-
     const response = await axios.post(
       "/ors/v2/directions/driving-car/geojson",
       {
         coordinates: [startCoords, endCoords],
         preference: "recommended",
         alternative_routes: {
-          target_count: 2,
-          weight_factor: 1.4,
-          share_factor: 0.6,
+          target_count: 3,      // ✅ ask for 3 routes
+          weight_factor: 1.6,   // ✅ allow longer alternatives
+          share_factor: 0.5,    // ✅ allow more overlap so 3rd route is found
         },
       },
       {

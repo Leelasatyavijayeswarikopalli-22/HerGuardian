@@ -5,15 +5,16 @@ import {
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import AboutUsModal from "./AboutUsModal";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all"); // ✅ NEW: filter state
+  const [activeFilter, setActiveFilter] = useState("all");
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [showAbout, setShowAbout] = useState(false);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -66,7 +67,6 @@ export default function Navbar() {
       time: "4 days ago",
       unread: false,
     },
-    // ✅ ADDED more variety for better filter demo
     {
       id: 7,
       type: "update",
@@ -85,9 +85,11 @@ export default function Navbar() {
     },
   ]);
 
+  // ✅ Total count (all notifications)
+  const totalCount = notifications.length;
+  // ✅ Unread count (for the modal "3 unread messages" text)
   const unreadCount = notifications.filter(n => n.unread).length;
 
-  // ✅ NEW: Filter notifications based on active filter
   const getFilteredNotifications = () => {
     switch (activeFilter) {
       case "alerts":
@@ -105,6 +107,10 @@ export default function Navbar() {
 
   const markAllRead = () => {
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
+  };
+
+  const markAsRead = (id) => {
+    setNotifications(notifications.map(n => n.id === id ? { ...n, unread: false } : n));
   };
 
   const deleteNotification = (id) => {
@@ -148,21 +154,25 @@ export default function Navbar() {
             </div>
           </Link>
 
-          {/* Mobile top-right */}
-          <div className="flex items-center gap-4 md:hidden">
+          {/* ✅ Mobile — subtle hover, TOTAL count */}
+          <div className="flex items-center gap-3 md:hidden">
             <button
               onClick={() => setShowNotifications(true)}
-              className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition"
+              className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:border-pink-500/40 hover:bg-pink-500/5 transition-all duration-200"
             >
-              <Bell size={18} className="text-white" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-pink-600 text-white text-[10px] flex items-center justify-center animate-pulse">
-                  {unreadCount}
+              <Bell size={18} className="text-white hover:text-pink-300 transition-colors" />
+              {totalCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-pink-600 text-white text-[9px] font-bold flex items-center justify-center border border-[#12081f]">
+                  {totalCount > 9 ? "9+" : totalCount}
                 </span>
               )}
             </button>
-            <button onClick={handleProfileClick} className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
-              <UserCircle size={18} className="text-white" />
+
+            <button
+              onClick={handleProfileClick}
+              className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/40 hover:bg-purple-500/5 transition-all duration-200"
+            >
+              <UserCircle size={18} className="text-white hover:text-purple-300 transition-colors" />
             </button>
           </div>
 
@@ -174,22 +184,43 @@ export default function Navbar() {
             <NavItem to="/reports" label="Reports" active={location.pathname.startsWith("/reports")} />
           </div>
 
-          {/* Desktop Right */}
+          {/* ✅ Desktop — subtle hover, TOTAL count */}
           <div className="hidden md:flex items-center gap-3">
+            {/* 🔔 BELL */}
             <button
               onClick={() => setShowNotifications(true)}
-              className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 hover:border-pink-500/50 transition"
+              className="group relative p-2 rounded-lg bg-white/5 border border-white/10 hover:border-pink-500/40 hover:bg-pink-500/5 transition-all duration-200"
             >
-              <Bell size={18} className="text-white" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-pink-600 text-white text-[10px] flex items-center justify-center animate-pulse shadow-[0_0_10px_rgba(236,72,153,0.8)]">
-                  {unreadCount}
+              <Bell
+                size={18}
+                className="text-white group-hover:text-pink-300 transition-colors duration-200"
+              />
+
+              {/* ✅ Shows TOTAL notifications count (8) */}
+              {totalCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-pink-600 text-white text-[9px] font-bold flex items-center justify-center border border-[#12081f]">
+                  {totalCount > 9 ? "9+" : totalCount}
                 </span>
               )}
+
+              <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-black/80 text-pink-300 text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
+                Notifications
+              </span>
             </button>
 
-            <button onClick={handleProfileClick} className="relative p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition">
-              <UserCircle size={18} className="text-white" />
+            {/* 👤 USER */}
+            <button
+              onClick={handleProfileClick}
+              className="group relative p-2 rounded-lg bg-white/5 border border-white/10 hover:border-purple-500/40 hover:bg-purple-500/5 transition-all duration-200"
+            >
+              <UserCircle
+                size={18}
+                className="text-white group-hover:text-purple-300 transition-colors duration-200"
+              />
+
+              <span className="absolute top-full mt-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded bg-black/80 text-purple-300 text-[10px] font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200">
+                Profile
+              </span>
             </button>
 
             <button
@@ -243,22 +274,23 @@ export default function Navbar() {
 
             <div className="relative bg-gradient-to-br from-[#1a0b2e]/98 via-[#0a041d]/98 to-[#1a0b2e]/98 backdrop-blur-2xl border border-pink-500/30 rounded-3xl shadow-[0_0_80px_rgba(236,72,153,0.4)] overflow-hidden">
 
-              {/* Header */}
               <div className="sticky top-0 z-20 bg-gradient-to-r from-[#1a0b2e]/95 via-[#2a0f3d]/95 to-[#1a0b2e]/95 backdrop-blur-xl border-b border-pink-500/20 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="relative">
                     <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-[0_0_20px_rgba(236,72,153,0.5)]">
                       <Bell size={20} className="text-white" />
                     </div>
-                    {unreadCount > 0 && (
+                    {totalCount > 0 && (
                       <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center border-2 border-[#1a0b2e]">
-                        {unreadCount}
+                        {totalCount}
                       </span>
                     )}
                   </div>
                   <div>
                     <h2 className="text-white font-bold text-lg leading-tight">Notifications</h2>
-                    <p className="text-pink-300 text-xs">{unreadCount} unread {unreadCount === 1 ? "message" : "messages"}</p>
+                    <p className="text-pink-300 text-xs">
+                      {unreadCount} unread of {totalCount} total
+                    </p>
                   </div>
                 </div>
 
@@ -281,7 +313,6 @@ export default function Navbar() {
                 </div>
               </div>
 
-              {/* ✅ WORKING Filter tabs */}
               <div className="flex gap-2 px-6 py-3 border-b border-white/5 overflow-x-auto custom-scrollbar">
                 <FilterPill
                   label="All"
@@ -312,7 +343,6 @@ export default function Navbar() {
                 />
               </div>
 
-              {/* Notifications list — now uses filtered list */}
               <div className="overflow-y-auto max-h-[60vh] custom-scrollbar">
                 {filteredNotifications.length === 0 ? (
                   <div className="text-center py-16 px-6">
@@ -335,13 +365,13 @@ export default function Navbar() {
                         key={n.id}
                         notification={n}
                         onDelete={() => deleteNotification(n.id)}
+                        onMarkRead={() => markAsRead(n.id)}
                       />
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Footer */}
               <div className="sticky bottom-0 bg-gradient-to-r from-[#1a0b2e]/95 via-[#2a0f3d]/95 to-[#1a0b2e]/95 backdrop-blur-xl border-t border-pink-500/20 px-6 py-3 flex items-center justify-between">
                 <p className="text-gray-400 text-xs flex items-center gap-1">
                   <Shield size={12} className="text-pink-400" />
@@ -360,7 +390,7 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* ===== GET HELP MODAL (unchanged) ===== */}
+      {/* ===== GET HELP MODAL ===== */}
       {showHelp && (
         <div
           className="fixed inset-0 z-[10000] flex items-center justify-center p-4 animate-fadeIn"
@@ -462,7 +492,6 @@ export default function Navbar() {
         </div>
       )}
 
-      {/* Animations */}
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp {
@@ -528,7 +557,6 @@ function ContactCard({ Icon, title, value, href }) {
 
 /* ===== NOTIFICATION COMPONENTS ===== */
 
-// ✅ UPDATED: FilterPill now accepts onClick and works
 function FilterPill({ label, count, active, icon: Icon, onClick }) {
   return (
     <button
@@ -548,7 +576,7 @@ function FilterPill({ label, count, active, icon: Icon, onClick }) {
   );
 }
 
-function NotificationCard({ notification, onDelete }) {
+function NotificationCard({ notification, onDelete, onMarkRead }) {
   const typeConfig = {
     danger: {
       icon: AlertTriangle,
@@ -597,7 +625,8 @@ function NotificationCard({ notification, onDelete }) {
 
   return (
     <div
-      className={`relative group bg-gradient-to-br ${config.bg} border ${config.border} rounded-2xl p-4 hover:scale-[1.01] hover:shadow-lg transition-all duration-300 ${notification.unread ? "ring-1 ring-pink-500/30" : ""}`}
+      onClick={onMarkRead}
+      className={`relative group bg-gradient-to-br ${config.bg} border ${config.border} rounded-2xl p-4 hover:scale-[1.01] hover:shadow-lg transition-all duration-300 cursor-pointer ${notification.unread ? "ring-1 ring-pink-500/30" : ""}`}
     >
       {notification.unread && (
         <span className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-pink-500 animate-pulse shadow-[0_0_10px_rgba(236,72,153,0.8)]"></span>
@@ -631,7 +660,7 @@ function NotificationCard({ notification, onDelete }) {
         </div>
 
         <button
-          onClick={onDelete}
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
           className="opacity-0 group-hover:opacity-100 w-7 h-7 rounded-lg bg-black/40 border border-white/10 flex items-center justify-center hover:bg-red-500/20 hover:border-red-500/50 transition-all"
           title="Delete"
         >

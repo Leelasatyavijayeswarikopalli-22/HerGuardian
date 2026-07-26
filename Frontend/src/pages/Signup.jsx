@@ -3,6 +3,24 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, User, Mail, Lock as LockIcon, Phone, Mic, Sparkles, UserPlus, Eye, EyeOff } from "lucide-react";
 
+/* ✅ MOVED OUTSIDE — no more re-mounting on every keystroke */
+function InputField({ icon: Icon, onChange, ...props }) {
+  return (
+    <div className="relative group">
+      <Icon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-400 group-focus-within:text-pink-300 transition z-10" />
+      <input
+        {...props}
+        onChange={onChange}
+        className="w-full pl-12 pr-4 py-3 rounded-xl bg-black/40 backdrop-blur-md
+                   border border-pink-500/30 text-white placeholder-gray-500 text-sm
+                   focus:border-pink-500/80 focus:bg-black/60 focus:outline-none
+                   focus:shadow-[0_0_20px_rgba(236,72,153,0.3)]
+                   transition-all duration-300"
+      />
+    </div>
+  );
+}
+
 export default function Signup() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -82,22 +100,6 @@ export default function Signup() {
       else alert("Server Error");
     }
   };
-
-  // Reusable input component
-  const InputField = ({ icon: Icon, ...props }) => (
-    <div className="relative group">
-      <Icon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-400 group-focus-within:text-pink-300 transition z-10" />
-      <input
-        {...props}
-        onChange={handleChange}
-        className="w-full pl-12 pr-4 py-3 rounded-xl bg-black/40 backdrop-blur-md
-                   border border-pink-500/30 text-white placeholder-gray-500 text-sm
-                   focus:border-pink-500/80 focus:bg-black/60 focus:outline-none
-                   focus:shadow-[0_0_20px_rgba(236,72,153,0.3)]
-                   transition-all duration-300"
-      />
-    </div>
-  );
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-10 bg-[#05010f]">
@@ -199,8 +201,9 @@ export default function Signup() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
             
-            <InputField icon={User} name="fullName" placeholder="Full Name" value={formData.fullName} />
-            <InputField icon={Mail} name="email" type="email" placeholder="Email Address" value={formData.email} />
+            {/* ✅ Now passes onChange as prop */}
+            <InputField icon={User} name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} />
+            <InputField icon={Mail} name="email" type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} />
             
             {/* Password with toggle */}
             <div className="relative group">
@@ -251,11 +254,12 @@ export default function Signup() {
               <div className="flex-1 h-px bg-pink-500/20"></div>
             </div>
 
-            <InputField icon={Phone} name="emergencyContact1" placeholder="Emergency Contact 1" value={formData.emergencyContact1} />
-            <InputField icon={Phone} name="emergencyContact2" placeholder="Emergency Contact 2" value={formData.emergencyContact2} />
-            <InputField icon={Phone} name="emergencyContact3" placeholder="Emergency Contact 3" value={formData.emergencyContact3} />
+            {/* ✅ Now passes onChange as prop */}
+            <InputField icon={Phone} name="emergencyContact1" placeholder="Emergency Contact 1" value={formData.emergencyContact1} onChange={handleChange} />
+            <InputField icon={Phone} name="emergencyContact2" placeholder="Emergency Contact 2" value={formData.emergencyContact2} onChange={handleChange} />
+            <InputField icon={Phone} name="emergencyContact3" placeholder="Emergency Contact 3" value={formData.emergencyContact3} onChange={handleChange} />
 
-            <InputField icon={Mic} name="secretPhrase" placeholder="Secret SOS Phrase" value={formData.secretPhrase} />
+            <InputField icon={Mic} name="secretPhrase" placeholder="Secret SOS Phrase" value={formData.secretPhrase} onChange={handleChange} />
 
             {/* Submit */}
             <button

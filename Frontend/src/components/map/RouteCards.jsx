@@ -18,7 +18,9 @@ export default function RouteCards({
   return (
     <div className="mt-6 space-y-6">
       {routeResults.map((route) => {
-        const info = getScoreInfo(route.totalSafetyScore);
+        // ✅ safe score: never NaN / undefined
+        const score = Number(route.totalSafetyScore) || 0;
+        const info = getScoreInfo(score);
         const isSelected = selectedRoute === route.routeNumber;
 
         return (
@@ -48,7 +50,7 @@ export default function RouteCards({
 
               <div className={`rounded-2xl px-5 py-3 text-center shadow-lg ${info.badge}`}>
                 <h1 className="text-3xl font-black leading-none">
-                  {route.totalSafetyScore.toFixed(1)}
+                  {score.toFixed(1)}
                 </h1>
                 <p className="mt-1 text-[10px] font-bold tracking-widest opacity-90">
                   {info.label}
@@ -60,7 +62,7 @@ export default function RouteCards({
             <div className="mt-4 h-2.5 w-full overflow-hidden rounded-full bg-white/10">
               <div
                 className={`h-full rounded-full ${info.bar} transition-all duration-700`}
-                style={{ width: `${Math.min(route.totalSafetyScore, 100)}%` }}
+                style={{ width: `${Math.min(score, 100)}%` }}
               />
             </div>
 
@@ -84,7 +86,6 @@ export default function RouteCards({
             <div className="mt-5 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
               {[
                 ["Crime", route.crimeScore],
-                ["Crowd", route.crowdScore],
                 ["Lighting", route.lightingScore],
                 ["Police", route.policeScore],
                 ["CCTV", route.cctvScore],
@@ -93,7 +94,7 @@ export default function RouteCards({
               ].map(([label, value]) => (
                 <div key={label} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5 flex justify-between items-center">
                   <span className="text-white/60 text-xs font-semibold">{label}</span>
-                  <b className="text-white text-sm">{value?.toFixed(1) ?? "—"}</b>
+                  <b className="text-white text-sm">{Number(value).toFixed(1)}</b>
                 </div>
               ))}
             </div>
@@ -142,17 +143,26 @@ export default function RouteCards({
             )}
 
             {/* START BUTTON */}
-            {isSelected && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  startJourney(route);
-                }}
-                className="mt-6 w-full rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-600 py-4 text-xl font-black text-white shadow-[0_10px_40px_rgba(16,185,129,0.4)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_15px_50px_rgba(16,185,129,0.6)]"
-              >
-                {journeyStarted ? "SAFE JOURNEY ACTIVE" : "START SAFE JOURNEY"}
-              </button>
-            )}
+            {isSelected &&
+              (journeyStarted ? (
+                // ✅ journey running → informational only, cannot double-start
+                <button
+                  disabled
+                  className="mt-6 w-full cursor-not-allowed rounded-3xl bg-gradient-to-r from-emerald-700 to-teal-700 py-4 text-xl font-black text-white opacity-80 shadow-[0_10px_40px_rgba(16,185,129,0.4)]"
+                >
+                  🛡 SAFE JOURNEY ACTIVE
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startJourney(route);
+                  }}
+                  className="mt-6 w-full rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-600 py-4 text-xl font-black text-white shadow-[0_10px_40px_rgba(16,185,129,0.4)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_15px_50px_rgba(16,185,129,0.6)]"
+                >
+                  START SAFE JOURNEY
+                </button>
+              ))}
           </div>
         );
       })}
