@@ -75,8 +75,6 @@ element={
 
 />
 
-
-
 <Route
 
 path="/safety-map"

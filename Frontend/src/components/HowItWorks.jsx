@@ -22,7 +22,7 @@ export default function HowItWorks() {
     },
     {
       title: "Safety score is generated",
-      desc: "You receive a color-coded safety score for each available path.",
+      desc: "You receive a color-coded safety score for each available path and also provided with a dynamic dashboard.",
       Icon: Gauge,
       color: "from-green-500 to-emerald-600"
     },

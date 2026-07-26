@@ -12,7 +12,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="hidden min-h-screen w-64 border-r border-white/10 bg-black/20 backdrop-blur-xl md:block relative overflow-hidden">
+    <aside className="relative hidden w-64 shrink-0 overflow-hidden border-r border-white/10 bg-black/20 backdrop-blur-xl md:block md:sticky md:top-16 md:h-[calc(100vh-4rem)] md:overflow-y-auto">
       {/* Ambient glow */}
       <div className="absolute top-1/3 -left-20 w-60 h-60 bg-pink-500/10 blur-[80px] rounded-full pointer-events-none"></div>
 

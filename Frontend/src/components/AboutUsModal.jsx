@@ -8,6 +8,9 @@ import {
   Mail,
 } from "lucide-react";
 import { useEffect } from "react";
+const ajnabh = "/founders/ajnabh.jpeg";
+
+const vijayeswari = "/founders/vijayeswari.jpeg";
 
 export default function AboutUsModal({ isOpen, onClose }) {
   useEffect(() => {
@@ -120,7 +123,7 @@ export default function AboutUsModal({ isOpen, onClose }) {
               <FounderCard
                 name="Ajnabh Koushik"
                 role="Co-Founder"
-                image="/founders/ajnabh.jpg"
+                image={ajnabh}
                 fallback="AK"
                 bio="Ajnabh Koushik is a Co-Founder of HerGuardian and a B.Tech student at NIT Patna, graduating in 2028."
                 instagram="https://www.instagram.com/ajnabh_koushik/"
@@ -130,8 +133,8 @@ export default function AboutUsModal({ isOpen, onClose }) {
 
               <FounderCard
                 name="Kopalli Vijayeswari"
-                role="Co-Founder"
-                image="/founders/vijayeswari.jpg"
+                role="Founder"
+                image={vijayeswari}
                 fallback="KV"
                 bio="Kopalli Vijayeswari is a Co-Founder of HerGuardian and a B.Tech student at NIT Patna, graduating in 2028."
                 instagram="https://www.instagram.com/vijji__22/"
