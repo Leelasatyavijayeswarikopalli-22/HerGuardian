@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from '../api/api';
 
 
 export async function getDashboard(
@@ -9,9 +9,9 @@ export async function getDashboard(
 ){
 
 
-const response=await axios.get(
+const response=await api.get(
 
-`http://localhost:8080/api/dashboard?lat=${latitude}&lon=${longitude}`
+`/dashboard?lat=${latitude}&lon=${longitude}`
 
 );
 

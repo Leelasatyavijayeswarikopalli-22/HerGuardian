@@ -3,7 +3,7 @@ import api from "../../api/api";
 import Card from "../Card";
 import Button from "../Button";
 
-export default function ManageReports({ onUpdate }) {
+export default function ManageReports({ onUpdate, authorityEmail, authorityName }) {
   const [reports, setReports] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [status, setStatus] = useState({});
@@ -11,7 +11,7 @@ export default function ManageReports({ onUpdate }) {
   const [updatingId, setUpdatingId] = useState(null);
 
   useEffect(() => {
-    loadReports(true); // Initial load with skeleton
+    loadReports(true);
   }, []);
 
   async function loadReports(isInitial = false) {
@@ -20,7 +20,6 @@ export default function ManageReports({ onUpdate }) {
       const response = await api.get("/reports");
       setReports(response.data);
 
-      // Initialize statuses and remarks without overwriting user's active selections
       setStatus((prev) => {
         const newStatuses = { ...prev };
         response.data.forEach((report) => {
@@ -56,14 +55,17 @@ export default function ManageReports({ onUpdate }) {
 
     try {
       setUpdatingId(id);
+
+      // ✅ send authority identity so backend saves WHO updated this report
       await api.put(`/reports/status/${id}`, {
         status: selectedStatus,
         adminRemark: selectedRemark,
+        authorityEmail: authorityEmail || "",
+        authorityName: authorityName || "",
       });
 
       alert("Report Updated Successfully.");
 
-      // Silent reload — keeps scroll position and doesn't flash loading screen
       await loadReports(false);
       if (onUpdate) onUpdate();
     } catch (error) {
@@ -122,9 +124,10 @@ export default function ManageReports({ onUpdate }) {
             </span>
           </p>
 
-          {report.authorityName && (
+          {/* ✅ show who last handled this report */}
+          {report.authorityEmail && (
             <p>
-              <b>Updated By:</b> {report.authorityName}
+              <b>Handled By:</b> {report.authorityName || report.authorityEmail}
             </p>
           )}
 
@@ -135,7 +138,6 @@ export default function ManageReports({ onUpdate }) {
             </p>
           )}
 
-          {/* STATUS DROPDOWN */}
           <div className="relative w-full mt-4">
             <select
               value={status[report.id] !== undefined ? status[report.id] : report.status}

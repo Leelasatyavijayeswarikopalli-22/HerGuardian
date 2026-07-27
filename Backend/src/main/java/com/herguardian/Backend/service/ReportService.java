@@ -127,8 +127,9 @@ public class ReportService {
         report.setStatus(normalizedStatus);
         report.setAdminRemark(remark);
 
-        // Use the real logged-in authority name
+        // ✅ save BOTH name and email so frontend can filter by authority
         report.setAuthorityName(authority.getFullName());
+        report.setAuthorityEmail(authority.getEmail());
 
         if ("RECTIFIED".equals(normalizedStatus)) {
             report.setVerified(true);
@@ -140,7 +141,6 @@ public class ReportService {
 
         return reportRepository.save(report);
     }
-
     private User getAuthenticatedUser(
             Authentication authentication
     ) {

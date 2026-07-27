@@ -21,7 +21,6 @@ export default function AuthorityDashboard() {
   const authorityEmail = JSON.parse(localStorage.getItem("user") || "{}")?.email || "";
   const authorityRole = localStorage.getItem("role") || "AUTHORITY";
 
-  // Portal hide root
   useEffect(() => {
     const rootEl = document.getElementById("root");
     const originalDisplay = rootEl ? rootEl.style.display : "";
@@ -37,7 +36,6 @@ export default function AuthorityDashboard() {
     };
   }, []);
 
-  // Fetch all reports for stats
   const loadAllReports = async () => {
     try {
       setLoading(true);
@@ -52,47 +50,63 @@ export default function AuthorityDashboard() {
 
   useEffect(() => {
     loadAllReports();
-    const interval = setInterval(loadAllReports, 10000); // refresh every 10s
+    const interval = setInterval(loadAllReports, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  // ================= REAL COUNTS =================
+  const isMyReport = (report) => {
+    if (!authorityEmail) return false;
+    const email = authorityEmail.toLowerCase();
+
+    return (
+      (report.authorityEmail && report.authorityEmail.toLowerCase() === email) ||
+      (report.authorityName && report.authorityName.toLowerCase() === email) ||
+      (report.updatedBy && report.updatedBy.toLowerCase() === email) ||
+      (report.resolvedBy && report.resolvedBy.toLowerCase() === email) ||
+      (report.verifiedBy && report.verifiedBy.toLowerCase() === email)
+    );
+  };
+
   const totalReports = reports.length;
   const activeCases = reports.filter((r) => r.status === "ACTIVE").length;
-  const pendingReview = reports.filter((r) => r.status === "UNDER_VERIFICATION").length;
-  const inProgress = reports.filter((r) => r.status === "IN_PROGRESS").length;
-  const resolvedCases = reports.filter((r) => r.status === "RECTIFIED").length;
 
-  // Verified today = RECTIFIED cases resolved today
+  const myReports = reports.filter(isMyReport);
+
+  const myPendingReview = myReports.filter((r) => r.status === "UNDER_VERIFICATION").length;
+  const myInProgress = myReports.filter((r) => r.status === "IN_PROGRESS").length;
+  const myResolvedCases = myReports.filter((r) => r.status === "RECTIFIED").length;
+
   const todayStr = new Date().toDateString();
-  const verifiedToday = reports.filter(
-    (r) => r.status === "RECTIFIED" && r.resolvedAt && new Date(r.resolvedAt).toDateString() === todayStr
+  const myVerifiedToday = myReports.filter(
+    (r) =>
+      r.status === "RECTIFIED" &&
+      r.resolvedAt &&
+      new Date(r.resolvedAt).toDateString() === todayStr
   ).length;
 
-  // Unique users
-  const uniqueUsers = new Set(reports.map((r) => r.reportedBy)).size;
+  const myUniqueUsers = new Set(myReports.map((r) => r.reportedBy)).size;
 
-  // Recent reports for "New Reports" (last 24h)
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-  const newReportsCount = reports.filter(
+  const myNewHandledCount = myReports.filter(
     (r) => r.reportedAt && new Date(r.reportedAt).getTime() >= oneDayAgo
   ).length;
 
-  // User Records grouping
-  const userRecords = reports.reduce((acc, r) => {
+  const myTotalHandled = myReports.length;
+
+  const activeCasesList = reports.filter((r) => r.status === "ACTIVE");
+
+  const myVerifiedCasesList = myReports.filter(
+    (r) => r.status === "UNDER_VERIFICATION" || r.status === "IN_PROGRESS"
+  );
+
+  const myUserRecords = myReports.reduce((acc, r) => {
     const key = r.reportedBy || "Unknown";
     if (!acc[key]) acc[key] = { name: key, count: 0, cases: [] };
     acc[key].count += 1;
     acc[key].cases.push(r);
     return acc;
   }, {});
-  const userRecordsList = Object.values(userRecords).sort((a, b) => b.count - a.count);
-
-  // Cases by status - for sidebar tabs
-  const activeCasesList = reports.filter((r) => r.status === "ACTIVE");
-  const verifiedCasesList = reports.filter(
-    (r) => r.status === "UNDER_VERIFICATION" || r.status === "IN_PROGRESS"
-  );
+  const myUserRecordsList = Object.values(myUserRecords).sort((a, b) => b.count - a.count);
 
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout from the Authority Portal?")) {
@@ -103,12 +117,26 @@ export default function AuthorityDashboard() {
 
   const sidebarItems = [
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
-    { id: "manage-cases", name: "Manage Cases", icon: ClipboardCheck, badge: activeCases > 0 ? `${activeCases} Active` : null },
-    { id: "verified-cases", name: "Verified Cases", icon: CheckCircle2, badge: verifiedCasesList.length > 0 ? `${verifiedCasesList.length}` : null },
-    { id: "user-records", name: "User Records", icon: Users, badge: uniqueUsers > 0 ? `${uniqueUsers}` : null },
+    {
+      id: "manage-cases",
+      name: "Manage Cases",
+      icon: ClipboardCheck,
+      badge: activeCases > 0 ? `${activeCases} Active` : null,
+    },
+    {
+      id: "verified-cases",
+      name: "My Verified Cases",
+      icon: CheckCircle2,
+      badge: myVerifiedCasesList.length > 0 ? `${myVerifiedCasesList.length}` : null,
+    },
+    {
+      id: "user-records",
+      name: "My User Records",
+      icon: Users,
+      badge: myUniqueUsers > 0 ? `${myUniqueUsers}` : null,
+    },
   ];
 
-  // ================= RENDER HELPERS =================
   const renderReportCard = (report) => (
     <div
       key={report.id}
@@ -130,28 +158,36 @@ export default function AuthorityDashboard() {
           {report.status}
         </span>
       </div>
-      <p className="text-sm text-slate-300"><b className="text-white">Location:</b> {report.location}</p>
-      <p className="text-sm text-slate-300 mt-1"><b className="text-white">Description:</b> {report.description}</p>
-      <p className="text-sm text-slate-300 mt-1"><b className="text-white">Reported By:</b> {report.reportedBy}</p>
+      <p className="text-sm text-slate-300">
+        <b className="text-white">Location:</b> {report.location}
+      </p>
+      <p className="text-sm text-slate-300 mt-1">
+        <b className="text-white">Description:</b> {report.description}
+      </p>
+      <p className="text-sm text-slate-300 mt-1">
+        <b className="text-white">Reported By:</b> {report.reportedBy}
+      </p>
       <p className="text-sm text-slate-300 mt-1">
         <b className="text-white">Reported At:</b>{" "}
         {report.reportedAt ? new Date(report.reportedAt).toLocaleString() : "-"}
       </p>
-      {report.authorityName && (
-        <p className="text-sm text-slate-300 mt-1"><b className="text-white">Updated By:</b> {report.authorityName}</p>
+      {report.authorityEmail && (
+        <p className="text-sm text-slate-300 mt-1">
+          <b className="text-white">Handled By:</b> {report.authorityName || report.authorityEmail}
+        </p>
       )}
       {report.adminRemark && (
-        <p className="text-sm text-yellow-300 mt-2"><b>Remark:</b> {report.adminRemark}</p>
+        <p className="text-sm text-yellow-300 mt-2">
+          <b>Remark:</b> {report.adminRemark}
+        </p>
       )}
     </div>
   );
 
-  // ================= CONTENT PER TAB =================
   const renderContent = () => {
     if (activeTab === "dashboard") {
       return (
         <>
-          {/* Hero */}
           <section className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-900 via-indigo-900 to-slate-900 p-8 text-white shadow-2xl border border-white/10">
             <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -185,25 +221,52 @@ export default function AuthorityDashboard() {
 
                 <div className="flex gap-3">
                   <div className="flex-1 rounded-xl bg-green-500/10 border border-green-500/20 p-3 text-center">
-                    <p className="text-2xl font-bold text-green-400">{activeCases}</p>
-                    <p className="text-xs text-green-300">Active Cases</p>
+                    <p className="text-2xl font-bold text-green-400">{myTotalHandled}</p>
+                    <p className="text-xs text-green-300">My Cases</p>
                   </div>
                   <div className="flex-1 rounded-xl bg-blue-500/10 border border-blue-500/20 p-3 text-center">
-                    <p className="text-2xl font-bold text-blue-400">{resolvedCases}</p>
-                    <p className="text-xs text-blue-300">Resolved</p>
+                    <p className="text-2xl font-bold text-blue-400">{myResolvedCases}</p>
+                    <p className="text-xs text-blue-300">My Resolved</p>
                   </div>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Stats */}
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
             {[
-              { title: "New Reports (24h)", value: newReportsCount, icon: ClipboardCheck, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20" },
-              { title: "Pending Review", value: pendingReview, icon: Shield, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-              { title: "Verified Today", value: verifiedToday, icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-              { title: "Total Users", value: uniqueUsers, icon: Users, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+              {
+                title: "My Handled (24h)",
+                value: myNewHandledCount,
+                icon: ClipboardCheck,
+                color: "text-purple-400",
+                bg: "bg-purple-500/10",
+                border: "border-purple-500/20",
+              },
+              {
+                title: "My Pending Review",
+                value: myPendingReview,
+                icon: Shield,
+                color: "text-amber-400",
+                bg: "bg-amber-500/10",
+                border: "border-amber-500/20",
+              },
+              {
+                title: "My Verified Today",
+                value: myVerifiedToday,
+                icon: CheckCircle2,
+                color: "text-emerald-400",
+                bg: "bg-emerald-500/10",
+                border: "border-emerald-500/20",
+              },
+              {
+                title: "My Users Served",
+                value: myUniqueUsers,
+                icon: Users,
+                color: "text-blue-400",
+                bg: "bg-blue-500/10",
+                border: "border-blue-500/20",
+              },
             ].map((stat, idx) => (
               <div
                 key={idx}
@@ -214,7 +277,7 @@ export default function AuthorityDashboard() {
                     <stat.icon className={stat.color} size={24} />
                   </div>
                   <span className="text-xs font-bold text-slate-500 group-hover:text-purple-400 transition">
-                    Live
+                    My Stats
                   </span>
                 </div>
                 <p className="text-3xl font-black text-white mb-1">{stat.value}</p>
@@ -223,7 +286,6 @@ export default function AuthorityDashboard() {
             ))}
           </section>
 
-          {/* Tools */}
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2 rounded-3xl bg-[#13102a] border border-white/10 p-6 shadow-xl">
               <div className="flex items-center justify-between mb-6">
@@ -242,7 +304,12 @@ export default function AuthorityDashboard() {
                   </button>
                 </div>
               </div>
-              <ManageReports onUpdate={loadAllReports} />
+              {/* ✅ pass authority identity so updates are tagged */}
+              <ManageReports
+                onUpdate={loadAllReports}
+                authorityEmail={authorityEmail}
+                authorityName={authorityName}
+              />
             </div>
 
             <div className="space-y-6">
@@ -268,22 +335,23 @@ export default function AuthorityDashboard() {
               </div>
 
               <div className="rounded-3xl bg-[#13102a] border border-white/10 p-6">
-                <h3 className="text-lg font-bold text-white mb-4">System Status</h3>
+                <h3 className="text-lg font-bold text-white mb-4">My Performance</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Database Connection</span>
-                    <span className="flex items-center gap-2 text-sm text-emerald-400">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                      Online
-                    </span>
+                    <span className="text-sm text-slate-400">Total Handled</span>
+                    <span className="text-sm font-bold text-white">{myTotalHandled}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Security Protocol</span>
-                    <span className="text-sm text-purple-400">Active</span>
+                    <span className="text-sm text-slate-400">Resolved</span>
+                    <span className="text-sm font-bold text-emerald-400">{myResolvedCases}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-slate-400">Total Reports</span>
-                    <span className="text-sm text-slate-300">{totalReports}</span>
+                    <span className="text-sm text-slate-400">In Progress</span>
+                    <span className="text-sm font-bold text-blue-400">{myInProgress}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-slate-400">Pending Review</span>
+                    <span className="text-sm font-bold text-amber-400">{myPendingReview}</span>
                   </div>
                 </div>
               </div>
@@ -299,7 +367,11 @@ export default function AuthorityDashboard() {
           <div className="mb-6">
             <h3 className="text-2xl font-bold text-white">Active Cases</h3>
             <p className="text-sm text-slate-400 mt-1">
-              Total Active: <span className="text-red-400 font-bold">{activeCasesList.length}</span>
+              Total Active:{" "}
+              <span className="text-red-400 font-bold">{activeCasesList.length}</span>
+              <span className="text-slate-500 ml-2">
+                (All unassigned cases visible for pickup)
+              </span>
             </p>
           </div>
           {loading ? (
@@ -317,18 +389,22 @@ export default function AuthorityDashboard() {
       return (
         <section className="rounded-3xl bg-[#13102a] border border-white/10 p-6 shadow-xl">
           <div className="mb-6">
-            <h3 className="text-2xl font-bold text-white">Verified Cases</h3>
+            <h3 className="text-2xl font-bold text-white">My Verified Cases</h3>
             <p className="text-sm text-slate-400 mt-1">
-              Under Verification: <span className="text-amber-400 font-bold">{pendingReview}</span> ·
-              In Progress: <span className="text-blue-400 font-bold ml-1">{inProgress}</span>
+              Under Verification:{" "}
+              <span className="text-amber-400 font-bold">{myPendingReview}</span> · In Progress:{" "}
+              <span className="text-blue-400 font-bold ml-1">{myInProgress}</span>
+              <span className="text-slate-500 ml-2">(Only cases handled by you)</span>
             </p>
           </div>
           {loading ? (
             <p className="text-slate-400">Loading...</p>
-          ) : verifiedCasesList.length === 0 ? (
-            <p className="text-slate-400">No cases under verification or in progress.</p>
+          ) : myVerifiedCasesList.length === 0 ? (
+            <p className="text-slate-400">
+              You have no cases under verification or in progress.
+            </p>
           ) : (
-            verifiedCasesList.map(renderReportCard)
+            myVerifiedCasesList.map(renderReportCard)
           )}
         </section>
       );
@@ -338,19 +414,22 @@ export default function AuthorityDashboard() {
       return (
         <section className="rounded-3xl bg-[#13102a] border border-white/10 p-6 shadow-xl">
           <div className="mb-6">
-            <h3 className="text-2xl font-bold text-white">User Records</h3>
+            <h3 className="text-2xl font-bold text-white">My User Records</h3>
             <p className="text-sm text-slate-400 mt-1">
-              Total unique users: <span className="text-blue-400 font-bold">{uniqueUsers}</span>
+              Users whose reports you handled:{" "}
+              <span className="text-blue-400 font-bold">{myUniqueUsers}</span>
             </p>
           </div>
 
           {loading ? (
             <p className="text-slate-400">Loading...</p>
-          ) : userRecordsList.length === 0 ? (
-            <p className="text-slate-400">No user records found.</p>
+          ) : myUserRecordsList.length === 0 ? (
+            <p className="text-slate-400">
+              You haven't handled any reports yet.
+            </p>
           ) : (
             <div className="space-y-4">
-              {userRecordsList.map((user, idx) => (
+              {myUserRecordsList.map((user, idx) => (
                 <div
                   key={idx}
                   className="rounded-2xl bg-[#1a1630] border border-white/10 p-5 hover:border-purple-500/40 transition"
@@ -362,7 +441,9 @@ export default function AuthorityDashboard() {
                       </div>
                       <div>
                         <p className="text-white font-bold">{user.name}</p>
-                        <p className="text-xs text-slate-400">Reported {user.count} case(s)</p>
+                        <p className="text-xs text-slate-400">
+                          You handled {user.count} case(s) from this user
+                        </p>
                       </div>
                     </div>
                     <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-500/30">
@@ -421,14 +502,12 @@ export default function AuthorityDashboard() {
       }}
     >
       <div className="relative w-full h-full flex">
-        {/* SIDEBAR */}
         <aside
           className={`h-full flex-shrink-0 bg-[#13102a] border-r border-white/10 transition-all duration-300 ease-in-out overflow-hidden ${
             isSidebarOpen ? "w-72" : "w-0"
           }`}
         >
           <div className="flex h-full flex-col w-72">
-            {/* Logo */}
             <div className="border-b border-white/10 px-6 py-5">
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -446,7 +525,6 @@ export default function AuthorityDashboard() {
               </div>
             </div>
 
-            {/* Profile */}
             <div className="px-6 py-5 border-b border-white/10">
               <div className="rounded-2xl bg-gradient-to-br from-purple-900/40 to-slate-900/40 border border-purple-500/20 p-4 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-3">
@@ -472,7 +550,6 @@ export default function AuthorityDashboard() {
               </div>
             </div>
 
-            {/* Nav */}
             <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
               {sidebarItems.map((item) => {
                 const Icon = item.icon;
@@ -491,7 +568,9 @@ export default function AuthorityDashboard() {
                       <Icon
                         size={20}
                         className={`${
-                          isActive ? "text-purple-400" : "text-slate-500 group-hover:text-purple-400"
+                          isActive
+                            ? "text-purple-400"
+                            : "text-slate-500 group-hover:text-purple-400"
                         } transition-colors`}
                       />
                       <span className={`text-sm font-semibold ${isActive ? "text-white" : ""}`}>
@@ -508,7 +587,6 @@ export default function AuthorityDashboard() {
               })}
             </nav>
 
-            {/* Logout */}
             <div className="p-4 border-t border-white/10">
               <button
                 onClick={handleLogout}
@@ -521,9 +599,7 @@ export default function AuthorityDashboard() {
           </div>
         </aside>
 
-        {/* MAIN COLUMN */}
         <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
-          {/* NAVBAR */}
           <header className="flex-shrink-0 bg-[#13102a]/95 backdrop-blur-xl border-b border-white/10 z-30">
             <div className="flex items-center justify-between px-6 py-4">
               <div className="flex items-center gap-4">
@@ -553,7 +629,7 @@ export default function AuthorityDashboard() {
 
                 <button className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition">
                   <Bell size={20} />
-                  {newReportsCount > 0 && (
+                  {activeCases > 0 && (
                     <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span>
                   )}
                 </button>
@@ -579,7 +655,6 @@ export default function AuthorityDashboard() {
             </div>
           </header>
 
-          {/* MAIN CONTENT */}
           <main className="flex-1 overflow-y-auto">
             <div className="p-6 max-w-7xl mx-auto">{renderContent()}</div>
           </main>

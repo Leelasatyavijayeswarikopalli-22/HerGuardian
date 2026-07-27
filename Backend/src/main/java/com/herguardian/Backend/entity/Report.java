@@ -56,7 +56,8 @@ public class Report {
 
     private LocalDateTime resolvedAt;
 
-
+    @Column
+    private String authorityEmail;
 
     @PrePersist
     public void create(){
