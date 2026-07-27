@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../api/api";
 import Card from "../Card";
 import { ShieldCheck, MapPin, Users, Calendar, Inbox } from "lucide-react";
 
-export default function RectifiedReports() {
+export default function RectifiedReports({ refresh }) {
   const [reports, setReports] = useState([]);
 
   async function loadReports() {
     try {
-      const response = await axios.get("http://localhost:8080/api/reports/rectified");
+      const response = await api.get("/reports/user/rectified");
       setReports(response.data);
     } catch (error) {
       console.log(error);
@@ -19,7 +19,7 @@ export default function RectifiedReports() {
     loadReports();
     const interval = setInterval(() => loadReports(), 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [refresh]);
 
   return (
     <Card>

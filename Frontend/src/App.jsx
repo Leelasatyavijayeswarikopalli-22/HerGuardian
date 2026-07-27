@@ -1,9 +1,7 @@
-import {BrowserRouter,Routes,Route}
-from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-
 import Dashboard from "./pages/Dashboard";
 import SafetyMap from "./pages/SafetyMap";
 import CommunityReports from "./pages/CommunityReports";
@@ -15,148 +13,83 @@ import Home from "./pages/Home";
 import AuthChoice from "./pages/AuthChoice";
 import VerifyOtp from "./pages/VerifyOtp";
 
-import ProtectedAuthorityRoute
-from "./components/authority/ProtectedAuthorityRoute";
+import ProtectedAuthorityRoute from "./components/authority/ProtectedAuthorityRoute";
+import ProtectedUserRoute from "./components/authority/ProtectedUserRoute";
 
-
-export default function App(){
-
-return(
-
-<BrowserRouter>
-
-<Routes>
-
-
-<Route
-path="/"
-element={<Home/>}
-/>
-
-
-<Route
-path="/login"
-element={<Login/>}
-/>
-
-
-<Route
-path="/auth"
-element={<AuthChoice/>}
-/>
-
-
-<Route
-path="/signup"
-element={<Signup/>}
-/>
-
-
-<Route
-path="/verify-otp"
-element={<VerifyOtp/>}
-/>
-
-
-
-<Route
-
-path="/dashboard"
-
-element={
-
-<Layout>
-
-<Dashboard/>
-
-</Layout>
-
+function UserPage({ children }) {
+    return (
+        <ProtectedUserRoute>
+            <Layout>{children}</Layout>
+        </ProtectedUserRoute>
+    );
 }
 
-/>
-
-<Route
-
-path="/safety-map"
-
-element={
-
-<Layout>
-
-<SafetyMap/>
-
-</Layout>
-
+function AuthorityPage({ children }) {
+    return (
+        <ProtectedAuthorityRoute>
+            <Layout>{children}</Layout>
+        </ProtectedAuthorityRoute>
+    );
 }
 
-/>
+export default function App() {
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/auth" element={<AuthChoice />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/verify-otp" element={<VerifyOtp />} />
 
+                {/* USER ONLY routes */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <UserPage>
+                            <Dashboard />
+                        </UserPage>
+                    }
+                />
 
+                <Route
+                    path="/safety-map"
+                    element={
+                        <UserPage>
+                            <SafetyMap />
+                        </UserPage>
+                    }
+                />
 
-<Route
+                <Route
+                    path="/reports"
+                    element={
+                        <UserPage>
+                            <CommunityReports />
+                        </UserPage>
+                    }
+                />
 
-path="/reports"
+                <Route
+                    path="/profile"
+                    element={
+                        <UserPage>
+                            <Profile />
+                        </UserPage>
+                    }
+                />
 
-element={
-
-<Layout>
-
-<CommunityReports/>
-
-</Layout>
-
-}
-
-/>
-
-
-
-<Route
-
-path="/profile"
-
-element={
-
-<Layout>
-
-<Profile/>
-
-</Layout>
-
-}
-
-/>
-
-
-
-<Route
-
-path="/authority"
-
-element={
-
-<ProtectedAuthorityRoute>
-
-<Layout>
-
-<AuthorityDashboard/>
-
-</Layout>
-
-</ProtectedAuthorityRoute>
-
-}
-
-/>
-
-
-
-</Routes>
-
-</BrowserRouter>
-
-
-);
-
-
+                {/* AUTHORITY ONLY route */}
+                <Route
+                    path="/authority"
+                    element={
+                        <AuthorityPage>
+                            <AuthorityDashboard />
+                        </AuthorityPage>
+                    }
+                />
+            </Routes>
+        </BrowserRouter>
+    );
 }

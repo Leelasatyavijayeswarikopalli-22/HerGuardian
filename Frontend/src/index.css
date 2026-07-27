@@ -110,17 +110,6 @@ h1, h2, h3, p, span, label, input, textarea {
   0% { background-position: 0 0; }
   100% { background-position: 550px 550px; }
 }
-
-/* NAV FLOAT ANIMATION */
-@keyframes float-nav {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-4px); }
-}
-
-nav {
-  animation: float-nav 6s ease-in-out infinite;
-}
-
 /* GLOW PULSE for logo/main elements */
 @keyframes glowPulse {
   0%, 100% { 

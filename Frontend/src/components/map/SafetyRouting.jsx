@@ -149,7 +149,7 @@ export default function SafetyRouting({
           weight = 6;
         } else if (aiRoute.totalSafetyScore >= 80) {
           color = "#22c55e";
-        } else if (aiRoute.totalSafetyScore >= 60) {
+        } else if (aiRoute.totalSafetyScore >= 50) {
           color = "#FFD93D";
         }
 

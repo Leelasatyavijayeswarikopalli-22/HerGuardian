@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedAuthorityRoute({ children }) {
+export default function ProtectedUserRoute({ children }) {
     const token = localStorage.getItem("token");
     const role = String(localStorage.getItem("role") || "").toUpperCase();
 
@@ -8,8 +8,12 @@ export default function ProtectedAuthorityRoute({ children }) {
         return <Navigate to="/login" replace />;
     }
 
-    if (role !== "AUTHORITY") {
-        return <Navigate to="/dashboard" replace />;
+    if (role === "AUTHORITY") {
+        return <Navigate to="/authority" replace />;
+    }
+
+    if (role !== "USER") {
+        return <Navigate to="/login" replace />;
     }
 
     return children;

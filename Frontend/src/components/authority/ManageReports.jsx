@@ -1,343 +1,192 @@
-import {useEffect,useState} from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import api from "../../api/api";
 import Card from "../Card";
 import Button from "../Button";
 
-
-export default function ManageReports(){
-
-
-const [reports,setReports]=
-useState([]);
-
-
-const [remarks,setRemarks]=
-useState({});
-
-
-const [status,setStatus]=
-useState({});
-
-
-useEffect(()=>{
-
-loadReports();
-
-},[]);
-
-
-
-async function loadReports(){
-
-
-try{
-
-
-const response=
-
-await axios.get(
-
-"http://localhost:8080/api/reports"
-
-);
-
-
-setReports(
-
-response.data
-
-);
-
-
-}
-
-
-catch(error){
-
-console.log(error);
-
-}
-
-
-}
-
-
-
-
-async function updateReport(id){
-
-
-try{
-
-
-await axios.put(
-
-`http://localhost:8080/api/reports/status/${id}`,
-
-{
-
-status:
-
-status[id] || "ACTIVE",
-
-
-adminRemark:
-
-remarks[id] || "",
-
-
-authorityName:
-
-localStorage.getItem(
-
-"name"
-
-)
-}
-
-);
-
-
-
-alert(
-
-"Report Updated Successfully."
-
-);
-
-
-loadReports();
-
-
-}
-
-
-catch(error){
-
-console.log(error);
-
-}
-
-
-}
-
-
-
-
-return(
-
-
-<div>
-
-
-{
-
-reports.map((report)=>(
-
-
-<Card
-
-key={report.id}
-
-className="mb-5"
-
->
-
-
-<h2
-
-className="text-xl
-font-bold
-text-purple-700"
-
->
-
-{report.category}
-
-</h2>
-
-
-
-<p className="mt-2">
-
-<b>Location :</b>
-
-{report.location}
-
-</p>
-
-
-
-<p>
-
-<b>Description :</b>
-
-{report.description}
-
-</p>
-
-
-
-<p>
-
-<b>Current Status :</b>
-
-{report.status}
-
-</p>
-
-
-
-<select
-
-value={
-
-status[report.id]
-
-||
-
-report.status
-
-}
-
-onChange={(e)=>{
-
-setStatus({
-
-...status,
-
-[report.id]:
-
-e.target.value
-
-});
-
-}}
-
-className="mt-4
-w-full
-rounded-xl
-border
-p-3"
-
->
-
-
-<option>
-
-ACTIVE
-
-</option>
-
-
-<option>
-
-UNDER_VERIFICATION
-
-</option>
-
-
-<option>
-
-IN_PROGRESS
-
-</option>
-
-
-<option>
-
-RECTIFIED
-
-</option>
-
-
-</select>
-
-
-
-
-<textarea
-
-rows="4"
-
-placeholder="Authority Remarks"
-
-
-value={
-
-remarks[report.id]
-
-|| ""
-
-}
-
-
-onChange={(e)=>{
-
-
-setRemarks({
-
-...remarks,
-
-[report.id]:
-
-e.target.value
-
-});
-
-
-}}
-
-className="mt-4
-w-full
-rounded-xl
-border
-p-3"
-
-
-/>
-
-
-
-
-<Button
-
-onClick={()=>{
-
-updateReport(
-
-report.id
-
-);
-
-}}
-
-className="mt-4
-w-full"
-
->
-
-UPDATE REPORT
-
-
-</Button>
-
-
-
-</Card>
-
-
-))
-
-
-}
-
-
-
-</div>
-
-
-);
-
-
+export default function ManageReports({ onUpdate }) {
+  const [reports, setReports] = useState([]);
+  const [remarks, setRemarks] = useState({});
+  const [status, setStatus] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState(null);
+
+  useEffect(() => {
+    loadReports(true); // Initial load with skeleton
+  }, []);
+
+  async function loadReports(isInitial = false) {
+    try {
+      if (isInitial) setLoading(true);
+      const response = await api.get("/reports");
+      setReports(response.data);
+
+      // Initialize statuses and remarks without overwriting user's active selections
+      setStatus((prev) => {
+        const newStatuses = { ...prev };
+        response.data.forEach((report) => {
+          if (newStatuses[report.id] === undefined) {
+            newStatuses[report.id] = report.status;
+          }
+        });
+        return newStatuses;
+      });
+
+      setRemarks((prev) => {
+        const newRemarks = { ...prev };
+        response.data.forEach((report) => {
+          if (newRemarks[report.id] === undefined) {
+            newRemarks[report.id] = report.adminRemark || "";
+          }
+        });
+        return newRemarks;
+      });
+    } catch (error) {
+      console.error("Unable to load reports:", error);
+      if (isInitial) {
+        alert(error.response?.data?.message || "Unable to load reports.");
+      }
+    } finally {
+      if (isInitial) setLoading(false);
+    }
+  }
+
+  async function updateReport(id) {
+    const selectedStatus = status[id] || "ACTIVE";
+    const selectedRemark = remarks[id] || "";
+
+    try {
+      setUpdatingId(id);
+      await api.put(`/reports/status/${id}`, {
+        status: selectedStatus,
+        adminRemark: selectedRemark,
+      });
+
+      alert("Report Updated Successfully.");
+
+      // Silent reload — keeps scroll position and doesn't flash loading screen
+      await loadReports(false);
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error("Unable to update report:", error);
+      alert(
+        error.response?.data?.message ||
+          error.response?.data ||
+          "Unable to update report."
+      );
+    } finally {
+      setUpdatingId(null);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="rounded-xl bg-purple-500/10 p-5 text-purple-300 border border-purple-500/20">
+        Loading reports...
+      </div>
+    );
+  }
+
+  if (reports.length === 0) {
+    return (
+      <div className="rounded-xl bg-white/5 p-5 text-slate-400 border border-white/10">
+        No reports found.
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {reports.map((report) => (
+        <Card key={report.id}>
+          <h2 className="text-xl font-bold text-purple-300">{report.category}</h2>
+
+          <p className="mt-2">
+            <b>Location:</b> {report.location}
+          </p>
+          <p>
+            <b>Description:</b> {report.description}
+          </p>
+          <p>
+            <b>Reported By:</b> {report.reportedBy}
+          </p>
+          <p>
+            <b>Reported At:</b>{" "}
+            {report.reportedAt
+              ? new Date(report.reportedAt).toLocaleString()
+              : "-"}
+          </p>
+          <p>
+            <b>Current Status:</b>{" "}
+            <span className="font-semibold text-purple-300">
+              {report.status}
+            </span>
+          </p>
+
+          {report.authorityName && (
+            <p>
+              <b>Updated By:</b> {report.authorityName}
+            </p>
+          )}
+
+          {report.resolvedAt && (
+            <p>
+              <b>Resolved At:</b>{" "}
+              {new Date(report.resolvedAt).toLocaleString()}
+            </p>
+          )}
+
+          {/* STATUS DROPDOWN */}
+          <div className="relative w-full mt-4">
+            <select
+              value={status[report.id] !== undefined ? status[report.id] : report.status}
+              onChange={(e) => {
+                const val = e.target.value;
+                setStatus((prev) => ({ ...prev, [report.id]: val }));
+              }}
+              className="w-full bg-[#13102a] text-white border border-white/20 rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer"
+            >
+              <option value="ACTIVE" style={{ backgroundColor: "#13102a", color: "white" }}>ACTIVE</option>
+              <option value="UNDER_VERIFICATION" style={{ backgroundColor: "#13102a", color: "white" }}>UNDER VERIFICATION</option>
+              <option value="IN_PROGRESS" style={{ backgroundColor: "#13102a", color: "white" }}>IN PROGRESS</option>
+              <option value="RECTIFIED" style={{ backgroundColor: "#13102a", color: "white" }}>RECTIFIED</option>
+            </select>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="w-5 h-5 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-purple-400"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+
+          <textarea
+            rows="4"
+            placeholder="Authority Remarks"
+            value={remarks[report.id] !== undefined ? remarks[report.id] : (report.adminRemark || "")}
+            onChange={(event) => {
+              const newRemark = event.target.value;
+              setRemarks((previousRemarks) => ({
+                ...previousRemarks,
+                [report.id]: newRemark,
+              }));
+            }}
+            className="mt-4 w-full rounded-xl border border-white/20 bg-[#13102a] text-white p-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+
+          <Button
+            type="button"
+            onClick={() => updateReport(report.id)}
+            disabled={updatingId === report.id}
+            className="mt-4 w-full"
+          >
+            {updatingId === report.id ? "UPDATING..." : "UPDATE REPORT"}
+          </Button>
+        </Card>
+      ))}
+    </div>
+  );
 }

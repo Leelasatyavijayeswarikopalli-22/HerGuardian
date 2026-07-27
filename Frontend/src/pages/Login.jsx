@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/api";
 import { ArrowLeft, Mail, Lock as LockIcon, LogIn, Eye, EyeOff, Sparkles } from "lucide-react";
 
 export default function Login() {
@@ -11,51 +11,75 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+    e.preventDefault();
 
-        if (!email || !password) {
-            alert("Please enter Email and Password");
+    if (!email || !password) {
+        alert("Please enter Email and Password");
+        return;
+    }
+
+    try {
+        const response = await api.post("/auth/login", {
+            email,
+            password,
+        });
+
+        const role = String(response.data.role || "").toUpperCase();
+
+        if (!role) {
+            alert("Role was not received from the server.");
             return;
         }
 
-        try {
-            const response = await axios.post(
-                "http://localhost:8080/api/auth/login",
-                { email, password }
-            );
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("role", role);
+        localStorage.setItem("id", response.data.id || "");
+        localStorage.setItem("name", response.data.fullName || "");
 
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem(
-                "user",
-                JSON.stringify({
-                    fullName: response.data.fullName,
-                    email: email,
-                    emergencyContact1: response.data.emergencyContact1,
-                    emergencyContact2: response.data.emergencyContact2,
-                    emergencyContact3: response.data.emergencyContact3,
-                })
-            );
-            localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem(
+            "user",
+            JSON.stringify({
+                id: response.data.id,
+                fullName: response.data.fullName,
+                email: response.data.email,
+                emergencyContact1: response.data.emergencyContact1,
+                emergencyContact2: response.data.emergencyContact2,
+                emergencyContact3: response.data.emergencyContact3,
+                role,
+            })
+        );
 
-            alert("Login Successful");
-            localStorage.setItem("token", response.data.token);
-            localStorage.setItem("role", response.data.role);
-            localStorage.setItem("name", response.data.fullName);
-            localStorage.setItem("id", response.data.id);
+        alert("Login Successful");
 
-            if (response.data.role === "AUTHORITY") {
-                navigate("/authority");
-            } else {
-                navigate("/profile");
-            }
-        } catch (error) {
-            if (error.response) {
-                alert(error.response.data);
-            } else {
-                alert("Server Error");
-            }
+        if (role === "AUTHORITY") {
+            navigate("/authority", { replace: true });
+        } else if (role === "USER" || role === "NULL") {
+            navigate("/dashboard", { replace: true });
+        } else {
+            alert("Invalid user role.");
+            localStorage.clear();
         }
-    };
+
+    } catch (error) {
+        if (error.response) {
+            if (error.response) {
+    const data = error.response.data;
+
+    const message =
+        typeof data === "string"
+            ? data
+            : data.message || data.error || "Login failed";
+
+    alert(message);
+} else {
+    alert("Server Error");
+}
+        } else {
+            alert("Server Error");
+        }
+    }
+};
 
     return (
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 bg-[#05010f]">

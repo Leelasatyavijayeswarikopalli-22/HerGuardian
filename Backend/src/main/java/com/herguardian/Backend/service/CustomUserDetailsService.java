@@ -6,26 +6,33 @@ import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService
+        implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserRepository repository;
 
-    public CustomUserDetailsService(UserRepository userRepository){
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(
+            UserRepository repository
+    ) {
+        this.repository = repository;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(
+            String email
+    ) throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmail(email)
+        User user = repository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User Not Found"));
+                        new UsernameNotFoundException(
+                                "User Not Found"
+                        )
+                );
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .authorities("USER")
+                .authorities(user.getRole())
                 .build();
     }
 }

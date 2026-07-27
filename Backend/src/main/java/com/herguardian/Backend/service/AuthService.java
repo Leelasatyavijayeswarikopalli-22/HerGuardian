@@ -115,6 +115,7 @@ public class AuthService {
                 .emergencyContact2(pendingUser.getEmergencyContact2())
                 .emergencyContact3(pendingUser.getEmergencyContact3())
                 .voicePhrase(pendingUser.getVoicePhrase())
+                .role("USER")
                 .verified(true)
                 .build();
 
@@ -142,15 +143,17 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getEmail());
 
-        return new LoginResponse(
-                token,
-                "Login Successful",
-                user.getFullName(),
-                user.getEmail(),
-                user.getEmergencyContact1(),
-                user.getEmergencyContact2(),
-                user.getEmergencyContact3()
-        );
+        return LoginResponse.builder()
+                .token(token)
+                .message("Login Successful")
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .emergencyContact1(user.getEmergencyContact1())
+                .emergencyContact2(user.getEmergencyContact2())
+                .emergencyContact3(user.getEmergencyContact3())
+                .role(user.getRole())
+                .build();
     }
     public String getVoicePhrase(String email) {
 

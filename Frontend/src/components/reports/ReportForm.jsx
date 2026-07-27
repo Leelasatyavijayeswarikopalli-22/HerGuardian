@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../../api/api";
 import Button from "../Button";
 import Card from "../Card";
 import { Search, MapPin, Lightbulb, Video, AlertTriangle, Bus, Eye, ShieldAlert, Ban, MoreHorizontal, Send } from "lucide-react";
@@ -68,7 +68,7 @@ export default function ReportForm() {
       return;
     }
     try {
-      await axios.post("http://localhost:8080/api/reports", { category, description, location, latitude, longitude });
+      await api.post("/reports", { category, description, location, latitude, longitude });
       alert("Report Submitted Successfully.");
       setCategory("");
       setDescription("");
@@ -78,7 +78,8 @@ export default function ReportForm() {
       window.dispatchEvent(new Event("reportSubmitted"));
     } catch (error) {
       console.log(error);
-      alert("Unable to submit report.");
+      alert(error.response?.data?.message ||
+            "Unable to submit report.");
     }
   }
 
