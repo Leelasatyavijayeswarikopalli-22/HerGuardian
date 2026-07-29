@@ -49,7 +49,16 @@ export default function Login() {
                 role,
             })
         );
-
+         if (window.AndroidBridge && window.AndroidBridge.onUserLoggedIn) {
+            window.AndroidBridge.onUserLoggedIn(
+                response.data.token,
+                response.data.email,
+                response.data.fullName,
+                response.data.emergencyContact1 || "",
+                response.data.emergencyContact2 || "",
+                response.data.emergencyContact3 || ""
+            );
+        }
         alert("Login Successful");
 
         if (role === "AUTHORITY") {

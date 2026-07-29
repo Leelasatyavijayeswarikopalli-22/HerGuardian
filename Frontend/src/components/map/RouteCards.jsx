@@ -1,3 +1,4 @@
+import {useMap} from "../../context/MapContext";
 export default function RouteCards({
   routeResults,
   selectedRoute,
@@ -6,7 +7,14 @@ export default function RouteCards({
   journeyStarted,
 }) {
   if (routeResults.length === 0) return null;
-
+  // ✅ pull real live values from context
+const {
+  safetyStatus,
+  voiceSOS,
+  routeDeviation,
+  currentLocation,
+  watchIdRef,
+} = useMap();
   const getScoreInfo = (score) => {
     if (score > 70)
       return { label: "VERY SAFE", hex: "#00F5A0", badge: "bg-emerald-600 text-emerald-50", bar: "bg-emerald-400", ring: "ring-emerald-400/50" };
@@ -119,28 +127,101 @@ export default function RouteCards({
             </div>
 
             {/* GUARDIAN MODE */}
-            {isSelected && journeyStarted && (
-              <div className="mt-6 rounded-3xl bg-gradient-to-r from-emerald-600 to-cyan-600 p-6 text-white shadow-2xl border border-white/10">
-                <h1 className="mb-4 text-2xl font-black">SAFE JOURNEY MODE ACTIVE</h1>
-                <div className="space-y-3 text-base font-medium">
-                  <p>📍 Live Location Tracking Enabled</p>
-                  <p>🎙 Secret Voice SOS Enabled</p>
-                  <p>🚨 Emergency Monitoring Enabled</p>
-                  <p>🤖 AI Risk Detection Enabled</p>
-                  <p>🛡 Route Safety Monitoring Enabled</p>
-                  <p>👨‍👩‍ Emergency Contacts Ready</p>
-                  <p>📢 Microphone Active Until Destination</p>
-                </div>
-                <div className="mt-5 rounded-2xl bg-white/20 p-4 backdrop-blur-md">
-                  <h3 className="font-black text-xl">CURRENT STATUS</h3>
-                  <div className="mt-2 space-y-1 text-sm opacity-95">
-                    <p>Risk Level : LOW</p>
-                    <p>Safety Monitoring : ACTIVE</p>
-                    <p>Location Sharing : ACTIVE</p>
-                  </div>
-                </div>
-              </div>
-            )}
+           {/* GUARDIAN MODE - now uses REAL data from context */}
+{isSelected && journeyStarted && (() => {
+  // ✅ real values
+  const trackingActive = watchIdRef.current != null;
+  const locationSharing = currentLocation != null;
+
+  // ✅ risk level derived from safetyStatus + deviation
+  let riskLevel = "LOW";
+  let riskColor = "text-emerald-200";
+  if (routeDeviation) {
+    riskLevel = "HIGH";
+    riskColor = "text-red-200";
+  } else if (safetyStatus === "CAUTION") {
+    riskLevel = "MEDIUM";
+    riskColor = "text-amber-200";
+  } else if (score < 50) {
+    riskLevel = "HIGH";
+    riskColor = "text-red-200";
+  } else if (score < 70) {
+    riskLevel = "MEDIUM";
+    riskColor = "text-amber-200";
+  }
+
+  // ✅ feature list built from real state
+  const features = [
+    { emoji: "📍", label: "Live Location Tracking", active: trackingActive },
+    { emoji: "🎙", label: "Secret Voice SOS", active: voiceSOS },
+    { emoji: "🚨", label: "Emergency Monitoring", active: journeyStarted },
+    { emoji: "🤖", label: "AI Risk Detection", active: routeResults.length > 0 },
+    { emoji: "🛡", label: "Route Safety Monitoring", active: !routeDeviation },
+    { emoji: "👨‍👩", label: "Emergency Contacts", active: true },
+    { emoji: "📢", label: "Microphone Until Destination", active: voiceSOS },
+  ];
+
+  return (
+    <div className="mt-6 rounded-3xl bg-gradient-to-r from-emerald-600 to-cyan-600 p-6 text-white shadow-2xl border border-white/10">
+      <h1 className="mb-4 text-2xl font-black">SAFE JOURNEY MODE ACTIVE</h1>
+
+      <div className="space-y-2.5 text-base font-medium">
+        {features.map((f) => (
+          <p key={f.label} className="flex items-center justify-between">
+            <span>
+              {f.emoji} {f.label}
+            </span>
+            <span
+              className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                f.active
+                  ? "bg-emerald-900/60 text-emerald-200"
+                  : "bg-red-900/60 text-red-200"
+              }`}
+            >
+              {f.active ? "ENABLED" : "OFF"}
+            </span>
+          </p>
+        ))}
+      </div>
+
+      <div className="mt-5 rounded-2xl bg-white/20 p-4 backdrop-blur-md">
+        <h3 className="font-black text-xl">CURRENT STATUS</h3>
+        <div className="mt-2 space-y-1.5 text-sm opacity-95">
+          <p className="flex justify-between">
+            <span>Risk Level</span>
+            <b className={riskColor}>{riskLevel}</b>
+          </p>
+          <p className="flex justify-between">
+            <span>Safety Status</span>
+            <b>{safetyStatus}</b>
+          </p>
+          <p className="flex justify-between">
+            <span>Safety Score</span>
+            <b>{score.toFixed(1)} / 100</b>
+          </p>
+          <p className="flex justify-between">
+            <span>Route Deviation</span>
+            <b className={routeDeviation ? "text-red-200" : "text-emerald-200"}>
+              {routeDeviation ? "YES ⚠️" : "NO ✓"}
+            </b>
+          </p>
+          <p className="flex justify-between">
+            <span>Location Sharing</span>
+            <b className={locationSharing ? "text-emerald-200" : "text-amber-200"}>
+              {locationSharing ? "ACTIVE" : "WAITING GPS..."}
+            </b>
+          </p>
+          <p className="flex justify-between">
+            <span>Voice SOS</span>
+            <b className={voiceSOS ? "text-emerald-200" : "text-red-200"}>
+              {voiceSOS ? "LISTENING" : "OFF"}
+            </b>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+})()}
 
             {/* START BUTTON */}
             {isSelected &&

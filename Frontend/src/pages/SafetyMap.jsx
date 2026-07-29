@@ -1,13 +1,16 @@
 import SrcToDest from "../components/map/SrcToDest";
 import GoogleMapView from "../components/map/GoogleMapView";
 import SafetyLegend from "../components/map/SafetyLegend";
-import { MapPin, Navigation, Flag, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { MapPin, Flag, Sparkles } from "lucide-react";
+import { useMap } from "../context/MapContext";
 
 export default function SafetyMap() {
-  const [source, setSource] = useState(null);
-  const [destination, setDestination] = useState(null);
-  const [pickingMode, setPickingMode] = useState(null);
+  // ✅ get state from context instead of useState
+  const {
+    source, setSource,
+    destination, setDestination,
+    pickingMode, setPickingMode,
+  } = useMap();
 
   return (
     <div className="p-6 relative">
@@ -21,22 +24,25 @@ export default function SafetyMap() {
           Live Route Safety
         </span>
         <h1 className="text-4xl font-extrabold text-white">
-          Safety <span className="bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">Map</span>
+          Safety{" "}
+          <span className="bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent">
+            Map
+          </span>
         </h1>
       </div>
 
       <div className="relative grid gap-6 lg:grid-cols-4">
         <div className="lg:col-span-3">
-          <div className="relative z-[9999]">
+          <div className="relative z-20">
             <SrcToDest
-  source={source}
-  destination={destination}
-  setSource={setSource}
-  setDestination={setDestination}
-/>
+              source={source}
+              destination={destination}
+              setSource={setSource}
+              setDestination={setDestination}
+            />
           </div>
 
-          {/* Action Buttons Row */}
+          {/* Action Buttons */}
           <div className="mb-4 flex flex-wrap gap-3">
             <button
               onClick={() => setPickingMode("source")}
@@ -74,16 +80,9 @@ export default function SafetyMap() {
             )}
           </div>
 
-          {/* Map with border glow */}
+          {/* Map */}
           <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-            <GoogleMapView
-              source={source}
-              destination={destination}
-              setSource={setSource}
-              setDestination={setDestination}
-              pickingMode={pickingMode}
-              setPickingMode={setPickingMode}
-            />
+            <GoogleMapView />
           </div>
         </div>
 

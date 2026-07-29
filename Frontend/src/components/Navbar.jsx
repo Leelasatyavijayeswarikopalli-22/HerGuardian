@@ -1,7 +1,8 @@
 import { 
   Bell, Menu, X, Phone, UserCircle, Siren, MessageCircle, Mail, LifeBuoy, 
   MapPin, AlertTriangle, Heart, Clock, HelpCircle, Shield, Info, CheckCircle,
-  Zap, TrendingUp, Users, Sparkles, ChevronRight, Trash2
+  Zap, TrendingUp, Users, Sparkles, ChevronRight, Trash2,
+  Home, LayoutDashboard, FileText
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -15,6 +16,7 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showAbout, setShowAbout] = useState(false);
+  const isHome = location.pathname === "/";
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -144,7 +146,14 @@ export default function Navbar() {
   return (
     <>
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-[9999] bg-[#12081f]/90 backdrop-blur-xl border-b border-white/10">
+      <nav
+  className={`fixed top-0 left-0 right-0 h-16 z-[2000] border-b border-white/10 ${
+    isHome
+      ? "bg-black/30 backdrop-blur-md"          // 👈 Home: transparent blend (like pic 1)
+      : "shadow-lg shadow-black/50"              // 👈 Others: solid
+  }`}
+  style={!isHome ? { backgroundColor: "#150a26" } : undefined}
+>
         <div className="max-w-7xl mx-auto h-16 px-4 lg:px-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
             <img src="/logo.jpeg" alt="HerGuardian" className="w-10 h-10 rounded-full object-cover border border-white/10" />
@@ -153,6 +162,9 @@ export default function Navbar() {
               <p className="text-[10px] text-pink-300 tracking-wider">Empowering Every Journey</p>
             </div>
           </Link>
+
+
+
 
           {/* ✅ Mobile — subtle hover, TOTAL count */}
           <div className="flex items-center gap-3 md:hidden">
@@ -177,12 +189,12 @@ export default function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-2 absolute left-1/2 -translate-x-1/2">
-            <NavItem to="/" label="Home" active={location.pathname === "/"} />
-            <NavItem to="/dashboard" label="Dashboard" active={location.pathname.startsWith("/dashboard")} />
-            <NavItem to="/safety-map" label="Safety Map" active={location.pathname === "/safety-map"} />
-            <NavItem to="/reports" label="Reports" active={location.pathname.startsWith("/reports")} />
-          </div>
+          <div className="hidden lg:flex items-center gap-2 absolute left-1/2 -translate-x-1/2 bg-black/20 p-1.5 rounded-2xl border border-white/5 shadow-inner">
+  <NavItem to="/" label="Home" icon={Home} active={location.pathname === "/"} />
+  <NavItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} active={location.pathname.startsWith("/dashboard")} />
+  <NavItem to="/safety-map" label="Safety Map" icon={MapPin} active={location.pathname === "/safety-map"} />
+  <NavItem to="/reports" label="Reports" icon={FileText} active={location.pathname.startsWith("/reports")} />
+</div>
 
           {/* ✅ Desktop — subtle hover, TOTAL count */}
           <div className="hidden md:flex items-center gap-3">
@@ -239,17 +251,33 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile Menu */}
+{/* Mobile Menu */}
+      {/* Mobile Menu */}
       {open && (
-        <div className="lg:hidden fixed top-16 left-0 right-0 z-[9998] bg-[#12081f]/95 backdrop-blur-xl border-b border-white/10">
+        <div
+          className="lg:hidden"
+          style={{
+            position: "fixed",
+            top: "64px",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100vw",
+            height: "calc(100vh - 64px)",
+            backgroundColor: "#12081f",
+            zIndex: 99999,
+            overflowY: "auto",
+          }}
+        >
           <div className="p-4 space-y-2">
-            <MobileItem to="/" label="Home" active={location.pathname === "/"} onClick={() => setOpen(false)} />
-            <MobileItem to="/dashboard" label="Dashboard" active={location.pathname.startsWith("/dashboard")} onClick={() => setOpen(false)} />
-            <MobileItem to="/safety-map" label="Safety Map" active={location.pathname === "/safety-map"} onClick={() => setOpen(false)} />
-            <MobileItem to="/reports" label="Reports" active={location.pathname.startsWith("/reports")} onClick={() => setOpen(false)} />
+            <MobileItem to="/" label="Home" icon={Home} active={location.pathname === "/"} onClick={() => setOpen(false)} />
+            <MobileItem to="/dashboard" label="Dashboard" icon={LayoutDashboard} active={location.pathname.startsWith("/dashboard")} onClick={() => setOpen(false)} />
+            <MobileItem to="/safety-map" label="Safety Map" icon={MapPin} active={location.pathname === "/safety-map"} onClick={() => setOpen(false)} />
+            <MobileItem to="/reports" label="Reports" icon={FileText} active={location.pathname.startsWith("/reports")} onClick={() => setOpen(false)} />
 
             <button
               onClick={() => { setShowHelp(true); setOpen(false); }}
-              className="w-full mt-4 py-3 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold flex items-center justify-center gap-2"
+              className="w-full mt-3 py-3 rounded-xl bg-gradient-to-r from-pink-600 to-purple-600 text-white font-semibold flex items-center justify-center gap-2 shadow-lg"
             >
               <Phone size={18} />
               Get Help
@@ -515,17 +543,34 @@ export default function Navbar() {
 
 /* ===== Helper Components ===== */
 
-function NavItem({ to, label, active }) {
+function NavItem({ to, label, icon: Icon, active }) {
   return (
-    <Link to={to} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${active ? "bg-pink-500/20 text-pink-300" : "text-gray-300 hover:text-white hover:bg-white/5"}`}>
+    <Link
+      to={to}
+      className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300 ${
+        active
+          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-pink-600/25 scale-105"
+          : "text-gray-300 hover:text-white hover:bg-white/5"
+      }`}
+    >
+      <Icon size={16} />
       {label}
     </Link>
   );
 }
 
-function MobileItem({ to, label, active, onClick }) {
+function MobileItem({ to, label, icon: Icon, active, onClick }) {
   return (
-    <Link to={to} onClick={onClick} className={`block px-4 py-3 rounded-lg transition ${active ? "bg-pink-500/20 text-pink-300" : "text-gray-300 hover:bg-white/5 hover:text-white"}`}>
+    <Link
+      to={to}
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base font-bold transition-all border ${
+        active
+          ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md border-transparent"
+          : "bg-[#1a0f2e] border-white/10 text-gray-300 hover:bg-[#241638] hover:text-white hover:border-pink-500/40"
+      }`}
+    >
+      <Icon size={18} />
       {label}
     </Link>
   );

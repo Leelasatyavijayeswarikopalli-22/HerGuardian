@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { MapPin, Navigation, Search } from "lucide-react";
 import Input from "../Input";
 import Button from "../Button";
-
 export default function SrcToDest({
   source,
   destination,
@@ -330,46 +330,56 @@ export default function SrcToDest({
         </div>
       </div>
 
-      {isLoading && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="relative">
-            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500 opacity-60 blur-2xl animate-pulse"></div>
+      {isLoading && createPortal(
+  <div
+    className="flex items-center justify-center bg-black/85 backdrop-blur-md animate-fadeIn"
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 2147483647, // ✅ MAX possible z-index — beats Leaflet & everything
+    }}
+  >
+    <div className="relative">
+      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500 opacity-60 blur-2xl animate-pulse"></div>
 
-            <div className="relative flex min-w-[320px] flex-col items-center gap-6 rounded-3xl border border-pink-500/40 bg-gradient-to-br from-[#1a0b2e]/95 via-[#0a041d]/95 to-[#1a0b2e]/95 px-10 py-12 shadow-[0_0_60px_rgba(236,72,153,0.5)]">
-              <div className="relative flex h-24 w-24 items-center justify-center">
-                <div className="absolute inset-0 animate-spin rounded-full border-4 border-pink-500/30 border-t-pink-500"></div>
-                <div className="absolute inset-2 rounded-full border-4 border-purple-500/30 border-b-purple-500 animate-[spin_1.5s_linear_infinite_reverse]"></div>
-                <div className="h-8 w-8 animate-pulse rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
-              </div>
-
-              <div className="text-center">
-                <h3 className="mb-2 text-xl font-bold text-white">
-                  Finding{" "}
-                  <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
-                    Safest Route
-                  </span>
-                </h3>
-                <p className="text-sm text-gray-400">
-                  Analyzing safety zones, lighting & crime data...
-                </p>
-              </div>
-
-              <div className="flex gap-2">
-                <span className="h-2 w-2 animate-bounce rounded-full bg-pink-500 [animation-delay:-0.3s]"></span>
-                <span className="h-2 w-2 animate-bounce rounded-full bg-fuchsia-500 [animation-delay:-0.15s]"></span>
-                <span className="h-2 w-2 animate-bounce rounded-full bg-purple-500"></span>
-              </div>
-
-              <div className="w-full space-y-2 border-t border-white/10 pt-2">
-                <LoadingStep text="Locating start point" delay="0s" />
-                <LoadingStep text="Scanning safety zones" delay="0.5s" />
-                <LoadingStep text="Calculating safest path" delay="1s" />
-              </div>
-            </div>
-          </div>
+      <div className="relative flex min-w-[320px] flex-col items-center gap-6 rounded-3xl border border-pink-500/40 bg-gradient-to-br from-[#1a0b2e]/98 via-[#0a041d]/98 to-[#1a0b2e]/98 px-10 py-12 shadow-[0_0_60px_rgba(236,72,153,0.5)]">
+        <div className="relative flex h-24 w-24 items-center justify-center">
+          <div className="absolute inset-0 animate-spin rounded-full border-4 border-pink-500/30 border-t-pink-500"></div>
+          <div className="absolute inset-2 rounded-full border-4 border-purple-500/30 border-b-purple-500 animate-[spin_1.5s_linear_infinite_reverse]"></div>
+          <div className="h-8 w-8 animate-pulse rounded-full bg-gradient-to-br from-pink-500 to-purple-600 shadow-[0_0_20px_rgba(236,72,153,0.8)]"></div>
         </div>
-      )}
 
+        <div className="text-center">
+          <h3 className="mb-2 text-xl font-bold text-white">
+            Finding{" "}
+            <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
+              Safest Route
+            </span>
+          </h3>
+          <p className="text-sm text-gray-400">
+            Analyzing safety zones, lighting & crime data...
+          </p>
+        </div>
+
+        <div className="flex gap-2">
+          <span className="h-2 w-2 animate-bounce rounded-full bg-pink-500 [animation-delay:-0.3s]"></span>
+          <span className="h-2 w-2 animate-bounce rounded-full bg-fuchsia-500 [animation-delay:-0.15s]"></span>
+          <span className="h-2 w-2 animate-bounce rounded-full bg-purple-500"></span>
+        </div>
+
+        <div className="w-full space-y-2 border-t border-white/10 pt-2">
+          <LoadingStep text="Locating start point" delay="0s" />
+          <LoadingStep text="Scanning safety zones" delay="0.5s" />
+          <LoadingStep text="Calculating safest path" delay="1s" />
+        </div>
+      </div>
+    </div>
+  </div>,
+  document.body // ✅ render directly into <body>, outside map's stacking context
+)}
       <style>{`
         @keyframes fadeIn {
           from { opacity: 0; }

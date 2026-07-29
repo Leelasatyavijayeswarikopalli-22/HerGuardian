@@ -5,18 +5,19 @@ import Footer from "../components/Footer";
 export default function Layout({ children }) {
   return (
     <div className="min-h-screen glow-bg">
-      <Navbar />
-
-      {/* pt-16 = navbar height (h-16 = 64px) */}
+     <Navbar />
       <div className="flex pt-16">
+
         <Sidebar />
 
-        <main className="flex-1 min-w-0">
+        <main className="flex-1">
           {children}
         </main>
+
       </div>
 
       <Footer />
+
     </div>
   );
 }
