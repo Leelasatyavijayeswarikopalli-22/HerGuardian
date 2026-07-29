@@ -80,6 +80,30 @@ export default function ManageReports({ onUpdate, authorityEmail, authorityName,
     }
   }
 
+  // ✅ Helper — is this report owned by ME (the logged-in authority)?
+  const isMyReport = (report) => {
+    if (!authorityEmail) return false;
+    const email = authorityEmail.toLowerCase();
+    return (
+      (report.authorityEmail && report.authorityEmail.toLowerCase() === email) ||
+      (report.updatedBy && report.updatedBy.toLowerCase() === email) ||
+      (report.resolvedBy && report.resolvedBy.toLowerCase() === email) ||
+      (report.verifiedBy && report.verifiedBy.toLowerCase() === email)
+    );
+  };
+
+  // ✅ Search matches multiple fields (like the parent dashboard)
+  const matchesSearch = (report) => {
+    if (!searchQuery || !searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (report.location && report.location.toLowerCase().includes(q)) ||
+      (report.category && report.category.toLowerCase().includes(q)) ||
+      (report.description && report.description.toLowerCase().includes(q)) ||
+      (report.reportedBy && report.reportedBy.toLowerCase().includes(q))
+    );
+  };
+
   if (loading) {
     return (
       <div className="rounded-xl bg-purple-500/10 p-5 text-purple-300 border border-purple-500/20">
@@ -88,23 +112,29 @@ export default function ManageReports({ onUpdate, authorityEmail, authorityName,
     );
   }
 
-  if (reports.length === 0) {
+  // ✅ Filter reports:
+  //   1. Never show RECTIFIED cases here
+  //   2. Show all ACTIVE (unassigned – any authority can pick up)
+  //   3. Show non-active cases ONLY if I am the one handling them
+  //   4. Apply search filter
+  const filteredReports = reports
+    .filter((r) => r.status !== "RECTIFIED")
+    .filter((r) => {
+      if (r.status === "ACTIVE") return true; // unassigned → visible to everyone
+      return isMyReport(r); // otherwise only my own cases
+    })
+    .filter(matchesSearch);
+
+  if (filteredReports.length === 0) {
     return (
       <div className="rounded-xl bg-white/5 p-5 text-slate-400 border border-white/10">
-        No reports found.
+        No reports available for you right now.
       </div>
     );
   }
 
-  // ✅ Filter reports based on searchQuery (placed after state and loading check)
-  const filteredReports = reports.filter((report) => {
-    if (!searchQuery) return true;
-    return report.location.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
   return (
     <div className="space-y-5">
-      {/* ✅ Mapped over filteredReports instead of reports */}
       {filteredReports.map((report) => (
         <Card key={report.id}>
           <h2 className="text-xl font-bold text-purple-300">{report.category}</h2>

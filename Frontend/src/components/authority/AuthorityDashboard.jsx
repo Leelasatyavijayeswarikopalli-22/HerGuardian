@@ -72,52 +72,62 @@ export default function AuthorityDashboard() {
 
   const totalReports = reports.length;
   const visibleReports = reports.filter((r) => r.status !== "RECTIFIED");
-
   const activeCases = visibleReports.filter((r) => r.status === "ACTIVE").length;
-
-  const myReports = visibleReports.filter(isMyReport);
-
+  const allMyReports = reports.filter(isMyReport);
+  const myReports = allMyReports.filter((r) => r.status !== "RECTIFIED");
   const myPendingReview = myReports.filter((r) => r.status === "UNDER_VERIFICATION").length;
   const myInProgress = myReports.filter((r) => r.status === "IN_PROGRESS").length;
-  const myResolvedCases = myReports.filter((r) => r.status === "RECTIFIED").length;
+  const myResolvedCases = allMyReports.filter((r) => r.status === "RECTIFIED").length;
 
   const todayStr = new Date().toDateString();
-  const myVerifiedToday = myReports.filter(
+  const myVerifiedToday = allMyReports.filter(
     (r) =>
       r.status === "RECTIFIED" &&
       r.resolvedAt &&
       new Date(r.resolvedAt).toDateString() === todayStr
   ).length;
 
-  const myUniqueUsers = new Set(myReports.map((r) => r.reportedBy)).size;
+  const myUniqueUsers = new Set(allMyReports.map((r) => r.reportedBy)).size;
 
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-  const myNewHandledCount = myReports.filter(
+  const myNewHandledCount = allMyReports.filter(
     (r) => r.reportedAt && new Date(r.reportedAt).getTime() >= oneDayAgo
   ).length;
 
-  const myTotalHandled = myReports.length;
-const matchesSearch = (report) => {
-  if (!searchLocation || !searchLocation.trim()) return true;
-  const query = searchLocation.toLowerCase();
-  return (
-    (report.location && report.location.toLowerCase().includes(query)) ||
-    (report.category && report.category.toLowerCase().includes(query)) ||
-    (report.description && report.description.toLowerCase().includes(query)) ||
-    (report.reportedBy && report.reportedBy.toLowerCase().includes(query))
+  const myTotalHandled = allMyReports.length;
+
+  // ✅ Search only applies to the active tab's content
+  const matchesSearch = (report) => {
+    if (!searchLocation || !searchLocation.trim()) return true;
+    const query = searchLocation.toLowerCase();
+    return (
+      (report.location && report.location.toLowerCase().includes(query)) ||
+      (report.category && report.category.toLowerCase().includes(query)) ||
+      (report.description && report.description.toLowerCase().includes(query)) ||
+      (report.reportedBy && report.reportedBy.toLowerCase().includes(query))
+    );
+  };
+
+  // ✅ Each tab uses searchLocation only for its own list
+  const activeCasesList = visibleReports
+    .filter((r) => r.status === "ACTIVE")
+    .filter(activeTab === "manage-cases" ? matchesSearch : () => true);
+
+  const myVerifiedCasesList = myReports
+    .filter((r) => r.status === "UNDER_VERIFICATION" || r.status === "IN_PROGRESS")
+    .filter(activeTab === "verified-cases" ? matchesSearch : () => true);
+
+  // Dashboard tab uses search for the ManageReports component inside it
+  const dashboardSearchQuery = activeTab === "dashboard" ? searchLocation : "";
+
+  // manage-cases tab search query for ManageReports
+  const manageCasesSearchQuery = activeTab === "manage-cases" ? searchLocation : "";
+
+  const searchedMyReports = allMyReports.filter(
+    activeTab === "user-records" ? matchesSearch : () => true
   );
-};
-   const activeCasesList = visibleReports
-  .filter((r) => r.status === "ACTIVE")
-  .filter(matchesSearch);
 
-const myVerifiedCasesList = myReports
-  .filter((r) => r.status === "UNDER_VERIFICATION" || r.status === "IN_PROGRESS")
-  .filter(matchesSearch);
-
-  const searchedMyReports = myReports.filter(matchesSearch);
-
-const myUserRecords = searchedMyReports.reduce((acc, r) => {
+  const myUserRecords = searchedMyReports.reduce((acc, r) => {
     const key = r.reportedBy || "Unknown";
     if (!acc[key]) acc[key] = { name: key, count: 0, cases: [] };
     acc[key].count += 1;
@@ -125,6 +135,7 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
     return acc;
   }, {});
   const myUserRecordsList = Object.values(myUserRecords).sort((a, b) => b.count - a.count);
+
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout from the Authority Portal?")) {
       localStorage.clear();
@@ -133,11 +144,16 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
   };
 
   const handleSearchKeyDown = (e) => {
-  if (e.key === "Enter") {
-    // ✅ search works on current tab, no tab switching needed
-    // the lists already re-filter reactively via matchesSearch
-  }
-};
+    if (e.key === "Enter") {
+      // filters reactively — no action needed
+    }
+  };
+
+  // ✅ Clear search when switching tabs so stale queries don't bleed across tabs
+  const handleTabChange = (tabId) => {
+    setSearchLocation("");
+    setActiveTab(tabId);
+  };
 
   const sidebarItems = [
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
@@ -204,6 +220,29 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
         <p className="text-sm text-yellow-300 mt-2">
           <b>Remark:</b> {report.adminRemark}
         </p>
+      )}
+    </div>
+  );
+
+  // ✅ Reusable search bar JSX
+  const searchBar = (
+    <div className="flex items-center gap-2 bg-black/30 border border-white/10 rounded-xl px-4 py-2 w-full">
+      <Search size={16} className="text-slate-500 flex-shrink-0" />
+      <input
+        type="text"
+        placeholder="Search Case Location..."
+        value={searchLocation}
+        onChange={(e) => setSearchLocation(e.target.value)}
+        onKeyDown={handleSearchKeyDown}
+        className="bg-transparent border-none outline-none text-sm text-white placeholder-slate-500 w-full"
+      />
+      {searchLocation && (
+        <button
+          onClick={() => setSearchLocation("")}
+          className="text-slate-500 hover:text-white transition flex-shrink-0"
+        >
+          <X size={14} />
+        </button>
       )}
     </div>
   );
@@ -328,12 +367,13 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
                   </button>
                 </div>
               </div>
-              {/* ✅ passed searchQuery to filter by location */}
+
+              {/* ✅ Dashboard tab passes its own search query */}
               <ManageReports
                 onUpdate={loadAllReports}
                 authorityEmail={authorityEmail}
                 authorityName={authorityName}
-                searchQuery={searchLocation}
+                searchQuery={dashboardSearchQuery}
               />
             </div>
 
@@ -582,7 +622,7 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() => handleTabChange(item.id)}
                     className={`w-full flex items-center justify-between rounded-xl px-4 py-3 text-left transition-all duration-200 group ${
                       isActive
                         ? "bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 text-white shadow-lg shadow-purple-900/20"
@@ -643,7 +683,7 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
               </div>
 
               <div className="flex items-center gap-4">
-                {/* ✅ UPDATED SEARCH BAR */}
+                {/* ✅ Desktop search bar — always visible on lg+ */}
                 <div className="hidden lg:flex items-center gap-2 bg-black/30 border border-white/10 rounded-xl px-4 py-2 w-72">
                   <Search size={16} className="text-slate-500" />
                   <input
@@ -654,6 +694,14 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
                     onKeyDown={handleSearchKeyDown}
                     className="bg-transparent border-none outline-none text-sm text-white placeholder-slate-500 w-full"
                   />
+                  {searchLocation && (
+                    <button
+                      onClick={() => setSearchLocation("")}
+                      className="text-slate-500 hover:text-white transition"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
                 </div>
 
                 <button className="relative p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition">
@@ -681,6 +729,11 @@ const myUserRecords = searchedMyReports.reduce((acc, r) => {
                   <span>Logout</span>
                 </button>
               </div>
+            </div>
+
+            {/* ✅ Mobile search bar — visible below md, full width */}
+            <div className="lg:hidden px-4 pb-3">
+              {searchBar}
             </div>
           </header>
 

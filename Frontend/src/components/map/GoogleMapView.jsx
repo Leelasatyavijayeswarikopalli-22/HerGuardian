@@ -26,9 +26,8 @@ const LiveIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const ARRIVAL_KM = 0.05;      // 50 m → destination reached
-const DEVIATION_KM = 0.1;     // 100 m off the selected route → warning
-const AVG_SPEED_KMH = 35;     // realistic Indian city average
+  const ARRIVAL_KM = 0.05; // 50 metres
+const DEVIATION_KM = 0.1; // 100 metres
 
 export default function GoogleMapView({
   source,
