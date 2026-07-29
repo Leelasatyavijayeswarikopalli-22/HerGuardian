@@ -11,8 +11,8 @@ export default function Hero() {
   const [showHelp, setShowHelp] = useState(false);
 
   return (
-    <section
-      className="relative min-h-screen flex flex-col overflow-hidden justify-center"
+            <section
+      className="relative min-h-screen flex flex-col overflow-hidden justify-between pt-28 lg:pt-20 pb-20"
       style={{
         backgroundImage: `
           linear-gradient(135deg, rgba(30, 5, 50, 0.88) 0%, rgba(80, 10, 60, 0.75) 40%, rgba(10, 2, 25, 0.95) 100%),
@@ -79,69 +79,70 @@ export default function Hero() {
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="flex-1 relative flex items-center justify-center mt-8 lg:mt-0 min-h-[560px] lg:translate-y-10">
+                        {/* RIGHT SIDE */}
+        <div className="flex-1 relative flex flex-col items-center justify-center my-6 lg:my-0 min-h-[350px] lg:min-h-[500px] w-full">
+          <div className="absolute w-[300px] lg:w-[500px] h-[300px] lg:h-[500px] bg-pink-500/40 blur-[130px] rounded-full"></div>
 
-          <div className="absolute w-[500px] h-[500px] bg-pink-500/40 blur-[130px] rounded-full"></div>
-
-          <div className="absolute w-[500px] h-[500px] border border-pink-500/30 rounded-full animate-[spin_30s_linear_infinite]">
+          <div className="hidden lg:block absolute w-[500px] h-[500px] border border-pink-500/30 rounded-full animate-[spin_30s_linear_infinite]">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-pink-400 rounded-full shadow-[0_0_15px_rgba(236,72,153,0.9)]"></div>
           </div>
-          <div className="absolute w-[400px] h-[400px] border border-purple-500/30 rounded-full animate-[spin_20s_linear_infinite_reverse]"></div>
-          <div className="absolute w-[300px] h-[300px] border border-pink-500/40 rounded-full"></div>
+          <div className="hidden lg:block absolute w-[400px] h-[400px] border border-purple-500/30 rounded-full animate-[spin_20s_linear_infinite_reverse]"></div>
+          <div className="hidden lg:block absolute w-[300px] h-[300px] border border-pink-500/40 rounded-full"></div>
 
-          <div className="absolute w-[200px] h-[200px] rounded-full border-4 border-pink-500 shadow-[0_0_60px_rgba(236,72,153,0.9),inset_0_0_40px_rgba(236,72,153,0.4)] animate-pulse"></div>
+          <div className="hidden lg:block absolute w-[200px] h-[200px] rounded-full border-4 border-pink-500 shadow-[0_0_60px_rgba(236,72,153,0.9),inset_0_0_40px_rgba(236,72,153,0.4)] animate-pulse"></div>
 
-          <div className="relative z-10 flex items-center justify-center w-36 h-36 rounded-full  
-                bg-white overflow-hidden
-                cursor-pointer transition-all duration-300 ease-out
-                shadow-[0_0_28px_rgba(236,72,153,0.45)]
-                hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(236,72,153,0.55)]">
-            <img src="/icon.png" alt="HerGuardian Logo" className="w-full h-full object-contain p-1" />
-          </div>
-
-         <FloatCard
-  className="absolute top-0 left-1/2 -translate-x-1/2"
-  Icon={MapPinned}
-  iconColor="text-blue-400"
-  title="Safety Map"
-/>
-          <FloatCard className="absolute top-1/2 left-[8%] -translate-y-1/2" Icon={Shield} iconColor="text-green-400" title="Dynamic Safety Score"/>
-          <FloatCard className="absolute top-1/2 right-[8%] -translate-y-1/2" Icon={Mic} iconColor="text-red-400" title="Secret Voice SOS" />
-          <FloatCard
-  className="absolute bottom-0 left-1/2 -translate-x-1/2"
-  Icon={Users}
-  iconColor="text-pink-400"
-  title="Community Report"
-/>
-        </div>
-      </div>
-
-      
-      {/* BOTTOM STATS BAR */}
-<div className="relative z-10 px-6 lg:px-20 pb-6 -mt-4">
-  <div className="max-w-2xl mx-auto lg:mx-0 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/10 px-8 py-5 shadow-2xl">
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 place-items-center">
-      <StatItem Icon={ShieldCheck} value="12K+" label="Women Protected" color="text-pink-400" />
-      <StatItem Icon={Siren} value="8.5K+" label="Incidents Reported" color="text-orange-400" />
-      <StatItem Icon={UsersRound} value="25K+" label="Trusted Users" color="text-purple-400" />
-    </div>
-  </div>
+          <div className="relative z-10 flex items-center justify-center w-28 h-28 lg:w-36 lg:h-36 rounded-full bg-white overflow-hidden shadow-[0_0_28px_rgba(236,72,153,0.45)] mx-auto">
+  <img src="/icon.png" alt="HerGuardian Logo" className="w-full h-full object-contain p-1" />
 </div>
 
-      {/* FLOATING "Need Help?" CHAT WIDGET */}
-      <button
-        onClick={() => setShowHelp(true)}
-        className="absolute bottom-20 right-6 z-[50] flex items-center gap-3 bg-black/70 backdrop-blur-xl border border-pink-500/30 rounded-full pl-3 pr-5 py-3 shadow-[0_0_30px_rgba(236,72,153,0.4)] cursor-pointer hover:scale-105 hover:border-pink-500/60 hover:shadow-[0_0_40px_rgba(236,72,153,0.7)] transition-all duration-300"
-      >
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg animate-pulse">
-          <MessageCircle size={20} className="text-white" />
-        </div>
-        <div className="text-left">
-          <p className="text-white font-semibold text-sm leading-tight">Need Help?</p>
-          <p className="text-pink-300 text-xs">We're here for you</p>
-        </div>
-      </button>
+          {/* ✅ 1. Wrap your existing FloatCards in hidden lg:block so they only show on desktop */}
+          <div className="hidden lg:block">
+            <FloatCard className="absolute top-0 left-1/2 -translate-x-1/2" Icon={MapPinned} iconColor="text-blue-400" title="Safety Map" />
+            <FloatCard className="absolute top-1/2 left-[8%] -translate-y-1/2" Icon={Shield} iconColor="text-green-400" title="Dynamic Safety Score"/>
+            <FloatCard className="absolute top-1/2 right-[8%] -translate-y-1/2" Icon={Mic} iconColor="text-red-400" title="Secret Voice SOS" />
+            <FloatCard className="absolute bottom-0 left-1/2 -translate-x-1/2" Icon={Users} iconColor="text-pink-400" title="Community Report" />
+          </div>
 
+          {/* ✅ 2. Add this clean mobile grid right below it so mobile devices never overlap */}
+          <div className="grid grid-cols-2 gap-3 mt-8 lg:hidden w-full max-w-xs z-10">
+            <MobileFloatCard Icon={MapPinned} iconColor="text-blue-400" title="Safety Map" />
+            <MobileFloatCard Icon={Shield} iconColor="text-green-400" title="Safety Score" />
+            <MobileFloatCard Icon={Mic} iconColor="text-red-400" title="Voice SOS" />
+            <MobileFloatCard Icon={Users} iconColor="text-pink-400" title="Community" />
+          </div>
+
+        </div>
+        </div>
+      
+             {/* BOTTOM STATS & HELP CONTAINER */}
+      {/* BOTTOM STATS & HELP CONTAINER */}
+<div className="relative z-10 w-full px-6 lg:px-12 mt-6 flex flex-col lg:flex-row items-center lg:items-end justify-between gap-6">
+        
+        {/* Stats Box */}
+        <div className="max-w-2xl rounded-2xl bg-black/50 backdrop-blur-xl border border-white/10 px-6 sm:px-8 py-5 shadow-2xl w-full lg:w-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 place-items-center sm:place-items-start">
+            <StatItem Icon={ShieldCheck} value="12K+" label="Women Protected" color="text-pink-400" />
+            <StatItem Icon={Siren} value="8.5K+" label="Incidents Reported" color="text-orange-400" />
+            <StatItem Icon={UsersRound} value="25K+" label="Trusted Users" color="text-purple-400" />
+          </div>
+        </div>
+
+        {/* "Need Help?" Widget */}
+                {/* "Need Help?" Widget */}
+        <button
+          onClick={() => setShowHelp(true)}
+          className="flex items-center gap-3 bg-black/85 backdrop-blur-xl border border-pink-500/50 rounded-full pl-3 pr-5 py-3 shadow-[0_0_35px_rgba(236,72,153,0.5)] cursor-pointer hover:scale-105 hover:border-pink-500 hover:shadow-[0_0_45px_rgba(236,72,153,0.8)] transition-all duration-300 w-full sm:w-auto justify-center lg:justify-start lg:ml-auto"
+        >
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg animate-pulse">
+            <MessageCircle size={20} className="text-white" />
+          </div>
+          <div className="text-left">
+            <p className="text-white font-semibold text-sm leading-tight">Need Help?</p>
+            <p className="text-pink-300 text-xs">We're here for you</p>
+          </div>
+        </button>
+
+      </div>
       {/* ===== LEARN MORE MODAL ===== */}
       {showLearnMore && (
         <div 
@@ -516,7 +517,17 @@ function ContactCard({ Icon, title, value, href }) {
     </a>
   );
 }
-
+/* Mobile Responsive Feature Card */
+function MobileFloatCard({ Icon, iconColor, title }) {
+  return (
+    <div className="flex items-center gap-2.5 bg-black/60 backdrop-blur-md border border-pink-500/30 rounded-xl p-2.5 shadow-md">
+      <div className={`w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 ${iconColor}`}>
+        <Icon size={16} />
+      </div>
+      <span className="text-white text-xs font-semibold leading-tight">{title}</span>
+    </div>
+  );
+}
 /* Helpline Card */
 function HelplineCard({ number, label }) {
   return (
