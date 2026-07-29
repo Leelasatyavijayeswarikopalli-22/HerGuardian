@@ -3,7 +3,7 @@ import api from "../../api/api";
 import Card from "../Card";
 import Button from "../Button";
 
-export default function ManageReports({ onUpdate, authorityEmail, authorityName }) {
+export default function ManageReports({ onUpdate, authorityEmail, authorityName, searchQuery }) {
   const [reports, setReports] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [status, setStatus] = useState({});
@@ -96,9 +96,16 @@ export default function ManageReports({ onUpdate, authorityEmail, authorityName 
     );
   }
 
+  // ✅ Filter reports based on searchQuery (placed after state and loading check)
+  const filteredReports = reports.filter((report) => {
+    if (!searchQuery) return true;
+    return report.location.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
     <div className="space-y-5">
-      {reports.map((report) => (
+      {/* ✅ Mapped over filteredReports instead of reports */}
+      {filteredReports.map((report) => (
         <Card key={report.id}>
           <h2 className="text-xl font-bold text-purple-300">{report.category}</h2>
 

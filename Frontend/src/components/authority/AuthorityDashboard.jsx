@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
@@ -16,6 +16,9 @@ export default function AuthorityDashboard() {
 
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchLocation, setSearchLocation] = useState("");
+
+  const caseManagementRef = useRef(null);
 
   const authorityName = localStorage.getItem("name") || "Authority Officer";
   const authorityEmail = JSON.parse(localStorage.getItem("user") || "{}")?.email || "";
@@ -68,9 +71,11 @@ export default function AuthorityDashboard() {
   };
 
   const totalReports = reports.length;
-  const activeCases = reports.filter((r) => r.status === "ACTIVE").length;
+  const visibleReports = reports.filter((r) => r.status !== "RECTIFIED");
 
-  const myReports = reports.filter(isMyReport);
+  const activeCases = visibleReports.filter((r) => r.status === "ACTIVE").length;
+
+  const myReports = visibleReports.filter(isMyReport);
 
   const myPendingReview = myReports.filter((r) => r.status === "UNDER_VERIFICATION").length;
   const myInProgress = myReports.filter((r) => r.status === "IN_PROGRESS").length;
@@ -92,14 +97,27 @@ export default function AuthorityDashboard() {
   ).length;
 
   const myTotalHandled = myReports.length;
-
-  const activeCasesList = reports.filter((r) => r.status === "ACTIVE");
-
-  const myVerifiedCasesList = myReports.filter(
-    (r) => r.status === "UNDER_VERIFICATION" || r.status === "IN_PROGRESS"
+const matchesSearch = (report) => {
+  if (!searchLocation || !searchLocation.trim()) return true;
+  const query = searchLocation.toLowerCase();
+  return (
+    (report.location && report.location.toLowerCase().includes(query)) ||
+    (report.category && report.category.toLowerCase().includes(query)) ||
+    (report.description && report.description.toLowerCase().includes(query)) ||
+    (report.reportedBy && report.reportedBy.toLowerCase().includes(query))
   );
+};
+   const activeCasesList = visibleReports
+  .filter((r) => r.status === "ACTIVE")
+  .filter(matchesSearch);
 
-  const myUserRecords = myReports.reduce((acc, r) => {
+const myVerifiedCasesList = myReports
+  .filter((r) => r.status === "UNDER_VERIFICATION" || r.status === "IN_PROGRESS")
+  .filter(matchesSearch);
+
+  const searchedMyReports = myReports.filter(matchesSearch);
+
+const myUserRecords = searchedMyReports.reduce((acc, r) => {
     const key = r.reportedBy || "Unknown";
     if (!acc[key]) acc[key] = { name: key, count: 0, cases: [] };
     acc[key].count += 1;
@@ -107,13 +125,19 @@ export default function AuthorityDashboard() {
     return acc;
   }, {});
   const myUserRecordsList = Object.values(myUserRecords).sort((a, b) => b.count - a.count);
-
   const handleLogout = () => {
     if (window.confirm("Are you sure you want to logout from the Authority Portal?")) {
       localStorage.clear();
       navigate("/login", { replace: true });
     }
   };
+
+  const handleSearchKeyDown = (e) => {
+  if (e.key === "Enter") {
+    // ✅ search works on current tab, no tab switching needed
+    // the lists already re-filter reactively via matchesSearch
+  }
+};
 
   const sidebarItems = [
     { id: "dashboard", name: "Dashboard", icon: LayoutDashboard, badge: null },
@@ -287,7 +311,7 @@ export default function AuthorityDashboard() {
           </section>
 
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <div className="lg:col-span-2 rounded-3xl bg-[#13102a] border border-white/10 p-6 shadow-xl">
+            <div ref={caseManagementRef} className="lg:col-span-2 rounded-3xl bg-[#13102a] border border-white/10 p-6 shadow-xl scroll-mt-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-white">Case Management</h3>
@@ -304,11 +328,12 @@ export default function AuthorityDashboard() {
                   </button>
                 </div>
               </div>
-              {/* ✅ pass authority identity so updates are tagged */}
+              {/* ✅ passed searchQuery to filter by location */}
               <ManageReports
                 onUpdate={loadAllReports}
                 authorityEmail={authorityEmail}
                 authorityName={authorityName}
+                searchQuery={searchLocation}
               />
             </div>
 
@@ -618,11 +643,15 @@ export default function AuthorityDashboard() {
               </div>
 
               <div className="flex items-center gap-4">
-                <div className="hidden lg:flex items-center gap-2 bg-black/30 border border-white/10 rounded-xl px-4 py-2 w-64">
+                {/* ✅ UPDATED SEARCH BAR */}
+                <div className="hidden lg:flex items-center gap-2 bg-black/30 border border-white/10 rounded-xl px-4 py-2 w-72">
                   <Search size={16} className="text-slate-500" />
                   <input
                     type="text"
-                    placeholder="Search case ID..."
+                    placeholder="Search Case Location..."
+                    value={searchLocation}
+                    onChange={(e) => setSearchLocation(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
                     className="bg-transparent border-none outline-none text-sm text-white placeholder-slate-500 w-full"
                   />
                 </div>
