@@ -19,7 +19,7 @@ public class CorsConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:5174",
-                "https://her-guardian.vercel.app/"
+                "https://her-guardian.vercel.app"
         ));
 
         configuration.setAllowedMethods(List.of(
