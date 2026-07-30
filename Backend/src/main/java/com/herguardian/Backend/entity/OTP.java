@@ -26,13 +26,7 @@ public class OTP {
 
     @Id
     @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "otp_seq"
-    )
-    @SequenceGenerator(
-            name = "otp_seq",
-            sequenceName = "OTP_SEQ",
-            allocationSize = 1
+            strategy = GenerationType.IDENTITY
     )
     private Long id;
 

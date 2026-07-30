@@ -15,12 +15,8 @@ import java.time.LocalDateTime;
 public class PendingUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "pending_seq")
-    @SequenceGenerator(
-            name = "pending_seq",
-            sequenceName = "PENDING_SEQ",
-            allocationSize = 1
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
     )
     private Long id;
 

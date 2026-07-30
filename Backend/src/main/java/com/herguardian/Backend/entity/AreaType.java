@@ -12,14 +12,9 @@ import lombok.*;
 public class AreaType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "area_seq")
-
-    @SequenceGenerator(
-            name="area_seq",
-            sequenceName="AREA_SEQ",
-            allocationSize = 1)
-
+    @GeneratedValue(
+            strategy = GenerationType.IDENTITY
+    )
     private Long id;
 
     private double latitude;
