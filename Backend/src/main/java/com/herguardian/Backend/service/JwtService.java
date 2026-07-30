@@ -5,6 +5,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 
 import java.security.Key;
 import java.util.Date;
@@ -12,12 +15,16 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    // Change this to a long random string before deploying
-    private static final String SECRET =
-            "HerGuardianSecretKeyForJwtAuthentication2026SuperSecureKey12345";
+    private final Key key;
 
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    public JwtService(
+            @Value("${jwt.secret}")
+            String secret) {
 
+        this.key = Keys.hmacShaKeyFor(
+                secret.getBytes()
+        );
+    }
     // Generate JWT
     public String generateToken(String email) {
 
