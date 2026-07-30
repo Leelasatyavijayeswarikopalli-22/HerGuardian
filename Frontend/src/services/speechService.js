@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:8080/api/auth";
+const API = "https://her-guardian.vercel.app/api/auth";
 
 export const getVoicePhrase = async (email) => {
 

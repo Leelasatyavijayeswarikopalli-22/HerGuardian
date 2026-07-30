@@ -79,7 +79,7 @@ export default function Signup() {
     if (secretPhrase.trim().length < 4) { alert("Secret phrase must contain at least 4 characters."); return; }
 
     try {
-      const response = await axios.post("http://localhost:8080/api/auth/register", {
+      const response = await axios.post("https://her-guardian.vercel.app/api/auth/register", {
         fullName, email, password,
         emergencyContact1, emergencyContact2, emergencyContact3,
         voicePhrase: secretPhrase,
