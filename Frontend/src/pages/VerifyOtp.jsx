@@ -28,7 +28,7 @@ export default function VerifyOtp() {
         try {
 
             const response = await axios.post(
-                "https://her-guardian.vercel.app/api/auth/verify",
+                "https://herguardian-production-2950.up.railway.app/api/auth/verify",
                 {
                     email: email,
                     otp: otp

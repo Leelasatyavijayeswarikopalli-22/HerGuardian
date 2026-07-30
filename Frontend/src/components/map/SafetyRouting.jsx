@@ -79,7 +79,7 @@ export default function SafetyRouting({
         };
 
         const response = await axios.post(
-          "https://her-guardian.vercel.app/api/routes/analyze",
+          "https://herguardian-production-2950.up.railway.app/api/routes/analyze",
           payload
         );
 
