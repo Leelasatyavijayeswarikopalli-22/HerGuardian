@@ -39,6 +39,9 @@ function AuthorityPage({ children }) {
 function AppRoutes() {
   const location = useLocation();
   const isSafetyMap = location.pathname === "/safety-map";
+  const token = localStorage.getItem("token");
+  const role = String(localStorage.getItem("role") || "").toUpperCase();
+  const isUser = token && role === "USER";
 
   // ✅ GLOBAL ANDROID SOS LISTENER (Triggered when screen-off voice phrase matches)
   useEffect(() => {
@@ -69,14 +72,16 @@ function AppRoutes() {
     };
   }, []);
 
-  // Only show SafetyMap div when on that route, but keep it mounted forever
-  const safetyMapElement = (
+  const safetyMapElement = isUser ? (
     <div style={{ display: isSafetyMap ? "block" : "none" }}>
       <UserPage>
         <SafetyMap />
       </UserPage>
     </div>
-  );
+  ) : null;
+
+  // Only bypass Routes when we're actually rendering the persistent map
+  const showPersistentMap = isSafetyMap && isUser;
 
   return (
     <>
@@ -84,14 +89,24 @@ function AppRoutes() {
       {safetyMapElement}
 
       {/* Normal routes - but skip safety-map since it's handled above */}
-      {!isSafetyMap && (
+      {!showPersistentMap && (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<AuthChoice />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
-
+           
+            {/* 👇 ADD THIS - handles logged-out users hitting /safety-map */}
+    <Route
+      path="/safety-map"
+      element={
+        <UserPage>
+          <SafetyMap />
+        </UserPage>
+      }
+    />
+    
           <Route
             path="/dashboard"
             element={
