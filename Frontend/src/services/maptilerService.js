@@ -13,14 +13,14 @@ export async function getAlternativeRoutes(source, destination) {
       : [destination.lng, destination.lat];
 
     const response = await axios.post(
-      "/ors/v2/directions/driving-car/geojson",
+      "https://api.openrouteservice.org/v2/directions/driving-car/geojson",  // ← FULL URL
       {
         coordinates: [startCoords, endCoords],
         preference: "recommended",
         alternative_routes: {
-          target_count: 3,      // ✅ ask for 3 routes
-          weight_factor: 1.6,   // ✅ allow longer alternatives
-          share_factor: 0.5,    // ✅ allow more overlap so 3rd route is found
+          target_count: 3,
+          weight_factor: 1.6,
+          share_factor: 0.5,
         },
       },
       {
