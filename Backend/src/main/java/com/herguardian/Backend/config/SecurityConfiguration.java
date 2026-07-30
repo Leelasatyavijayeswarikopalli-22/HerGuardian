@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                                 "/",
                                 "/error",
                                 "/favicon.ico",
-                                "/auth/**",
+                                "/api/auth/**",
                                 "/api/routes/**",
                                 "/api/test/**",
                                 "/api/mail",
