@@ -1,53 +1,58 @@
 package com.herguardian.Backend.service;
 
 import com.herguardian.Backend.exception.OtpDeliveryException;
-import lombok.RequiredArgsConstructor;
+import com.resend.Resend;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${resend.api.key}")
+    private String resendApiKey;
 
-    @Value("${spring.mail.username}")
+    @Value("${resend.from.email}")
     private String senderEmail;
+
+    private Resend resend;
+
+    @PostConstruct
+    public void init() {
+        this.resend = new Resend(resendApiKey);
+    }
 
     public void sendOtp(String email, String otp) {
 
         String normalizedEmail = email.trim().toLowerCase();
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        String htmlContent =
+                "<div style=\"font-family: Arial, sans-serif; line-height: 1.6;\">" +
+                        "<p>Hello,</p>" +
+                        "<p>Your HerGuardian OTP is: <strong style=\"font-size:18px;\">" + otp + "</strong></p>" +
+                        "<p>This OTP is valid for 5 minutes.</p>" +
+                        "<p>If you did not request this OTP, please ignore this email.</p>" +
+                        "<p>Stay Safe!<br/>HerGuardian Team</p>" +
+                        "</div>";
 
-        message.setFrom(senderEmail);
-        message.setTo(normalizedEmail);
-        message.setSubject("HerGuardian OTP Verification");
-
-        message.setText(
-                "Hello,\n\n" +
-                        "Your HerGuardian OTP is: " + otp + "\n\n" +
-                        "This OTP is valid for 5 minutes.\n\n" +
-                        "If you did not request this OTP, please ignore this email.\n\n" +
-                        "Stay Safe!\n" +
-                        "HerGuardian Team"
-        );
+        CreateEmailOptions params = CreateEmailOptions.builder()
+                .from(senderEmail)
+                .to(normalizedEmail)
+                .subject("HerGuardian OTP Verification")
+                .html(htmlContent)
+                .build();
 
         try {
-            mailSender.send(message);
-            log.info("OTP sent successfully to {}", normalizedEmail);
-        } catch (MailException exception) {
+            CreateEmailResponse response = resend.emails().send(params);
+            log.info("OTP sent successfully to {} (id: {})", normalizedEmail, response.getId());
+        } catch (ResendException exception) {
             log.error("Could not send OTP to {}", normalizedEmail, exception);
-
-            throw new OtpDeliveryException(
-                    "Unable to send OTP email",
-                    exception
-            );
+            throw new OtpDeliveryException("Unable to send OTP email", exception);
         }
     }
 }
