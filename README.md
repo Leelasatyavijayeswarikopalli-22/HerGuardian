@@ -466,7 +466,9 @@ Built during
 - Community Reports
 - Authority Portal
 - Voice SOS
+- Safety Dashboard
 
+---
 ---
 
 # 🏗️ System Architecture
@@ -1534,10 +1536,6 @@ HerGuardian is more than a navigation platform.
 It is a mission to ensure that **every woman can travel confidently, independently, and without fear**, powered by intelligent technology, proactive protection, and community-driven safety.
 
 ---
-
-<div align="center">
-
-
 <!-- ========================================================= -->
 <!--                 PREMIUM README ADDITIONS                  -->
 <!-- ========================================================= -->
@@ -1956,117 +1954,54 @@ Verified reports continuously improve future route recommendations.
 
 ---
 
----
-
 # 🌎 Vision 2030
 
-Our long-term vision is to build:
+Our long-term vision is to create
 
-> **India's largest AI-powered public safety navigation ecosystem.**
+> India's largest AI-powered public safety navigation ecosystem.
 
-HerGuardian aims to become a safety layer integrated into everyday mobility.
+Future deployments include
 
-Future integrations:
+🏙 Smart Cities
 
-| Sector | Future Possibility |
-|--------|--------------------|
-| 🏙 Smart Cities | City-wide safety intelligence |
-| 🚇 Public Transport | Safer commuting assistance |
-| 🚔 Police Systems | Faster emergency coordination |
-| 🎓 Universities | Campus safety monitoring |
-| 🏢 Organizations | Employee travel protection |
+🚇 Public Transport
 
----
+🚔 Police Systems
 
-# 📚 Learning & Technical Insights
+🎓 University Campuses
 
-HerGuardian demonstrates practical implementation of:
-
-| Domain | Implementation |
-|--------|---------------|
-| Artificial Intelligence | Safety prediction and risk analysis |
-| Machine Learning | Incident pattern learning |
-| Geospatial Computing | Route intelligence and mapping |
-| Backend Engineering | Secure REST APIs |
-| Authentication | JWT + BCrypt security |
-| Database Design | User, Route and Incident management |
-| Mobile Development | Voice-based emergency system |
-| Cloud Deployment | Scalable application hosting |
+🏢 Corporate Safety Networks
 
 ---
 
-# 🧪 Testing Strategy
+# 💖 Support
 
-## Frontend Testing
+If you found HerGuardian useful
 
-✔ UI responsiveness
-
-✔ Route interaction
-
-✔ Authentication flow
-
-✔ Dashboard updates
-
-
-## Backend Testing
-
-✔ API validation
-
-✔ Authentication testing
-
-✔ Database operations
-
-✔ Exception handling
-
-
-## AI Testing
-
-✔ Safety score accuracy
-
-✔ Route comparison
-
-✔ Risk prediction validation
-
----
-
-# 🔮 Future Enhancements
-
-| Enhancement | Description |
-|-------------|-------------|
-| 📱 Advanced Android App | Full native mobile experience |
-| ⌚ Wearable Integration | Smartwatch emergency trigger |
-| 🛰 Offline Emergency Mode | Works without internet |
-| 🌐 Multi-language Support | Regional language voice SOS |
-| 🤖 Advanced AI Models | Improved prediction accuracy |
-| 📹 CCTV Intelligence | Real-time visual safety analysis |
-| 🚦 Crowd Prediction | Density-based safety estimation |
-
----
-
-# 🤝 Support & Contribution
-
-If you like this project:
-
-⭐ Star the repository
+⭐ Star this repository
 
 🍴 Fork the project
 
-🐛 Report issues
+📢 Share it
 
-💡 Suggest improvements
+🤝 Contribute
 
-🤝 Contribute new features
+---
 
+<div align="center">
 
-## Contribution Steps
+# 🌟 Thank You
 
-```bash
-git clone https://github.com/YOUR_USERNAME/herguardian.git
+### Together, let's make every journey safer.
 
-cd herguardian
+---
 
-git checkout -b feature-name
+### 🛡 HerGuardian
 
-git commit -m "Added new feature"
+**Empowering Every Journey**
 
-git push origin feature-name
+Made with ❤️ by **Team Vigil**
+
+⭐ **Star the repository if you believe technology can make the world safer.**
+
+</div>
