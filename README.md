@@ -1537,15 +1537,6 @@ It is a mission to ensure that **every woman can travel confidently, independent
 
 <div align="center">
 
-# 🛡 HerGuardian
-
-### *Empowering Every Journey.*
-
-⭐ If you found this project inspiring, consider giving it a **Star** on GitHub.
-
-Made with ❤️ by **Team Vigil**
-
-</div>
 
 <!-- ========================================================= -->
 <!--                 PREMIUM README ADDITIONS                  -->
