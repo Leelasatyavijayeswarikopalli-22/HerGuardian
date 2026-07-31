@@ -1,9 +1,6 @@
 package com.herguardian.Backend.controller;
 
 import com.herguardian.Backend.dto.SOSRequest;
-import com.twilio.Twilio;
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,54 +15,78 @@ import org.springframework.web.bind.annotation.*;
 )
 public class SOSController {
 
-    // 🔑 Replace with your actual Twilio credentials (or put them in application.properties)
-    public static final String ACCOUNT_SID = "YOUR_TWILIO_ACCOUNT_SID";
-    public static final String AUTH_TOKEN = "YOUR_TWILIO_AUTH_TOKEN";
-    public static final String TWILIO_PHONE = "whatsapp:+14155238886"; // Or your Twilio SMS number
 
     @PostMapping("/trigger")
-    public ResponseEntity<?> triggerSOS(@RequestBody SOSRequest request) {
+    public ResponseEntity<?> triggerSOS(
+
+            @RequestBody SOSRequest request
+
+    ) {
+
         try {
-            System.out.println("🚨 EMERGENCY SOS TRIGGERED FOR: " + request.getFullName());
 
-            String googleMapsLink = "https://maps.google.com/?q=" + request.getLatitude() + "," + request.getLongitude();
-            String alertMessage = "EMERGENCY! " + request.getFullName() + " needs help! Live location: " + googleMapsLink;
+            String googleMapsLink =
 
-            // Initialize Twilio
-            Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+                    "https://maps.google.com/?q="
+                            + request.getLatitude()
+                            + ","
+                            + request.getLongitude();
 
-            // Send to Emergency Contact 1
-            if (request.getEmergencyContact1() != null && !request.getEmergencyContact1().isEmpty()) {
-                sendSmsOrWhatsapp(request.getEmergencyContact1(), alertMessage);
-            }
-            // Send to Emergency Contact 2
-            if (request.getEmergencyContact2() != null && !request.getEmergencyContact2().isEmpty()) {
-                sendSmsOrWhatsapp(request.getEmergencyContact2(), alertMessage);
-            }
-            // Send to Emergency Contact 3
-            if (request.getEmergencyContact3() != null && !request.getEmergencyContact3().isEmpty()) {
-                sendSmsOrWhatsapp(request.getEmergencyContact3(), alertMessage);
-            }
 
-            return ResponseEntity.ok("SOS Dispatched Successfully via Twilio!");
-        } catch (Exception e) {
-            System.err.println("Twilio Error: " + e.getMessage());
-            // Even if Twilio fails (e.g. invalid trial numbers), return success so the app doesn't crash
-            return ResponseEntity.ok("SOS Triggered (Local fallback logged)");
+            String alertMessage =
+
+                    "EMERGENCY!!\n\n"
+
+                            + request.getFullName()
+
+                            + " needs immediate help.\n\n"
+
+                            + "Location:\n"
+
+                            + googleMapsLink;
+
+
+            System.out.println("====================================");
+
+            System.out.println("SOS RECEIVED");
+
+            System.out.println("Name : "
+                    + request.getFullName());
+
+            System.out.println("Email : "
+                    + request.getEmail());
+
+            System.out.println("Latitude : "
+                    + request.getLatitude());
+
+            System.out.println("Longitude : "
+                    + request.getLongitude());
+
+            System.out.println("Trigger Phrase : "
+                    + request.getTriggerPhrase());
+
+            System.out.println("Timestamp : "
+                    + request.getTimestamp());
+
+            System.out.println(alertMessage);
+
+            System.out.println("====================================");
+
+
+            return ResponseEntity.ok(
+                    "SOS Triggered Successfully"
+            );
+
         }
+
+        catch (Exception e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body("Failed to trigger SOS");
+
+        }
+
     }
 
-    private void sendSmsOrWhatsapp(String toNumber, String messageBody) {
-        try {
-            // If using WhatsApp, prefix with "whatsapp:", e.g., "whatsapp:+919876543210"
-            Message.creator(
-                    new PhoneNumber(toNumber),
-                    new PhoneNumber(TWILIO_PHONE),
-                    messageBody
-            ).create();
-            System.out.println("Message sent successfully to " + toNumber);
-        } catch (Exception e) {
-            System.err.println("Failed to send to " + toNumber + ": " + e.getMessage());
-        }
-    }
 }

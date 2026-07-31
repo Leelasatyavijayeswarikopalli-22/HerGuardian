@@ -25,6 +25,9 @@
             "android.permission.FOREGROUND_SERVICE_LOCATION"
 
         />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+
+
     <!-- ── WakeLock keeps CPU running when screen is off ── -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -34,6 +37,9 @@
     <!-- ── Vibrate on SOS ── -->
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false"/>
     <application
         android:allowBackup="true"
         android:label="HerGuardian"

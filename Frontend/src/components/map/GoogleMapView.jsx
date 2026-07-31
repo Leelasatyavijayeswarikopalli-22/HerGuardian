@@ -222,30 +222,74 @@ export default function GoogleMapView() {
   alert("🚨 HERGUARDIAN SOS ACTIVATED — Emergency contacts notified");
 
   // ✅ Call your Spring backend to send SMS/WhatsApp immediately
-  fetch("http://YOUR-SERVER-IP:8080/api/sos/trigger", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      userId: userData.id,
-      email: userData.email,
-      fullName: userData.fullName,
-      emergencyContact1: userData.emergencyContact1,
-      emergencyContact2: userData.emergencyContact2,
-      emergencyContact3: userData.emergencyContact3,
-      liveLocation: liveLocation,
-      timestamp: new Date().toISOString(),
-      triggerPhrase: "voice-detected"
-    })
-  }).catch(err => console.error("SOS API error:", err));
+  fetch(
+"https://herguardian-production-2950.up.railway.app/api/sos/trigger",
 
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:userData.email,
+
+fullName:userData.fullName,
+
+emergencyContact1:
+userData.emergencyContact1,
+
+emergencyContact2:
+userData.emergencyContact2,
+
+emergencyContact3:
+userData.emergencyContact3,
+
+latitude:
+liveLocation?.lat,
+
+longitude:
+liveLocation?.lng,
+
+timestamp:
+new Date().toISOString(),
+
+triggerPhrase:
+"voice-detected"
+
+})
+
+})
+
+.catch((error)=>{
+
+console.log(error);
+
+});
   // ✅ Also notify Android native (if it needs to send direct SMS/WhatsApp)
   if (window.AndroidBridge && window.AndroidBridge.triggerNativeSOS) {
-    window.AndroidBridge.triggerNativeSOS(
-      userData.emergencyContact1,
-      userData.emergencyContact2,
-      userData.emergencyContact3,
-      `Live location: https://maps.google.com/?q=${liveLocation?.lat},${liveLocation?.lng}`
-    );
+   const locationMessage=
+
+`https://maps.google.com/?q=
+${liveLocation?.lat},
+${liveLocation?.lng}`;
+
+
+
+window.AndroidBridge.triggerNativeSOS(
+
+userData.emergencyContact1,
+
+userData.emergencyContact2,
+
+userData.emergencyContact3,
+
+locationMessage
+
+);
   }
 }
 

@@ -14,7 +14,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
+import android.telephony.SmsManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
             String contact3 = intent.getStringExtra("contact3");
 
             Log.d(TAG, "SOS broadcast received");
-
             // ── Tell React app to activate SOS ──
             // This calls window.onAndroidSOS() in your React app
             runOnUiThread(() -> {
@@ -140,8 +139,31 @@ public class MainActivity extends AppCompatActivity {
         // 🚀 CALLED WHEN USER CLICKS "START JOURNEY" IN REACT
         @JavascriptInterface
         public void onJourneyStarted() {
-            Log.d(TAG, "🛡 Journey Started! Activating background voice listener...");
-            startVoiceService(); // Microphone starts HERE
+
+            Log.d(
+                    TAG,
+                    "\uD83D\uDEE1 Journey Started! Activating background voice listener..."
+            );
+
+
+            if(ActivityCompat.checkSelfPermission(
+
+                    MainActivity.this,
+                    Manifest.permission.RECORD_AUDIO
+
+            ) != PackageManager.PERMISSION_GRANTED){
+
+                Log.e(
+                        TAG,
+                        "Microphone permission denied."
+                );
+
+                return;
+            }
+
+
+            startVoiceService();
+
         }
 
         // 🛑 CALLED WHEN USER REACHES DESTINATION OR ENDS JOURNEY
@@ -150,6 +172,51 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "🏁 Journey Ended! Stopping voice listener to save battery.");
             stopVoiceService(); // Microphone stops HERE
         }
+        @JavascriptInterface
+        public void triggerNativeSOS(
+
+                String contact1,
+                String contact2,
+                String contact3,
+                String location
+
+        ){
+
+            Log.d(TAG,"SOS ACTIVATED");
+
+
+            if(contact1!=null && !contact1.isEmpty()){
+
+                sendSMS(
+                        contact1,
+                        location
+                );
+
+            }
+
+
+            if(contact2!=null && !contact2.isEmpty()){
+
+                sendSMS(
+                        contact2,
+                        location
+                );
+
+            }
+
+
+            if(contact3!=null && !contact3.isEmpty()){
+
+                sendSMS(
+                        contact3,
+                        location
+                );
+
+            }
+
+
+        }
+
 
         @JavascriptInterface
         public void onUserLoggedOut() {
@@ -188,9 +255,6 @@ public class MainActivity extends AppCompatActivity {
                             sessionManager.saveVoicePhrase(phrase);
 
                             Log.d(TAG, "✅ Voice phrase saved: " + phrase);
-
-                            // Start the voice listener service
-                            startVoiceService();
                         }
                     }
 
@@ -199,8 +263,6 @@ public class MainActivity extends AppCompatActivity {
                             Call<SecretPhraseResponse> call, Throwable t
                     ) {
                         Log.e(TAG, "Phrase fetch failed: " + t.getMessage());
-                        // Start service anyway with existing phrase if any
-                        startVoiceService();
                     }
                 });
     }
@@ -240,7 +302,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestPermissions() {
         String[] permissions = {
-                Manifest.permission.RECORD_AUDIO
+                Manifest.permission.RECORD_AUDIO,
+
+                Manifest.permission.ACCESS_FINE_LOCATION,
+
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+
+                Manifest.permission.POST_NOTIFICATIONS,
+
+                Manifest.permission.SEND_SMS
         };
 
         boolean allGranted = true;
@@ -256,9 +326,82 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, permissions, 100);
         }
     }
+    private void sendSMS(
 
-    @Override
-    protected void onDestroy() {
+            String phoneNumber,
+            String location
+
+    ){
+
+        try{
+
+            if(phoneNumber==null ||
+                    phoneNumber.isEmpty()){
+
+                return;
+
+            }
+
+
+            if(ActivityCompat.checkSelfPermission(
+
+                    this,
+                    Manifest.permission.SEND_SMS
+
+            ) != PackageManager.PERMISSION_GRANTED){
+
+                return;
+
+            }
+
+
+            String message =
+
+                    "HERGUARDIAN EMERGENCY ALERT!\n\n"
+
+                            +"I need immediate help.\n\n"
+
+                            +"Live Location :\n"
+
+                            +location;
+
+
+
+            SmsManager smsManager =
+
+                    SmsManager.getDefault();
+
+
+            smsManager.sendTextMessage(
+
+                    phoneNumber,
+                    null,
+                    message,
+                    null,
+                    null
+
+            );
+
+
+            Log.d(
+                    TAG,
+                    "SMS SENT SUCCESSFULLY."
+            );
+
+
+        }
+
+        catch(Exception e){
+
+            Log.e(
+                    TAG,
+                    e.getMessage()
+            );
+
+        }
+
+    }
+    @Override protected void onDestroy() {
         super.onDestroy();
         try {
             unregisterReceiver(sosReceiver);
