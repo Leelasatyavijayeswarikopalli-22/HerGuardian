@@ -848,7 +848,7 @@ HerGuardian
 | Android | Java, Android SDK, XML, Gradle, Google Maps SDK, Retrofit |
 | Maps | Geoapify API, MapTiler API, OpenRouteService, Browser Geolocation |
 | Authentication | JWT Authentication, BCrypt Password Encryption |
-| Deployment | Vercel, Railway |
+| Deployment | Vercel, Railway , Neon |
 | DevOps | Git, GitHub, Maven, Postman, VS Code, IntelliJ IDEA |
 
 ---
