@@ -1,52 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.herguardian.app">
-    <!-- ── To access exact Location to send to emergency contacts ── -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ── Location ── -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!-- ── Microphone for voice phrase detection ── -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!-- ── Mic for voice phrase detection ── -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-    <!-- ── Internet for WebView + API calls ── -->
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- ── Foreground service keeps mic alive when screen is off ── -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
-    <uses-permission
 
-        android:name=
-            "android.permission.ACCESS_BACKGROUND_LOCATION"
+    <!-- ── Internet + Network ── -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-        />
-    <uses-permission
-
-        android:name=
-            "android.permission.FOREGROUND_SERVICE_LOCATION"
-
-        />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
-
-
-    <!-- ── WakeLock keeps CPU running when screen is off ── -->
+    <!-- ── Foreground service ── -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-
-    <!-- ── Restart service after phone reboot ── -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <!-- ── Vibrate on SOS ── -->
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <uses-feature
         android:name="android.hardware.telephony"
-        android:required="false"/>
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:label="HerGuardian"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        android:usesCleartextTraffic="false">
+        android:usesCleartextTraffic="true">
 
-        <!-- ── Main Activity (WebView) ── -->
+        <!-- ── Main Activity ── -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -57,14 +44,14 @@
             </intent-filter>
         </activity>
 
-        <!-- ── Voice Listener Service (screen-off detection) ── -->
+        <!-- ── Voice Listener Service - FIXED for Android 14 ── -->
         <service
             android:name=".service.VoiceListenerService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="microphone" />
+            android:foregroundServiceType="microphone|location" />
 
-        <!-- ── Boot Receiver (restart service after reboot) ── -->
+        <!-- ── Boot Receiver ── -->
         <receiver
             android:name=".receiver.BootReceiver"
             android:enabled="true"
