@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ArrowLeft, User, Mail, Lock as LockIcon, Phone, Mic, Sparkles, UserPlus, Eye, EyeOff } from "lucide-react";
@@ -22,6 +22,19 @@ function InputField({ icon: Icon, onChange, ...props }) {
 }
 
 export default function Signup() {
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    alert(
+      `DEMO LOGIN INFO\n\n` +
+      `👤 User:\nleelasatyavijayeswari1022@gmail.com\n\n` +
+      `🔐 Authority (either):\najnabhb.ug24.cs@nitp.ac.in\nkopalliv.ug24.cs@nitp.ac.in\n\n` +
+      `Password for all: Viji#2210\n\n` +
+      `Note: Sorry for the inconvenience of signup because we are using Resend API to send email and its free tier is restricted. Our signup requires OTP to login. The SMTP requests are blocked on Railway deployment so we shifted to Resend.`
+    );
+  }, 700); // 700ms after page opens
+
+  return () => clearTimeout(timer);
+}, []);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);

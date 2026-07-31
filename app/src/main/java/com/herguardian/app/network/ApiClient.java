@@ -12,7 +12,7 @@ public class ApiClient {
     // Emulator:    http://10.0.2.2:8080/
     // Real device: http://YOUR_PC_IP:8080/
     // Production:  https://your-server.com/
-    private static final String BASE_URL = "http://10.0.2.2:8080/";
+    private static final String BASE_URL = "https://herguardian-production-2950.up.railway.app/";
 
     private static Retrofit retrofit;
 

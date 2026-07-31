@@ -13,7 +13,18 @@
     <!-- ── Foreground service keeps mic alive when screen is off ── -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission
 
+        android:name=
+            "android.permission.ACCESS_BACKGROUND_LOCATION"
+
+        />
+    <uses-permission
+
+        android:name=
+            "android.permission.FOREGROUND_SERVICE_LOCATION"
+
+        />
     <!-- ── WakeLock keeps CPU running when screen is off ── -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
@@ -27,7 +38,7 @@
         android:allowBackup="true"
         android:label="HerGuardian"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="false">
 
         <!-- ── Main Activity (WebView) ── -->
         <activity

@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         // ── Load your React app ──
         // Change this to your deployed URL
-        webView.loadUrl("http://10.0.2.2:5173");
+        webView.loadUrl("https://her-guardian.vercel.app");
 
         // For local development:
         // webView.loadUrl("http://10.0.2.2:5173");
