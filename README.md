@@ -457,20 +457,6 @@ Built during
 
 ---
 
-# 📸 Screenshots
-
-> *(Screenshots will be added in Part 3)*
-
-- Home Dashboard
-- AI Route Map
-- Community Reports
-- Authority Portal
-- Voice SOS
-- Safety Dashboard
-
----
----
-
 # 🏗️ System Architecture
 
 HerGuardian follows a **hybrid Web + Android architecture** powered by AI-driven safety analysis, secure backend services, geospatial intelligence, and real-time community data.
