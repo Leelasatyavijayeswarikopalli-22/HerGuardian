@@ -1127,10 +1127,6 @@ Works even when:
 - Phone Locked
 - Hands Busy
 
-<p align="center">
-<img src="./assets/voice-sos.png" width="85%">
-</p>
-
 ---
 
 ## 📊 AI Dynamic Safety Dashboard
